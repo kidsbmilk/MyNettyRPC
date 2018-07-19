@@ -58,6 +58,7 @@ public class MessageRecvExecutor implements ApplicationContextAware, Initializin
                 ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
                         System.out.println("RPC Server Send message-id response:" + request.getMessageId());
+                        System.out.printf("%s + %s = %s\n", request.getParameters()[0], request.getParameters()[1], response.getResult());
                     }
                 });
             }
