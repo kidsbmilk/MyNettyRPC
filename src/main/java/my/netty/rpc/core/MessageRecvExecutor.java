@@ -68,6 +68,10 @@ public class MessageRecvExecutor implements ApplicationContextAware, Initializin
         }, threadPoolExecutor);
     }
 
+    /**
+     * 这个方法在postProcessBeforeInitialization()中调用。
+     * https://blog.csdn.net/xtj332/article/details/20127501
+     */
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         try {
             MessageKeyVal keyVal = (MessageKeyVal) ctx.getBean(Class.forName("my.netty.rpc.model.MessageKeyVal"));
@@ -86,6 +90,10 @@ public class MessageRecvExecutor implements ApplicationContextAware, Initializin
         }
     }
 
+    /**
+     * 最先执行的是postProcessBeforeInitialization，然后是afterPropertiesSet，然后是init-method，然后是postProcessAfterInitialization。
+     * https://blog.csdn.net/u013013553/article/details/79038702
+     */
     public void afterPropertiesSet() throws Exception {
         ThreadFactory threadRpcFactory = new NamedThreadFactory("NettyRPC ThreadFactory");
 
