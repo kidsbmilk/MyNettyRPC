@@ -52,6 +52,7 @@ public class MessageRecvExecutor implements ApplicationContextAware, Initializin
             }
         }
 
+        // 这里用的是guava并发库
         ListenableFuture<Boolean> listenableFuture = threadPoolExecutor.submit(task);
         Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
             public void onSuccess(@Nullable Boolean result) {

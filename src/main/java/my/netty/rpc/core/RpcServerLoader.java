@@ -50,8 +50,8 @@ public class RpcServerLoader {
             int port = Integer.parseInt(ipAddr[1]);
             final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
 
+            // 这里用的是guava并发库
             ListenableFuture<Boolean> listenableFuture = threadPoolExecutor.submit(new MessageSendInitializeTask(eventLoopGroup, remoteAddr, serializeProtocol));
-
             Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
                 public void onSuccess(@Nullable Boolean result) {
                     try {
