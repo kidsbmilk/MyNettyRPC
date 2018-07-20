@@ -17,3 +17,9 @@ Netty实现高性能RPC服务器优化篇之消息序列化 http://www.cnblogs.c
 * Netty网络模型采用主从Reactor线程模型，提升RPC服务器并行吞吐性能。
 * 多线程模型采用guava线程库进行封装。
 
+
+## MyNettyRPC 2.0 中文简介：
+**MyNettyRPC 2.0是基于MyNettyRPC 1.0 在Maven下构建的RPC系统，在原有1.0版本的基础上对代码进行重构升级，主要改进点如下：**
+* RPC服务启动、注册、卸载支持通过Spring中的MyNettyRPC标签进行统一管理。
+* 在原来编码解码器：JDK原生的对象序列化方式、kryo、hessian，新增了：protostuff。
+* 优化了NettyRPC服务端的线程池模型，支持LinkedBlockingQueue、ArrayBlockingQueue、SynchronousQueue，并扩展了多个线程池任务处理策略。
