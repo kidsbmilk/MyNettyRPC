@@ -1,6 +1,6 @@
 package my.netty.rpc.servicebean;
 
-import my.netty.rpc.core.MessageSendExecutor;
+import my.netty.rpc.netty.MessageSendExecutor;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;

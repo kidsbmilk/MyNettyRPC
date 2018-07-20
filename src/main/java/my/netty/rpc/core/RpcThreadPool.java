@@ -1,5 +1,7 @@
 package my.netty.rpc.core;
 
+import my.netty.rpc.parallel.NamedThreadFactory;
+
 import java.util.concurrent.*;
 
 public class RpcThreadPool {

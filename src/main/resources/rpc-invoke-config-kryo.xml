@@ -18,7 +18,7 @@
         </property>
     </bean>
     <bean id="calc" class="my.netty.rpc.servicebean.CalculateImpl"/>
-    <bean id="rpcServer" class="my.netty.rpc.core.MessageRecvExecutor">
+    <bean id="rpcServer" class="my.netty.rpc.netty.MessageRecvExecutor">
         <constructor-arg name="serverAddress" value="${rpc.server.addr}"/>
         <constructor-arg name="serializeProtocol" value="KRYOSERIALIZE"/>
     </bean>
