@@ -2,12 +2,13 @@ package my.netty.rpc.serialize.protostuff;
 
 import com.google.common.io.Closer;
 import io.netty.buffer.ByteBuf;
+import my.netty.rpc.serialize.MessageCodecUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class ProtostuffCodecUtil {
+public class ProtostuffCodecUtil implements MessageCodecUtil {
 
     private static Closer closer = Closer.create();
     private ProtostuffSerializePool pool = ProtostuffSerializePool.getProtostuffPoolInstance();

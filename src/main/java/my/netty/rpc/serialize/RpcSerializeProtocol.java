@@ -7,7 +7,8 @@ public enum  RpcSerializeProtocol {
 
     JDKSERIALIZE("jdknative"),
     KRYOSERIALIZE("kryo"),
-    HESSIANSERIALIZE("hessian");
+    HESSIANSERIALIZE("hessian"),
+    PROTOSTUFFSERIALIZE("protostuff");
 
     private String serializeProtocol;
 

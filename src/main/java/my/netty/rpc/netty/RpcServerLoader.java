@@ -3,7 +3,7 @@ package my.netty.rpc.netty;
 import com.google.common.util.concurrent.*;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import my.netty.rpc.core.RpcThreadPool;
+import my.netty.rpc.parallel.RpcThreadPool;
 import my.netty.rpc.serialize.RpcSerializeProtocol;
 
 import javax.annotation.Nullable;
