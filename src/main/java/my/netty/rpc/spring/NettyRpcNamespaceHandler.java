@@ -32,7 +32,7 @@ public class NettyRpcNamespaceHandler extends NamespaceHandlerSupport {
 
     public void init() {
         registerBeanDefinitionParser("service", new NettyRpcServiceParser());
-        registerBeanDefinitionParser("register", new NettyRpcRegisteryParser());
+        registerBeanDefinitionParser("registry", new NettyRpcRegistryParser());
         registerBeanDefinitionParser("reference", new NettyRpcReferenceParser());
     }
 }

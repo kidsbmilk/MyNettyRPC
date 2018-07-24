@@ -8,7 +8,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-public class NettyRpcRegistery implements InitializingBean, DisposableBean {
+public class NettyRpcRegistry implements InitializingBean, DisposableBean {
 
     private String ipAddr;
     private String protocol;

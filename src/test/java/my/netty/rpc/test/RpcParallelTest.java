@@ -24,7 +24,7 @@ public class RpcParallelTest {
 
         signal.countDown();
         finish.await();
-        sw.start();
+        sw.stop();
 
         String tip = String.format("加法计算RPC调用总天耗时: [%s] 毫秒", sw.getTime());
         System.out.println(tip);
