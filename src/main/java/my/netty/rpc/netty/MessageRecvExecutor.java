@@ -93,7 +93,7 @@ public class MessageRecvExecutor implements ApplicationContextAware{
                 ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
                         System.out.println("RPC Server Send message-id response:" + request.getMessageId());
-                        System.out.printf("%s + %s = %s\n", request.getParameters()[0], request.getParameters()[1], response.getResult());
+                        output(request, response);
                     }
                 });
             }
@@ -102,6 +102,15 @@ public class MessageRecvExecutor implements ApplicationContextAware{
                 t.printStackTrace();
             }
         }, threadPoolExecutor);
+    }
+
+    private static void output(final MessageRequest request, final MessageResponse response) {
+        if(request.getMethodName().equalsIgnoreCase("add")) {
+            System.out.printf("%s + %s = %s\n", request.getParameters()[0], request.getParameters()[1], response.getResult());
+        }
+        if(request.getMethodName().equalsIgnoreCase("multi")) {
+            System.out.printf("%s * %s = %s\n", request.getParameters()[0], request.getParameters()[1], response.getResult());
+        }
     }
 
     /**

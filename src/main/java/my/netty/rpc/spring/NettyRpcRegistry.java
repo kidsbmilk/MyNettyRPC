@@ -18,6 +18,10 @@ public class NettyRpcRegistry implements InitializingBean, DisposableBean {
         MessageRecvExecutor.getInstance().stop();
     }
 
+    /**
+     * 最先执行的是postProcessBeforeInitialization，然后是afterPropertiesSet，然后是init-method，然后是postProcessAfterInitialization。
+     * https://blog.csdn.net/u013013553/article/details/79038702
+     */
     public void afterPropertiesSet() throws Exception {
         MessageRecvExecutor ref = MessageRecvExecutor.getInstance();
         ref.setServerAddress(ipAddr);

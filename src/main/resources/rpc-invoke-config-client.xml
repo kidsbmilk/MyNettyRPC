@@ -5,11 +5,11 @@
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
     http://www.mynettyrpc.com/nettyrpc http://www.mynettyrpc.com/nettyrpc/nettyrpc.xsd">
+
     <context:property-placeholder location="classpath:rpc-server.properties"/>
-    <nettyrpc:reference id="addCalc" interfaceName="my.netty.rpc.services.AddCalculate"
-                        protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
-    <nettyrpc:reference id="multiCalc" interfaceName="my.netty.rpc.services.MultiCalculate"
-                        protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
-    <nettyrpc:reference id="personManage" interfaceName="my.netty.rpc.services.PersonManage"
-                        protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
+
+    <nettyrpc:reference id="addCalc" interfaceName="my.netty.rpc.services.AddCalculate" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
+    <nettyrpc:reference id="multiCalc" interfaceName="my.netty.rpc.services.MultiCalculate" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
+    <nettyrpc:reference id="personManage" interfaceName="my.netty.rpc.services.PersonManage" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
+
 </beans>

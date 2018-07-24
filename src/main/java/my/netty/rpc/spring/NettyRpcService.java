@@ -36,6 +36,12 @@ public class NettyRpcService implements ApplicationContextAware, ApplicationList
         this.interfaceName = interfaceName;
     }
 
+    /**
+     * 这个方法在postProcessBeforeInitialization()中调用。
+     * https://blog.csdn.net/xtj332/article/details/20127501
+     * 最先执行的是postProcessBeforeInitialization，然后是afterPropertiesSet，然后是init-method，然后是postProcessAfterInitialization。
+     * https://blog.csdn.net/u013013553/article/details/79038702
+     */
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
         applicationContext.publishEvent(new ServerStartEvent(new Object()));

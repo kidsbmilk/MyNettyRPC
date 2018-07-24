@@ -27,3 +27,12 @@ Netty实现高性能RPC服务器优化篇之消息序列化 http://www.cnblogs.c
 **基于Netty打造RPC服务器设计经验谈**
 http://www.cnblogs.com/jietang/p/5983038.html
 
+理解JMX之介绍和简单使用
+https://blog.csdn.net/lmy86263/article/details/71037316
+
+ApplicationContextAware得到ApplicationContext的原理
+https://blog.csdn.net/xtj332/article/details/20127501
+
+Spring afterPropertiesSet方法
+https://blog.csdn.net/u013013553/article/details/79038702
+
