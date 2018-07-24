@@ -36,9 +36,12 @@ public class MessageRecvExecutor implements ApplicationContextAware{
     private RpcSerializeProtocol serializeProtocol = RpcSerializeProtocol.JDKSERIALIZE;
 
     private final static String DELIMITER = ":";
-    private Map<String, Object> handlerMap = new ConcurrentHashMap<String, Object>();
-    ThreadFactory threadFactory = new NamedThreadFactory("NettyRPC ThreadFactory");
     int parallel = RpcSystemConfig.PARALLEL * 2;
+    private static int threadNums = 16;
+    private static int queueNums = -1;
+    private Map<String, Object> handlerMap = new ConcurrentHashMap<String, Object>();
+    volatile private static ListeningExecutorService threadPoolExecutor;
+    ThreadFactory threadFactory = new NamedThreadFactory("NettyRPC ThreadFactory");
     EventLoopGroup boss = new NioEventLoopGroup();
     EventLoopGroup worker = new NioEventLoopGroup(parallel, threadFactory, SelectorProvider.provider());
 
@@ -49,8 +52,6 @@ public class MessageRecvExecutor implements ApplicationContextAware{
     public void setHandlerMap(Map<String, Object> handlerMap) {
         this.handlerMap = handlerMap;
     }
-
-    volatile private static ListeningExecutorService threadPoolExecutor;
 
     public String getServerAddress() {
         return serverAddress;
@@ -80,7 +81,7 @@ public class MessageRecvExecutor implements ApplicationContextAware{
         if(threadPoolExecutor == null) {
             synchronized (MessageRecvExecutor.class) {
                 if(threadPoolExecutor == null) {
-                    threadPoolExecutor = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
+                    threadPoolExecutor = MoreExecutors.listeningDecorator((ThreadPoolExecutor) (RpcSystemConfig.isMonitorServerSupport() ? RpcThreadPool.getExecutorWithJmx(threadNums, queueNums) : RpcThreadPool.getExecutor(threadNums, queueNums)));
                 }
             }
         }

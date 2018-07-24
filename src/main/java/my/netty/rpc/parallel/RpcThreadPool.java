@@ -1,11 +1,23 @@
 package my.netty.rpc.parallel;
 
 import my.netty.rpc.core.RpcSystemConfig;
+import my.netty.rpc.jmx.ThreadPoolMonitorProvider;
+import my.netty.rpc.jmx.ThreadPoolStatus;
 import my.netty.rpc.parallel.policy.*;
 
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MalformedObjectNameException;
+import javax.management.ReflectionException;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.*;
 
 public class RpcThreadPool {
+    private static final Timer timer = new Timer("ThreadPoolMonitor", true);
+    private static final long monitorDelay = 100;
+    private static final long monitorPeriod = 300;
 
     private static RejectedExecutionHandler createPolicy() {
         RejectedPolicyType rejectedPolicyType = RejectedPolicyType.fromString(
@@ -45,5 +57,36 @@ public class RpcThreadPool {
         String name = "RpcThreadPool";
         return new ThreadPoolExecutor(threads, threads, 0, TimeUnit.MILLISECONDS,
                 createBlockingQueue(queues), new NamedThreadFactory(name, true), createPolicy());
+    }
+
+    public static Executor getExecutorWithJmx(int threads, int queues) {
+        final ThreadPoolExecutor executor = (ThreadPoolExecutor) getExecutor(threads, queues);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                ThreadPoolStatus status = new ThreadPoolStatus();
+                status.setPoolSize(executor.getPoolSize());
+                status.setActiveCount(executor.getActiveCount());
+                status.setCorePoolSize(executor.getCorePoolSize());
+                status.setMaximumPoolSize(executor.getMaximumPoolSize());
+                status.setLargestPoolSize(executor.getLargestPoolSize());
+                status.setTaskCount(executor.getTaskCount());
+                status.setCompletedTaskCount(executor.getCompletedTaskCount());
+
+                try {
+                    ThreadPoolMonitorProvider.monitor(status);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (MalformedObjectNameException e) {
+                    e.printStackTrace();
+                } catch (ReflectionException e) {
+                    e.printStackTrace();
+                } catch (MBeanException e) {
+                    e.printStackTrace();
+                } catch (InstanceNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, monitorDelay, monitorDelay);
+        return executor;
     }
 }
