@@ -10,7 +10,10 @@
                       ref="calcAddService"></nettyrpc:service>
     <nettyrpc:service id="demoMultiService" interfaceName="my.netty.rpc.services.MultiCalculate"
                       ref="calcMultiService"></nettyrpc:service>
+    <nettyrpc:service id="demoPersonManage" interfaceName="my.netty.rpc.services.PersonManage"
+                      ref="personManageService"></nettyrpc:service>
     <nettyrpc:registry id="rpcRegistry" ipAddr="${rpc.server.addr}" protocol="PROTOSTUFFSERIALIZE"></nettyrpc:registry>
     <bean id="calcAddService" class="my.netty.rpc.services.impl.AddCalculateImpl"></bean>
     <bean id="calcMultiService" class="my.netty.rpc.services.impl.MultiCalculateImpl"></bean>
+    <bean id="personManageService" class="my.netty.rpc.services.impl.PersonManageImpl"></bean>
 </beans>
