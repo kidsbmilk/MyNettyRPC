@@ -42,7 +42,7 @@ public class NettyRpcReference implements FactoryBean, InitializingBean, Disposa
 
     public void destroy() throws Exception {
         // 反射创建对象，然后就可以不同的监听器方法输出不同的信息了。
-        eventBus.post(new ClientStopEvent(0));
+        eventBus.post(new ClientStopEvent(interfaceName));
     }
 
     /**

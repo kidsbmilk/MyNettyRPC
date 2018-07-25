@@ -2,13 +2,13 @@ package my.netty.rpc.event;
 
 public class ClientStopEvent {
 
-    private final int message;
+    private final String message;
 
-    public ClientStopEvent(int message) {
+    public ClientStopEvent(String message) {
         this.message = message;
     }
 
-    public int getMessage() {
+    public String getMessage() {
         return message;
     }
 }

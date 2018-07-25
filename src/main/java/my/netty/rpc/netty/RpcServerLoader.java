@@ -52,6 +52,8 @@ public class RpcServerLoader {
             final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
 
             // 这里用的是guava并发库
+            // ListenableFuture in Guava
+            // https://www.cnblogs.com/hupengcool/p/3991310.html
             ListenableFuture<Boolean> listenableFuture = threadPoolExecutor.submit(new MessageSendInitializeTask(eventLoopGroup, remoteAddr, serializeProtocol));
             Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
                 public void onSuccess(@Nullable Boolean result) {
