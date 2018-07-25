@@ -41,6 +41,7 @@ public class NettyRpcReference implements FactoryBean, InitializingBean, Disposa
     }
 
     public void destroy() throws Exception {
+        // 反射创建对象，然后就可以不同的监听器方法输出不同的信息了。
         eventBus.post(new ClientStopEvent(0));
     }
 
@@ -51,6 +52,8 @@ public class NettyRpcReference implements FactoryBean, InitializingBean, Disposa
     public void afterPropertiesSet() throws Exception {
         MessageSendExecutor.getInstance().setRpcServerLoader(ipAddr, RpcSerializeProtocol.valueOf(protocol));
         ClientStopEventListener listener = new ClientStopEventListener();
+        // Google EventBus 使用详解
+        // https://blog.csdn.net/zhglance/article/details/54314823
         eventBus.register(listener);
     }
 

@@ -25,6 +25,7 @@ public class NettyRpcService implements ApplicationContextAware, ApplicationList
     }
 
     public void onApplicationEvent(ApplicationEvent event) {
+        // 这里保存了所有可用的服务
         MessageRecvExecutor.getInstance().getHandlerMap().put(interfaceName, applicationContext.getBean(ref));
     }
 
@@ -44,6 +45,8 @@ public class NettyRpcService implements ApplicationContextAware, ApplicationList
      */
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        // 当NettyRpcServiceParser解析完一个服务后，会发通知，然后onApplicationEvent方法将此服务加入到handlerMap中。
+        // 所有通知是会缓存的，内部实现可能是一个队列，可以调试看看。
         applicationContext.publishEvent(new ServerStartEvent(new Object()));
     }
 
