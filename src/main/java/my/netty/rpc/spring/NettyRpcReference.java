@@ -57,6 +57,10 @@ public class NettyRpcReference implements FactoryBean, InitializingBean, Disposa
         eventBus.register(listener);
     }
 
+    // 在ClassPathXmlApplicationContext.getBean中取出对象时，会调用这个方法，然后对对象进行代理，进而调用MessageSendProxy.handleInvocation，
+    // 将对象发送到RPC服务器上去执行相应操作。见PojoCallTest中的实现。
+    // spring中FactoryBean中的getObject()方法的作用
+    // https://blog.csdn.net/liuxiao723846/article/details/73794128
     public Object getObject() throws Exception {
         return MessageSendExecutor.getInstance().execute(getObjectType());
     }
