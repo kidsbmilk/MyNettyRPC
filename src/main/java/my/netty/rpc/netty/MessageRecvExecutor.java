@@ -13,8 +13,10 @@ import my.netty.rpc.model.MessageRequest;
 import my.netty.rpc.model.MessageResponse;
 import my.netty.rpc.serialize.RpcSerializeProtocol;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import java.nio.channels.spi.SelectorProvider;
@@ -87,6 +89,8 @@ public class MessageRecvExecutor implements ApplicationContextAware{
         }
 
         // 这里用的是guava并发库
+        // ListenableFuture in Guava
+        // https://www.cnblogs.com/hupengcool/p/3991310.html
         ListenableFuture<Boolean> listenableFuture = threadPoolExecutor.submit(task);
         Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
             public void onSuccess(@Nullable Boolean result) {
@@ -116,6 +120,9 @@ public class MessageRecvExecutor implements ApplicationContextAware{
     /**
      * 这个方法在postProcessBeforeInitialization()中调用。
      * https://blog.csdn.net/xtj332/article/details/20127501
+     *
+     * 因为此类实现了ApplicationContextAware，所以必须要实现此方法。
+     * 在xml里并没有此配置：<context:component-scan base-package="my.netty.rpc.netty"/>　，所以其实在这里没有用到此方法。
      */
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         try {
@@ -131,6 +138,8 @@ public class MessageRecvExecutor implements ApplicationContextAware{
                 handlerMap.put(entry.getKey(), entry.getValue());
             }
         } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(MessageRecvExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchBeanDefinitionException ex) {
             java.util.logging.Logger.getLogger(MessageRecvExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
