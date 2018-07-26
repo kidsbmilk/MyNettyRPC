@@ -31,6 +31,6 @@ public class MessageSendExecutor {
     }
 
     public static <T> T execute(Class<T> rpcInterface) {
-        return (T) Reflection.newProxy(rpcInterface, new MessageSendProxy<T>());
+        return (T) Reflection.newProxy(rpcInterface, new MessageSendProxy<T>()); // 注意：仅仅是返回一个对象（代理对象），并没有其他的动作。
     }
 }

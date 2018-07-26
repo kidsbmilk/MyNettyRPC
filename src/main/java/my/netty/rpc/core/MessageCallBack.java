@@ -36,7 +36,8 @@ public class MessageCallBack {
         }
     }
 
-    public void over(MessageResponse response) { // over有结束的意思
+    public void over(MessageResponse response) { // over有结束的意思，在这里的意思是：远程过程调用有结果返回了，在这里开始设置调用成功后的结果，
+        // 远程调用结束了，本地得到结果后的处理还没结束。
         try {
             lock.lock();
             finish.signal();

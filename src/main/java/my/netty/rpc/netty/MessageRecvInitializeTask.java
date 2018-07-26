@@ -37,7 +37,7 @@ public class MessageRecvInitializeTask implements Callable<Boolean> {
     public Boolean call() {
         response.setMessageId(request.getMessageId());
         try {
-            Object result = reflect(request);
+            Object result = reflect(request); // 在这里服务器端处理客户端发来的调用请求。
             response.setResult(result);
             return Boolean.TRUE;
         } catch (Throwable t) {
@@ -53,6 +53,6 @@ public class MessageRecvInitializeTask implements Callable<Boolean> {
         Object serviceBean = handlerMap.get(className);
         String methodName = request.getMethodName();
         Object[] parameters = request.getParameters();
-        return MethodUtils.invokeMethod(serviceBean, methodName, parameters);
+        return MethodUtils.invokeMethod(serviceBean, methodName, parameters); // 在这里服务器端处理客户端发来的调用请求。
     }
 }

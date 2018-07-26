@@ -65,7 +65,7 @@ public class NettyRpcReference implements FactoryBean, InitializingBean, Disposa
     // spring中FactoryBean中的getObject()方法的作用
     // https://blog.csdn.net/liuxiao723846/article/details/73794128
     public Object getObject() throws Exception {
-        return MessageSendExecutor.getInstance().execute(getObjectType());
+        return MessageSendExecutor.getInstance().execute(getObjectType()); // 注意：仅仅是返回一个对象（代理对象），并没有其他的动作。
     }
 
     public Class<?> getObjectType() {

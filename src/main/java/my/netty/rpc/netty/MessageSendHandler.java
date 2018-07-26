@@ -43,7 +43,8 @@ public class MessageSendHandler extends ChannelInboundHandlerAdapter {
         MessageCallBack callBack = mapCallBack.get(messageId);
         if(callBack != null) {
             mapCallBack.remove(messageId);
-            callBack.over(response);
+            callBack.over(response); // over有结束的意思，在这里的意思是：远程过程调用有结果返回了，在这里开始设置调用成功后的结果，
+            // 远程调用结束了，本地得到结果后的处理还没结束。
         }
     }
 
