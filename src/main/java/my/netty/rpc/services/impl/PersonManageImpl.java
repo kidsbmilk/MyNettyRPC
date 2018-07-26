@@ -9,4 +9,8 @@ public class PersonManageImpl implements PersonManage {
         System.out.println("person data[" + p + "] has save!");
         return 0;
     }
+
+    public Person getPerson(Person p) {
+        return p;
+    }
 }
