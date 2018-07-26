@@ -41,6 +41,8 @@ public class NettyRpcReference implements FactoryBean, InitializingBean, Disposa
     }
 
     // 这是DisposableBean里的方法，在Bean销毁时调用。
+    // InitializingBean和DisposableBean
+    // https://blog.csdn.net/msoso_______1988/article/details/9371467
     public void destroy() throws Exception {
         // 反射创建对象，然后就可以不同的监听器方法输出不同的信息了。
         eventBus.post(new ClientStopEvent(interfaceName));
