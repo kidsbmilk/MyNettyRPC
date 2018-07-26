@@ -26,7 +26,7 @@ public class MessageCallBack {
         try {
             lock.lock();
             finish.await(10 * 1000, TimeUnit.MILLISECONDS);
-            if(this.request != null) {
+            if(this.response != null) {
                 return this.response.getResult();
             } else {
                 return null;
