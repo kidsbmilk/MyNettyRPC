@@ -74,6 +74,7 @@ public class NettyRpcReference implements FactoryBean, InitializingBean, Disposa
         return null;
     }
 
+    // 如果isSingleton()返回true,则该实例会放到Spring容器的单实例缓存池中。
     public boolean isSingleton() {
         return true;
     }

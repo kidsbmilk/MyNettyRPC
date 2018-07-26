@@ -55,6 +55,7 @@ public class RpcServerLoader {
             // ListenableFuture in Guava
             // https://www.cnblogs.com/hupengcool/p/3991310.html
             ListenableFuture<Boolean> listenableFuture = threadPoolExecutor.submit(new MessageSendInitializeTask(eventLoopGroup, remoteAddr, serializeProtocol));
+            // 在MessageSendInitializeTask中会设置messageSendHandler
             Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
                 public void onSuccess(@Nullable Boolean result) {
                     try {
