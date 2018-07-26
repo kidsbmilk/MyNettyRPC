@@ -17,6 +17,7 @@ public class PojoCallTest {
         p.setAge(22);
 
         int result = manage.save(p); // 这里才会调用代理对象MessageSendProxy的handleInvocation方法，进行远程过程调用，整个过程，对客户端来说，就像是在本地调用的一样，感觉很神奇。
+        // 疑问：manage.save经过远程过程调用、反序列化啥的，返回的应该是Object，为什么可以直接赋给result呢？是在哪里做了类型转换吗？
 
         System.out.println("call pojo rpc result: " + result);
 
