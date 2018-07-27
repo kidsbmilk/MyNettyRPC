@@ -3,6 +3,7 @@ package my.netty.rpc.netty;
 import com.google.common.util.concurrent.*;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import my.netty.rpc.core.RpcSystemConfig;
 import my.netty.rpc.parallel.RpcThreadPool;
 import my.netty.rpc.serialize.RpcSerializeProtocol;
 
@@ -17,13 +18,15 @@ import java.util.logging.Logger;
 
 public class RpcServerLoader {
 
-    private volatile static RpcServerLoader rpcServerLoader;
-    private final static String DELIMITER = ":";
+    private static volatile RpcServerLoader rpcServerLoader;
+    private static final String DELIMITER = RpcSystemConfig.DELIMITER;
     private RpcSerializeProtocol serializeProtocol = RpcSerializeProtocol.JDKSERIALIZE;
 
-    private final static int parallel = Runtime.getRuntime().availableProcessors() * 2;
+    private static final int parallel = RpcSystemConfig.PARALLEL * 2;
     private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(parallel);
-    private static ListeningExecutorService threadPoolExecutor = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(16, -1));
+    private static int threadNums = RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_THREAD_NUMS;
+    private static int queueNums = RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_QUEUE_NUMS;
+    private static ListeningExecutorService threadPoolExecutor = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(threadNums, queueNums));
     private MessageSendHandler messageSendHandler = null;
 
     private Lock lock = new ReentrantLock();

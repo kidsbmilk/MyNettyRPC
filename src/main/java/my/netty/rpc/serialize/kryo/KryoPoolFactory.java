@@ -9,7 +9,7 @@ import org.objenesis.strategy.StdInstantiatorStrategy;
 
 public class KryoPoolFactory {
 
-    private static KryoPoolFactory poolFactory = null;
+    private static volatile KryoPoolFactory poolFactory = null;
 
     private KryoFactory factory = new KryoFactory() {
         public Kryo create() {

@@ -16,12 +16,12 @@ import java.util.concurrent.*;
 
 public class RpcThreadPool {
     private static final Timer timer = new Timer("ThreadPoolMonitor", true);
-    private static final long monitorDelay = 100;
-    private static final long monitorPeriod = 300;
+    private static final long monitorDelay = 100L;
+    private static final long monitorPeriod = 300L;
 
     private static RejectedExecutionHandler createPolicy() {
         RejectedPolicyType rejectedPolicyType = RejectedPolicyType.fromString(
-                System.getProperty(RpcSystemConfig.SystemPropertyThreadPoolRejectedPolicyAttr, "AbortPolicy"));
+                System.getProperty(RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_REJECTED_POLICY_ATTR, "AbortPolicy"));
 
         switch (rejectedPolicyType) {
             case BLOCKING_POLICY:
@@ -40,7 +40,7 @@ public class RpcThreadPool {
 
     private static BlockingQueue<Runnable> createBlockingQueue(int queues) {
         BlockingQueueType queueType = BlockingQueueType.fromString(
-                System.getProperty(RpcSystemConfig.SystemPropertyThreadPoolQueueNameAttr, "LinkedBlockingQueue"));
+                System.getProperty(RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_QUEUE_NAME_ATTR, "LinkedBlockingQueue"));
 
         switch (queueType) {
             case LINKED_BLOCKING_QUEUE:
@@ -54,6 +54,7 @@ public class RpcThreadPool {
     }
 
     public static Executor getExecutor(int threads, int queues) {
+        System.out.println("ThreadPool Core[threads:" + threads + ", queues:" + queues + "]");
         String name = "RpcThreadPool";
         return new ThreadPoolExecutor(threads, threads, 0, TimeUnit.MILLISECONDS,
                 createBlockingQueue(queues), new NamedThreadFactory(name, true), createPolicy());

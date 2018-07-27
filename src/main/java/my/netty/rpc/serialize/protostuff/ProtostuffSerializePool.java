@@ -6,7 +6,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 public class ProtostuffSerializePool {
 
     private GenericObjectPool<ProtostuffSerialize> protostuffPool;
-    volatile private static ProtostuffSerializePool poolFactory = null;
+    private static volatile ProtostuffSerializePool poolFactory = null;
 
     private ProtostuffSerializePool() {
         protostuffPool = new GenericObjectPool<ProtostuffSerialize>(new ProtostuffSerializeFactory());

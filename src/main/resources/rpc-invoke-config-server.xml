@@ -11,11 +11,13 @@
     <nettyrpc:service id="demoAddService" interfaceName="my.netty.rpc.services.AddCalculate" ref="calcAddService"></nettyrpc:service>
     <nettyrpc:service id="demoMultiService" interfaceName="my.netty.rpc.services.MultiCalculate" ref="calcMultiService"></nettyrpc:service>
     <nettyrpc:service id="demoPersonManage" interfaceName="my.netty.rpc.services.PersonManage" ref="personManageService"></nettyrpc:service>
+    <nettyrpc:service id="demoCostTime" interfaceName="my.netty.rpc.services.CostTimeCalculate" ref="costTimeCalculateService"></nettyrpc:service>
 
     <nettyrpc:registry id="rpcRegistry" ipAddr="${rpc.server.addr}" protocol="PROTOSTUFFSERIALIZE"></nettyrpc:registry>
 
     <bean id="calcAddService" class="my.netty.rpc.services.impl.AddCalculateImpl"></bean>
     <bean id="calcMultiService" class="my.netty.rpc.services.impl.MultiCalculateImpl"></bean>
     <bean id="personManageService" class="my.netty.rpc.services.impl.PersonManageImpl"></bean>
+    <bean id="costTimeCalculateService" class="my.netty.rpc.services.impl.CosTimeCalculateImpl"></bean>
 
 </beans>
