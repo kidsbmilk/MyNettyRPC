@@ -36,3 +36,19 @@ https://blog.csdn.net/xtj332/article/details/20127501
 Spring afterPropertiesSet方法
 https://blog.csdn.net/u013013553/article/details/79038702
 
+在NettyRPC 2.0的基础上新增NettyRPC异步回调功能模块：
+基于cglib生成异步代理Mock对象，针对一些极端耗时的RPC调用场景进行异步回调，从而提高客户端的并行吞吐量。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
