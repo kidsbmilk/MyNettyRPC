@@ -30,7 +30,12 @@ public class MessageSendExecutor {
         loader.unLoad();
     }
 
-    public static <T> T execute(Class<T> rpcInterface) {
-        return (T) Reflection.newProxy(rpcInterface, new MessageSendProxy<T>()); // 注意：仅仅是返回一个对象（代理对象），并没有其他的动作。
+//    public static <T> T execute(Class<T> rpcInterface) {
+//        return (T) Reflection.newProxy(rpcInterface, new MessageSendProxy<T>()); // 注意：仅仅是返回一个对象（代理对象），并没有其他的动作。
+//    }
+
+    // 上面一种写法是JDK的写法，用了强制类型转换，其实下面的写法也可以，Reflection.newProxy不用强制类型转换（进而MessageSendProxy类定义中也可以去掉泛型），见PojoCallTest里的分析。
+    public static Object execute(Class rpcInterface) {
+        return Reflection.newProxy(rpcInterface, new MessageSendProxy()); // 注意：仅仅是返回一个对象（代理对象），并没有其他的动作。
     }
 }

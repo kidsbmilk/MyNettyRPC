@@ -31,6 +31,9 @@ public class PojoCallTest {
          * Foo foo = Reflection.newProxy(Foo.class, invocationHandler);
          *
          * 但是，内部原理还是不太明白？
+         * 是我对动态代理不了解的原因，其实，JDK的动态代理在方法返回具体类型值时也是不需要进行类型转换的，可以写个JDK动态代理返回具体类型值的方法试一下。
+         * 我猜测这里不需要转换的原因是：PersonManage manage或者Foo foo在获取动态代理对象时已经转换过代理对象类型了，然后在调用其他方法时，其实就跟直接调用原对象是一样的，所以就不需要转换返回值的类型了。
+         * 具体实现就得看jvm源码了。
          */
 
         Person p2 = manage.getPerson(p);

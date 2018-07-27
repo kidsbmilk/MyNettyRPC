@@ -7,8 +7,8 @@ import my.netty.rpc.model.MessageRequest;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
-
-public class MessageSendProxy<T> extends AbstractInvocationHandler {
+//public class MessageSendProxy<T> extends AbstractInvocationHandler { // 见MessageSendExecutor中的分析。
+public class MessageSendProxy extends AbstractInvocationHandler {
 
     public Object handleInvocation(Object proxy, Method method, Object[] args) throws Throwable {
         MessageRequest request = new MessageRequest();
