@@ -46,6 +46,10 @@ public class AsyncCallResult {
              * 原因：cglib-nodep里包含了asm包，cglib里不包含asm包。asm包和cglib不匹配也会出错。因此用cglib-nodep就不会出现版本不匹配情况
              * https://zhidao.baidu.com/question/172397861.html
              */
+            /**
+             * cglib系列之二 CallbackFilter
+             * http://blog.163.com/chen_chenluoxi/blog/static/202159015201631311475636/
+             */
             Enhancer enhancer = new Enhancer();
             if(returnClass.isInterface()) {
                 enhancer.setInterfaces(new Class[]{AsyncCallObject.class, returnClass});
