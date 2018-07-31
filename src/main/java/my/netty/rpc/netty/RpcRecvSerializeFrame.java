@@ -18,6 +18,8 @@ public class RpcRecvSerializeFrame implements RpcSerializeFrame {
     }
 
     private static ClassToInstanceMap <NettyRpcRecvHandler> handler = MutableClassToInstanceMap.create();
+    // Guava ClassToInstanceMap
+    // https://www.cnblogs.com/zemliu/p/3335982.html
 
     static {
         handler.putInstance(JdkNativeRecvHandler.class, new JdkNativeRecvHandler());

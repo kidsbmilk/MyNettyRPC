@@ -63,6 +63,8 @@ public class RpcParallelTest {
     public static void main(String[] args) throws Exception {
         int parallel = 1000;
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:rpc-invoke-config-client.xml");
+        // 疑问：这里只创建了一个客户端链接，而下面是多个线程都通过一个链接向远方发起调用请求，感觉实质上还是单线程的，有点像数据库连接池。
+        // 验证一下上面的疑问是否正确。
 
         for(int i = 0; i < 1; i ++) {
             addTask((AddCalculate) context.getBean("addCalc"), parallel);

@@ -64,12 +64,12 @@ public class AsyncCallResult {
         }
 
         Enhancer.registerCallbacks(proxyClass, new Callback[]{new AsyncCallResultInterceptor(this),
-                new AsyncCallObjectInterceptor(future)});
+                new AsyncCallObjectInterceptor(future)}); // 见方法说明。
 
         try {
-            return ReflectionUtils.newInstance(proxyClass);
+            return ReflectionUtils.newInstance(proxyClass); // 创建一个Enhance代理对象。
         } finally {
-            Enhancer.registerStaticCallbacks(proxyClass, null);
+            Enhancer.registerStaticCallbacks(proxyClass, null); // 见方法说明。
         }
     }
 }

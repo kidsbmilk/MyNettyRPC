@@ -29,6 +29,9 @@ public class MessageSendInitializeTask implements Callable<Boolean> {
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .handler(new MessageSendChannelInitializer().buildRpcSerializeProtocol(protocol));
+        // 在MessageSendChannelInitializer.initChannel就会把MessageSendHandler设置到pipeline中。
+        // 而下面又获取pipeline中的MessageSendHandler，然后将其设置到RpcServerLoader中，
+        // 其实，在RpcServerLoader中，MessageSendHandler的作用仅仅是用来判断链接是否建立成功。
 
         ChannelFuture channelFuture = b.connect(serverAddress);
         channelFuture.addListener(new ChannelFutureListener() {
