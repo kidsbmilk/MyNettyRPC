@@ -89,10 +89,7 @@ public class RpcServerLoader {
 
     public void setMessageSendHandler(MessageSendHandler messageSendHandler) {
         try {
-            lock.lock(); // 这个只所以要加锁，是因为有多个线程要使用messageSendHandler去发送信息，而发起连接的线程要设置这个messageSendHandler，所以要加锁，注意是个可重入锁。
-            // 对比：在RpcParallel中会调用MultiCalcParallelRequestThread，进而调用MessageSendProxy.handleInvocation来并发的发请求，而在那里，就没有对handler.sendRequest加锁。
-            // 原因在于每个netty连接都是绑定到一个eventLoopGroup中的线程上的，始终由这个线程来处理这个连接上的请求，所以，并不需要加锁琰处理channel.writeAndFlush。
-            // Netty : writeAndFlush的线程安全及并发问题: https://blog.csdn.net/binhualiu1983/article/details/51646160
+            lock.lock();
             this.messageSendHandler = messageSendHandler;
             handlerStatus.signal();
         } finally {
@@ -102,7 +99,10 @@ public class RpcServerLoader {
 
     public MessageSendHandler getMessageSendHandler() throws InterruptedException {
         try {
-            lock.lock();
+            lock.lock(); // 这个只所以要加锁，是因为有多个线程要使用messageSendHandler去发送信息，而发起连接的线程要设置这个messageSendHandler，所以要加锁，注意是个可重入锁。
+            // 对比：在RpcParallel中会调用MultiCalcParallelRequestThread，进而调用MessageSendProxy.handleInvocation来并发的发请求，而在那里，就没有对handler.sendRequest加锁。
+            // 原因在于每个netty连接都是绑定到一个eventLoopGroup中的线程上的，始终由这个线程来处理这个连接上的请求，所以，并不需要加锁琰处理channel.writeAndFlush。
+            // Netty : writeAndFlush的线程安全及并发问题: https://blog.csdn.net/binhualiu1983/article/details/51646160
             if(messageSendHandler == null) {
                 connectStatus.await();
             }
