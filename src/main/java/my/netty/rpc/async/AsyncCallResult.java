@@ -55,7 +55,7 @@ public class AsyncCallResult {
                 enhancer.setInterfaces(new Class[]{AsyncCallObject.class, returnClass}); // 设置要拦截的类需要实现的接口
             } else {
                 enhancer.setInterfaces(new Class[]{AsyncCallObject.class}); // 设置要拦截的类需要实现的接口
-                enhancer.setSuperclass(returnClass); // 设置要拦截的类需要继承的父类，感觉这个returnClass这个变量名起的不好。
+                enhancer.setSuperclass(returnClass); // 设置要拦截的类需要继承的父类，远程过程调用返回此对象，所以取的变量名为returnClass。
             }
             enhancer.setCallbackFilter(new AsyncCallFilter());
             enhancer.setCallbackTypes(new Class[]{AsyncCallResultInterceptor.class, AsyncCallObjectInterceptor.class});

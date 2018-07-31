@@ -45,17 +45,17 @@ public class AsyncInvoker {
      * https://www.cnblogs.com/baiqiantao/p/7478523.html
      */
     private <R> R intercept(final AsyncCallback<R> callback, Class<?> returnClass) {
-        if(!Modifier.isPublic(returnClass.getModifiers())) {
+        if(!Modifier.isPublic(returnClass.getModifiers())) { // 注意：这个前面有个取反的符号，表示返回类型不是公有的。
             return callback.call();
-        } else if(Modifier.isFinal(returnClass.getModifiers())) {
+        } else if(Modifier.isFinal(returnClass.getModifiers())) { // 返回类型是final的。
             return callback.call();
-        } else if(Void.TYPE.isAssignableFrom(returnClass)) {
+        } else if(Void.TYPE.isAssignableFrom(returnClass)) { // 返回类型与void相等或者是void的子类
             return callback.call();
-        } else if(returnClass.isPrimitive() || returnClass.isArray()) {
+        } else if(returnClass.isPrimitive() || returnClass.isArray()) { // 返回类型是私有的或者是数组类型
             return callback.call();
-        } else if(returnClass == Object.class) {
+        } else if(returnClass == Object.class) { // 返回类型是Object
             return callback.call();
-        } else {
+        } else { // 对于AsyncRpcCallTest中的例子，返回类型为my.netty.rpc.services.pojo.CostTime，是公有的。
             return submit(callback, returnClass);
         }
     }

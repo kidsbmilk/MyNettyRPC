@@ -25,7 +25,8 @@ public class MessageCallBack {
     public Object start() throws InterruptedException {
         try {
             lock.lock();
-            finish.await(RpcSystemConfig.SYSTEM_PROPERTY_MESSAGE_CALLBACK_TIMEOUT, TimeUnit.MILLISECONDS);
+//            finish.await(RpcSystemConfig.SYSTEM_PROPERTY_MESSAGE_CALLBACK_TIMEOUT, TimeUnit.MILLISECONDS);
+            finish.await(RpcSystemConfig.SYSTEM_PROPERTY_ASYNC_MESSAGE_CALLBACK_TIMEOUT, TimeUnit.MILLISECONDS); // 原来问题在这里！
             if(this.response != null) {
                 return this.response.getResult();
             } else {

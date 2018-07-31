@@ -11,7 +11,7 @@ public class CosTimeCalculateImpl implements CostTimeCalculate {
             long start = 0, end = 0;
             start = System.currentTimeMillis();
             //模拟耗时操作
-            Thread.sleep(3000L);
+            Thread.sleep(10 * 1000L);
             end = System.currentTimeMillis();
 
             long interval = end - start;
