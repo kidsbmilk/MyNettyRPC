@@ -71,6 +71,20 @@ public class ReflectionUtils {
         }
     }
 
+    /**
+     * Java类型中ParameterizedType，GenericArrayType，TypeVariabl，WildcardType详解
+     * https://blog.csdn.net/sinat_29581293/article/details/52227953
+     *
+     * 我眼中的Java-Type体系(2)
+     * https://www.jianshu.com/p/e8eeff12c306
+     *
+     * java Type 详解
+     * https://blog.csdn.net/gdutxiaoxu/article/details/68926515
+     *
+     * 此函数名的意思：得到一般的类，这里的实现也是对于GenericArrayType，得到脱去其最右边的一对[]后的类型;
+     * 对于ParameterizedType，得到去除其泛型参数符信息后的类型;对于非GenericArrayType、非ParameterizedType的类型，
+     * 直接返回其类型。
+     */
     public static Class<?> getGenericClass(ParameterizedType parameterizedType, int i) {
         Object genericClass = parameterizedType.getActualTypeArguments()[i];
 

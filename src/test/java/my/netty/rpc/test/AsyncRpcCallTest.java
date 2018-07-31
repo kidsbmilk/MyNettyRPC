@@ -37,6 +37,13 @@ public class AsyncRpcCallTest {
             }
         });
 
+        /**
+         * 关于java中任意对象强制转换为接口类型的问题
+         * https://www.cnblogs.com/aheiabai/p/5850998.html
+         *
+         * 在AsyncCallResult.getResult()中设置了要拦截AsyncCallObject的实现类的_getStatus方法，具体拦截后的动作见AsyncCallObjectInterceptor中的实现。
+         * 所以，在这里对对象进行强制类型转换后的方法调用在编译时（编译器不对接口强制类型转换做检查）和运行时（使用了方法拦截）都不会出错，而且达到了目的。
+         */
         System.out.println("1 async nettyrpc call:[" + "result:" + elapse0 + ", status:[" + ((AsyncCallObject) elapse0)._getStatus() + "]");
         System.out.println("2 async nettyrpc call:[" + "result:" + elapse1 + ", status:[" + ((AsyncCallObject) elapse1)._getStatus() + "]");
         System.out.println("3 async nettyrpc call:[" + "result:" + elapse2 + ", status:[" + ((AsyncCallObject) elapse2)._getStatus() + "]");

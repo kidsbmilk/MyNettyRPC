@@ -20,6 +20,10 @@ public class AsyncInvoker {
      * 类方法学习四:getGenericInterfaces,getInterfaces
      * http://zzc1684.iteye.com/blog/2147133
      */
+    /**
+     * java中<T> T和T的区别？
+     * https://segmentfault.com/q/1010000009171736
+     */
     public <R> R submit(final AsyncCallback<R> callback) {
         Type type = callback.getClass().getGenericInterfaces()[0]; //　这里只所以只取第一个，见AsyncRpcCallTest中的例子，是直接创建了匿名类。
         if(type instanceof ParameterizedType) {

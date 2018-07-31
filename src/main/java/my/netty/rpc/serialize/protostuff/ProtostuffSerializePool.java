@@ -6,7 +6,9 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 public class ProtostuffSerializePool {
 
     private GenericObjectPool<ProtostuffSerialize> protostuffPool;
-    private static volatile ProtostuffSerializePool poolFactory = null;
+    private static volatile ProtostuffSerializePool poolFactory = null; // 这个volatile字段是必不可少的。
+    // 如何在Java中使用双重检查锁实现单例
+    // http://www.importnew.com/12196.html
 
     private ProtostuffSerializePool() {
         protostuffPool = new GenericObjectPool<ProtostuffSerialize>(new ProtostuffSerializeFactory());

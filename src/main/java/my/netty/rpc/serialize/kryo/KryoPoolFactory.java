@@ -9,7 +9,9 @@ import org.objenesis.strategy.StdInstantiatorStrategy;
 
 public class KryoPoolFactory {
 
-    private static volatile KryoPoolFactory poolFactory = null;
+    private static volatile KryoPoolFactory poolFactory = null; // 这个volatile字段是必不可少的。
+    // 如何在Java中使用双重检查锁实现单例
+    // http://www.importnew.com/12196.html
 
     private KryoFactory factory = new KryoFactory() {
         public Kryo create() {

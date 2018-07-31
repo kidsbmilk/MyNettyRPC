@@ -6,7 +6,9 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 public class HessianSerializePool {
 
     private GenericObjectPool<HessianSerialize> hessianPool;
-    private static volatile HessianSerializePool poolFactory = null;
+    private static volatile HessianSerializePool poolFactory = null; // 这个volatile字段是必不可少的。
+    // 如何在Java中使用双重检查锁实现单例
+    // http://www.importnew.com/12196.html
 
     private HessianSerializePool() {
         hessianPool = new GenericObjectPool<HessianSerialize>(new HessianSerializeFactory());
