@@ -31,7 +31,8 @@ public class ReflectionUtils {
         Constructor constructor = null;
         Object[] args = new Object[0];
         try {
-            constructor = type.getConstructor(new Class[]{});
+            constructor = type.getConstructor(new Class[]{}); // 如何通过反射来创建对象？getConstructor()和getDeclaredConstructor()区别？
+            // https://www.cnblogs.com/jiangyi-uestc/p/5686264.html
         } catch (NoSuchMethodException e) {
             ;
         }
@@ -63,11 +64,12 @@ public class ReflectionUtils {
 
     public static Object getDefaultVal(Class c1) {
         if(c1.isArray()) {
-            return Array.newInstance(c1.getComponentType(), 0);
+            return Array.newInstance(c1.getComponentType(), 0); // Java编程：Java的反射机制中的 getComponentType() 方法
+            // https://blog.csdn.net/claram/article/details/53412256
         } else if(c1.isPrimitive() || builder.build().containsKey(c1)) {
             return builder.build().get(c1);
         } else {
-            return newInstance(c1);
+            return newInstance(c1); // 递归创建对象
         }
     }
 

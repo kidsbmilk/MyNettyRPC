@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 public class RpcServerLoader {
 
-    private static volatile RpcServerLoader rpcServerLoader;
+    private static volatile RpcServerLoader rpcServerLoader; // 这是一个单例对象。是工具类，所以设置为单例对象。
     private static final String DELIMITER = RpcSystemConfig.DELIMITER;
     private RpcSerializeProtocol serializeProtocol = RpcSerializeProtocol.JDKSERIALIZE;
 
@@ -44,7 +44,7 @@ public class RpcServerLoader {
                 }
             }
         }
-        return rpcServerLoader;
+        return rpcServerLoader; // 这是一个单例对象。是工具类，所以设置为单例对象。
     }
 
     public void load(String serverAddress, RpcSerializeProtocol serializeProtocol) {
@@ -58,6 +58,10 @@ public class RpcServerLoader {
             // ListenableFuture in Guava
             // https://www.cnblogs.com/hupengcool/p/3991310.html
             ListenableFuture<Boolean> listenableFuture = threadPoolExecutor.submit(new MessageSendInitializeTask(eventLoopGroup, remoteAddr, serializeProtocol));
+            // 注意：这个threadPoolExecutor仅仅是用于创建返回listenableFuture的任务并执行，而连接始终是绑定到eventLoopGroup中的线程上的。
+            // 注意：RpcServerLoader是一个单例模式，是一个发起连接的工具类，而这个类中，有成员变量eventLoopGroup，具体发起请求的类是MessageSendInitializeTask，
+            // 对于多个客户端连接发起请求，会共用一个eventLoopGroup，这样就成一个连接池了，有点数据库连接池的感觉。
+
             // 在MessageSendInitializeTask中会设置messageSendHandler
             Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
                 public void onSuccess(@Nullable Boolean result) {
@@ -65,11 +69,11 @@ public class RpcServerLoader {
                         lock.lock();
 
                         if(messageSendHandler == null) {
-                            handlerStatus.await();
+                            handlerStatus.await(); // 这个跟setMessageSendHandler里的handlerStatus.signal()对应。
                         }
 
                         if(result == Boolean.TRUE && messageSendHandler != null) {
-                            connectStatus.signalAll();
+                            connectStatus.signalAll(); // 这个跟getMessageSendHandler里的connectStatus.await()相对应。
                         }
                     } catch (InterruptedException ex) {
                         Logger.getLogger(RpcServerLoader.class.getName()).log(Level.SEVERE, null, ex);
@@ -97,7 +101,10 @@ public class RpcServerLoader {
 
     public MessageSendHandler getMessageSendHandler() throws InterruptedException {
         try {
-            lock.lock();
+            lock.lock(); // 这个只所以要加锁，是因为有多个线程要使用messageSendHandler去发送信息，而发起连接的线程要设置这个messageSendHandler，所以要加锁，注意是个可重入锁。
+            // 对比：在RpcParallel中会调用MultiCalcParallelRequestThread，进而调用MessageSendProxy.handleInvocation来并发的发请求，而在那里，就没有对handler.sendRequest加锁。
+            // 原因在于每个netty连接都是绑定到一个eventLoopGroup中的线程上的，始终由这个线程来处理这个连接上的请求，所以，并不需要加锁琰处理channel.writeAndFlush。
+            // Netty : writeAndFlush的线程安全及并发问题: https://blog.csdn.net/binhualiu1983/article/details/51646160
             if(messageSendHandler == null) {
                 connectStatus.await();
             }

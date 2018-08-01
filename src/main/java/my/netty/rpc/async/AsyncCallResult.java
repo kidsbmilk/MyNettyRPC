@@ -70,12 +70,12 @@ public class AsyncCallResult {
         }
 
         Enhancer.registerCallbacks(proxyClass, new Callback[]{new AsyncCallResultInterceptor(this),
-                new AsyncCallObjectInterceptor(future)}); // 对于async部分的代码，关键部分就在这里，多个同类对象共用一个缓存的代理对象，但是注册的拦截不同，所以调用的具体对象不同。
+                new AsyncCallObjectInterceptor(future)}); // 对于async部分的代码，关键部分就在这里，多个同类对象共用一个缓存的代理对象，但是注册的拦截不同，所以调用的具体对象不同。见方法说明。
 
         try {
-            return ReflectionUtils.newInstance(proxyClass);
+            return ReflectionUtils.newInstance(proxyClass); // 创建一个Enhance代理对象。
         } finally {
-            Enhancer.registerStaticCallbacks(proxyClass, null);
+            Enhancer.registerStaticCallbacks(proxyClass, null); // 见方法说明。
         }
     }
 }
