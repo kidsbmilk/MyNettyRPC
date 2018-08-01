@@ -34,9 +34,16 @@ public class AsyncInvoker {
         }
     }
 
+    /**
+     * Callback是并发编程的一种技术，即回调技术，在Java中，并不存在Callback这个类（目前没接触到），Java实现Callback这一回调技术的方式是Callable、Runnable以及Future。
+     * AsyncCallback是在此项目中用于实现异步回调而定义的类。
+     */
     private <T> AsyncFuture<T> submit(Callable<T> task) { // 这个函数才是最根本的。上面的重载函数最终会转到这里。
-        AsyncFuture future = new AsyncFuture<T>(task);
+        AsyncFuture future = new AsyncFuture<T>(task); // AsyncFuture继承自FutureTask，做了一些统计工作，相当于装饰器。
         executor.submit(future); // 这个submit也是返回一个future，是非阻塞的。
+        // 这里才是异步调用开始的地方。
+        // 对于AsyncRpcCallTest中的调用，这里会执行calculate.calculate();然后调用MessageSendProxy.handleInvocation，之后就在MessageCallBack.start()里等待远程调用返回的结果，这也是之前版本中非async的套路。
+        // 而这个future也会在AsyncCallResult.loadFuture里用来等待MessageCallBack.start()里返回的结果。
         return future;
     }
 
@@ -65,8 +72,8 @@ public class AsyncInvoker {
             public R call() throws Exception {
                 return callback.call();
             }
-        });
-
+        }); // 通过这个future可以查询异步调用的结果。这里又进一步封装成了AsyncCallResult，AsyncCallResult.loadFuture代理了future.get操作。
+        // 这里之所以将future封装成AsyncCallResult，是为了创建二次代理。
         AsyncCallResult result = new AsyncCallResult(returnClass, future, RpcSystemConfig.SYSTEM_PROPERTY_ASYNC_MESSAGE_CALLBACK_TIMEOUT);
         R asyncProxy = (R) result.getResult();
 

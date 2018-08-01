@@ -58,6 +58,9 @@ public class AsyncCallResult {
              *
              * Java Code Examples for net.sf.cglib.proxy.Enhancer.registerCallbacks()
              * https://www.programcreek.com/java-api-examples/?class=net.sf.cglib.proxy.Enhancer&method=registerCallbacks
+             *
+             * CGLIB(Code Generation Library)详解
+             * https://blog.csdn.net/danchu/article/details/70238002
              */
             Enhancer enhancer = new Enhancer();
             if(returnClass.isInterface()) {
@@ -67,16 +70,19 @@ public class AsyncCallResult {
                 enhancer.setSuperclass(returnClass);
             }
             enhancer.setCallbackFilter(new AsyncCallFilter());
-            enhancer.setCallbackTypes(new Class[]{AsyncCallResultInterceptor.class, AsyncCallObjectInterceptor.class});
-            proxyClass = enhancer.createClass();
-            AsyncProxyCache.save(returnClass.getName(), proxyClass); // 缓存代理对象
+            enhancer.setCallbackTypes(new Class[]{AsyncCallResultInterceptor.class, AsyncCallObjectInterceptor.class}); // 注意：结合AsyncCallFilter来看，如果是AsyncCallObject的类型或者子类型，
+            // 则调用AsyncCallObjectInterceptor，否则的话，都调用AsyncCallResultInterceptor。我之前没仔细看，一直在从字面意思来找哪里调用了AsyncCallResult类或者子类型的对象。
+            proxyClass = enhancer.createClass(); // Enhancer创建一个被代理对象的子类并且拦截所有的方法调用（包括从Object中继承的toString和hashCode方法）
+            // 先使用Enhancer.createClass()来创建字节码(.class)，然后用字节码动态的生成增强后的对象。
+            AsyncProxyCache.save(returnClass.getName(), proxyClass); // 缓存代理对象类
         }
 
         Enhancer.registerCallbacks(proxyClass, new Callback[]{new AsyncCallResultInterceptor(this),
                 new AsyncCallObjectInterceptor(future)}); // 对于async部分的代码，关键部分就在这里，多个同类对象共用一个缓存的代理对象，但是注册的拦截不同，所以调用的具体对象不同。见方法说明。
 
         try {
-            return ReflectionUtils.newInstance(proxyClass); // 创建一个Enhance代理对象。
+            return ReflectionUtils.newInstance(proxyClass); // Enhancer创建一个被代理对象的子类并且拦截所有的方法调用（包括从Object中继承的toString和hashCode方法）
+            // 先使用Enhancer.createClass()来创建字节码(.class)，然后用字节码动态的生成增强后的对象。
         } finally {
             Enhancer.registerStaticCallbacks(proxyClass, null); // 见方法说明。
         }

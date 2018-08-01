@@ -24,6 +24,7 @@ public class CostTime implements Serializable {
     }
 
     public String toString() {
+//        System.out.println(System.currentTimeMillis());
         return "CostTime [elapse=" + elapse + ", detail=" + detail + "]";
     }
 }
