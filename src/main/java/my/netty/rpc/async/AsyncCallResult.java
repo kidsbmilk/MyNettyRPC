@@ -49,22 +49,28 @@ public class AsyncCallResult {
             /**
              * cglib系列之二 CallbackFilter
              * http://blog.163.com/chen_chenluoxi/blog/static/202159015201631311475636/
+             *
+             * cglib系列之一 Enhancer和MethodInterceptor
+             * http://blog.163.com/chen_chenluoxi/blog/static/2021590152016313104530795/
+             *
+             * 这里是又创建了一个代理对象，在代理对象之上，设置拦截器，以达到不同的效果。
+             * async部分，是在非async部分的基础上实现的，在非async部分上，已经创建过一个代理对象了（见NettyRpcReference.getObject的实现），而这里在其基础上又通过Enhance创建了代理对象，算是二次代理了。
              */
             Enhancer enhancer = new Enhancer();
             if(returnClass.isInterface()) {
-                enhancer.setInterfaces(new Class[]{AsyncCallObject.class, returnClass}); // 设置要拦截的类需要实现的接口
+                enhancer.setInterfaces(new Class[]{AsyncCallObject.class, returnClass});
             } else {
-                enhancer.setInterfaces(new Class[]{AsyncCallObject.class}); // 设置要拦截的类需要实现的接口
-                enhancer.setSuperclass(returnClass); // 设置要拦截的类需要继承的父类，远程过程调用返回此对象，所以取的变量名为returnClass。
+                enhancer.setInterfaces(new Class[]{AsyncCallObject.class});
+                enhancer.setSuperclass(returnClass);
             }
             enhancer.setCallbackFilter(new AsyncCallFilter());
             enhancer.setCallbackTypes(new Class[]{AsyncCallResultInterceptor.class, AsyncCallObjectInterceptor.class});
             proxyClass = enhancer.createClass();
-            AsyncProxyCache.save(returnClass.getName(), proxyClass);
+            AsyncProxyCache.save(returnClass.getName(), proxyClass); // 缓存代理对象
         }
 
         Enhancer.registerCallbacks(proxyClass, new Callback[]{new AsyncCallResultInterceptor(this),
-                new AsyncCallObjectInterceptor(future)});
+                new AsyncCallObjectInterceptor(future)}); // 对于async部分的代码，关键部分就在这里，多个同类对象共用一个缓存的代理对象，但是注册的拦截不同，所以调用的具体对象不同。
 
         try {
             return ReflectionUtils.newInstance(proxyClass);

@@ -34,9 +34,9 @@ public class AsyncInvoker {
         }
     }
 
-    private <T> AsyncFuture<T> submit(Callable<T> task) {
+    private <T> AsyncFuture<T> submit(Callable<T> task) { // 这个函数才是最根本的。上面的重载函数最终会转到这里。
         AsyncFuture future = new AsyncFuture<T>(task);
-        executor.submit(future);
+        executor.submit(future); // 这个submit也是返回一个future，是非阻塞的。
         return future;
     }
 
