@@ -12,5 +12,6 @@
     <nettyrpc:reference id="multiCalc" interfaceName="my.netty.rpc.services.MultiCalculate" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
     <nettyrpc:reference id="personManage" interfaceName="my.netty.rpc.services.PersonManage" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
     <nettyrpc:reference id="costTime" interfaceName="my.netty.rpc.services.CostTimeCalculate" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
+    <nettyrpc:reference id="access" interfaceName="my.netty.rpc.compiler.AccessAdaptive" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
 
 </beans>

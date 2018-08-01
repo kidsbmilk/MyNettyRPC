@@ -5,6 +5,7 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import my.netty.rpc.compiler.AccessAdaptiveProvider;
 import my.netty.rpc.core.RpcSystemConfig;
 import my.netty.rpc.parallel.NamedThreadFactory;
 import my.netty.rpc.parallel.RpcThreadPool;
@@ -46,6 +47,11 @@ public class MessageRecvExecutor implements ApplicationContextAware{
     ThreadFactory threadFactory = new NamedThreadFactory("NettyRPC ThreadFactory");
     EventLoopGroup boss = new NioEventLoopGroup();
     EventLoopGroup worker = new NioEventLoopGroup(parallel, threadFactory, SelectorProvider.provider());
+
+    public MessageRecvExecutor() {
+        handlerMap.clear();
+        handlerMap.put(RpcSystemConfig.RPC_COMPILER_SPI_ATTR, new AccessAdaptiveProvider());
+    }
 
     public Map<String, Object> getHandlerMap() {
         return handlerMap;
