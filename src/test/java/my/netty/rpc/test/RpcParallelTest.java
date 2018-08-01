@@ -81,6 +81,37 @@ public class RpcParallelTest {
         // 在这2000次多线程并发请求时，只会使用一个连接来发请求，相当于还是只有一个单线程在发请求。
         // 我想作者的本意应该是保留4份MessageSendExecutor.loader.messageSendHandler，或者是4个连接共享一个MessageSendExecutor.loader.messageSendHandler。
 
+        /**
+         * 对比1.0版（commit 764ac705f33b58cbef0e7981c3c40b0055fcf138）中有如下代码：
+         * //JDK本地序列化协议
+         *     public static void JdkNativeParallelTask(MessageSendExecutor executor, int parallel) throws InterruptedException {
+         *         String serverAddress = "127.0.0.1:18887";
+         *         RpcSerializeProtocol protocol = RpcSerializeProtocol.JDKSERIALIZE;
+         *         executor.setRpcServerLoader(serverAddress, protocol); // 这个其实是用来控制发起连接、使用哪个连接的。
+         *         RpcParallelTest.parallelTask(executor, parallel, serverAddress, protocol);
+         *         TimeUnit.SECONDS.sleep(3);
+         *     }
+         *
+         *     //Kryo序列化协议
+         *     public static void KryoParallelTask(MessageSendExecutor executor, int parallel) throws InterruptedException {
+         *         String serverAddress = "127.0.0.1:18888";
+         *         RpcSerializeProtocol protocol = RpcSerializeProtocol.KRYOSERIALIZE;
+         *         executor.setRpcServerLoader(serverAddress, protocol); // 这个其实是用来控制发起连接、使用哪个连接的。
+         *         RpcParallelTest.parallelTask(executor, parallel, serverAddress, protocol);
+         *         TimeUnit.SECONDS.sleep(3);
+         *     }
+         *
+         *     //Hessian序列化协议
+         *     public static void HessianParallelTask(MessageSendExecutor executor, int parallel) throws InterruptedException {
+         *         String serverAddress = "127.0.0.1:18889";
+         *         RpcSerializeProtocol protocol = RpcSerializeProtocol.HESSIANSERIALIZE;
+         *         executor.setRpcServerLoader(serverAddress, protocol); // 这个其实是用来控制发起连接、使用哪个连接的。
+         *         RpcParallelTest.parallelTask(executor, parallel, serverAddress, protocol);
+         *         TimeUnit.SECONDS.sleep(3);
+         *     }
+         * 如上面的注释所示，是使用executor.setRpcServerLoader来控制发起连接、使用哪个连接的。
+         */
+
         for(int i = 0; i < 1; i ++) {
             addTask((AddCalculate) context.getBean("addCalc"), parallel);
             multiTask((MultiCalculate) context.getBean("multiCalc"), parallel);
