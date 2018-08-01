@@ -55,6 +55,9 @@ public class AsyncCallResult {
              *
              * 这里是又创建了一个代理对象，在代理对象之上，设置拦截器，以达到不同的效果。
              * async部分，是在非async部分的基础上实现的，在非async部分上，已经创建过一个代理对象了（见NettyRpcReference.getObject的实现），而这里在其基础上又通过Enhance创建了代理对象，算是二次代理了。
+             *
+             * Java Code Examples for net.sf.cglib.proxy.Enhancer.registerCallbacks()
+             * https://www.programcreek.com/java-api-examples/?class=net.sf.cglib.proxy.Enhancer&method=registerCallbacks
              */
             Enhancer enhancer = new Enhancer();
             if(returnClass.isInterface()) {
