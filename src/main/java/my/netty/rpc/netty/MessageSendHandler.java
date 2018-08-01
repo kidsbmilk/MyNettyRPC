@@ -60,6 +60,7 @@ public class MessageSendHandler extends ChannelInboundHandlerAdapter {
         MessageCallBack callBack = new MessageCallBack(request);
         mapCallBack.put(request.getMessageId(), callBack);
         channel.writeAndFlush(request);
+//        System.out.println(channel.localAddress());
         return callBack;
     }
 }

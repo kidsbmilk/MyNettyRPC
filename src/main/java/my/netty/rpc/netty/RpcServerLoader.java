@@ -59,6 +59,8 @@ public class RpcServerLoader {
             // https://www.cnblogs.com/hupengcool/p/3991310.html
             ListenableFuture<Boolean> listenableFuture = threadPoolExecutor.submit(new MessageSendInitializeTask(eventLoopGroup, remoteAddr, serializeProtocol));
             // 注意：这个threadPoolExecutor仅仅是用于创建返回listenableFuture的任务并执行，而连接始终是绑定到eventLoopGroup中的线程上的。
+            // 注意：RpcServerLoader是一个单例模式，是一个发起连接的工具类，而这个类中，有成员变量eventLoopGroup，具体发起请求的类是MessageSendInitializeTask，
+            // 对于多个客户端连接发起请求，会共用一个eventLoopGroup，这样就成一个连接池了，有点数据库连接池的感觉。
 
             // 在MessageSendInitializeTask中会设置messageSendHandler
             Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {

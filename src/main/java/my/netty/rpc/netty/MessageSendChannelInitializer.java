@@ -17,7 +17,7 @@ public class MessageSendChannelInitializer extends ChannelInitializer<SocketChan
     }
 
     protected void initChannel(SocketChannel socketChannel) throws Exception {
-        ChannelPipeline pipeline = socketChannel.pipeline();
+        ChannelPipeline pipeline = socketChannel.pipeline(); // 对于有4次发起连接的操作，为什么这里只被调用了一次 ?zz?
         frame.select(protocol, pipeline);
     }
 }

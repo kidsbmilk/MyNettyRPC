@@ -20,6 +20,7 @@ public class MessageRecvHandler extends ChannelInboundHandlerAdapter {
         MessageResponse response = new MessageResponse();
         MessageRecvInitializeTask recvTask = new MessageRecvInitializeTask(request, response, handlerMap);
         MessageRecvExecutor.submit(recvTask, ctx, request, response);
+//        System.out.println(ctx.channel().remoteAddress());
     }
 
     public void execptionCaught(ChannelHandlerContext ctx, Throwable cause) {
