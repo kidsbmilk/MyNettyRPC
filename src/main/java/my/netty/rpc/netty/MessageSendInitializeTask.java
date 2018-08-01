@@ -39,6 +39,7 @@ public class MessageSendInitializeTask implements Callable<Boolean> {
                 if(channelFuture.isSuccess()) {
                     MessageSendHandler handler = channelFuture.channel().pipeline().get(MessageSendHandler.class);
                     RpcServerLoader.getInstance().setMessageSendHandler(handler);
+//                    System.out.println("zzlog: channel " + channelFuture.channel());
                 }
             }
         });
