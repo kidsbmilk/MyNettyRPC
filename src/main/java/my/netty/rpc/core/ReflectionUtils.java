@@ -27,6 +27,11 @@ public class ReflectionUtils {
         builder.put(long.class, Long.valueOf(0));
     }
 
+    /**
+     * 用Object[0]来代替null 很多时候我们需要传递参数的类型，而不是传null，所以用Object[0] : https://bbs.csdn.net/topics/390182138
+     *
+     * collection.toArray(new String[0])中new String[0]的作用: https://www.cnblogs.com/blog-cq/p/5680104.html
+     */
     public static Object newInstance(Class type) {
         Constructor constructor = null;
         Object[] args = new Object[0];
