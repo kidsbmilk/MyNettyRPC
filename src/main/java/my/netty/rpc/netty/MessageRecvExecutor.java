@@ -6,6 +6,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import my.netty.rpc.compiler.AccessAdaptiveProvider;
+import my.netty.rpc.core.AbilityDetailProvider;
 import my.netty.rpc.core.RpcSystemConfig;
 import my.netty.rpc.parallel.NamedThreadFactory;
 import my.netty.rpc.parallel.RpcThreadPool;
@@ -55,6 +56,7 @@ public class MessageRecvExecutor implements ApplicationContextAware{
 
     private void register() {
         handlerMap.put(RpcSystemConfig.RPC_COMPILER_SPI_ATTR, new AccessAdaptiveProvider());
+        handlerMap.put(RpcSystemConfig.RPC_ABILITY_DETAIL_SPI_ATTR, new AbilityDetailProvider());
     }
 
     public Map<String, Object> getHandlerMap() {
@@ -133,6 +135,8 @@ public class MessageRecvExecutor implements ApplicationContextAware{
      *
      * 因为此类实现了ApplicationContextAware，所以必须要实现此方法。
      * 在xml里并没有此配置：<context:component-scan base-package="my.netty.rpc.netty"/>　，所以其实在这里没有用到此方法。
+     *
+     * 在早期版本中，在xml中配置MessageKeyVal的值，并且开启自动扫描这个包，所以才会用以下的方法来初始化handlerMap，现在已经不使用此方法了。
      */
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         try {

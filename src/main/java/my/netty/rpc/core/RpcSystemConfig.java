@@ -11,6 +11,7 @@ public class RpcSystemConfig {
     public static final int PARALLEL = Math.max(2, Runtime.getRuntime().availableProcessors());
     public static final String DELIMITER = ":";
     public static final String RPC_COMPILER_SPI_ATTR = "my.netty.rpc.compiler.AccessAdaptive";
+    public static final String RPC_ABILITY_DETAIL_SPI_ATTR = "my.netty.rpc.core.AbilityDetail";
 
     private static boolean monitorServerSupport = false;
 

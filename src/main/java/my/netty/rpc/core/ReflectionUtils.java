@@ -7,6 +7,15 @@ import java.lang.reflect.*;
 public class ReflectionUtils {
 
     private static ImmutableMap.Builder<Class, Object> builder = ImmutableMap.builder();
+    private StringBuilder provider = new StringBuilder();
+
+    public StringBuilder getProvider() {
+        return provider;
+    }
+
+    public void clearProvider() {
+        provider.delete(0, provider.length());
+    }
 
     static {
         builder.put(Boolean.class, Boolean.FALSE);
@@ -38,8 +47,7 @@ public class ReflectionUtils {
         try {
             constructor = type.getConstructor(new Class[]{}); // 如何通过反射来创建对象？getConstructor()和getDeclaredConstructor()区别？
             // https://www.cnblogs.com/jiangyi-uestc/p/5686264.html
-        } catch (NoSuchMethodException e) {
-            ;
+        } catch (NoSuchMethodException ignored) {
         }
 
         if(constructor == null) {
@@ -57,17 +65,13 @@ public class ReflectionUtils {
 
         try {
             return constructor.newInstance(args);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static Object getDefaultVal(Class c1) {
+    private static Object getDefaultVal(Class c1) {
         if(c1.isArray()) {
             return Array.newInstance(c1.getComponentType(), 0); // Java编程：Java的反射机制中的 getComponentType() 方法
             // https://blog.csdn.net/claram/article/details/53412256
@@ -101,6 +105,82 @@ public class ReflectionUtils {
             return (Class<?>) ((ParameterizedType) genericClass).getRawType();
         } else {
             return (Class<?>) genericClass;
+        }
+    }
+
+    private String modifiers(int m) {
+        return m != 0 ? Modifier.toString(m) + " " : "";
+    }
+
+    private String getType(Class<?> t) {
+        StringBuilder brackets = new StringBuilder();
+        while(t.isArray()) {
+            brackets.append("[]");
+            t = t.getComponentType();
+        }
+        return t.getName() + brackets;
+    }
+
+    private void listTypes(Class<?>[] types) {
+        for(int i = 0; i < types.length; i ++) {
+            if(i > 0) {
+                provider.append(", ");
+            }
+            provider.append(getType(types[i]));
+        }
+    }
+
+    private void listField(Field f) {
+        provider.append("\n    ")
+                .append(modifiers(f.getModifiers()))
+                .append(getType(f.getType()))
+                .append(" ")
+                .append(f.getName())
+                .append(";");
+    }
+
+    private void listMethod(Executable member) {
+        provider.append("\n    ")
+                .append(modifiers(member.getModifiers()));
+        if(member instanceof Method) {
+            provider.append(getType(((Method) member).getReturnType()))
+                    .append(" ");
+        }
+        provider.append(member.getName())
+                .append("(");
+        listTypes(member.getParameterTypes());
+        provider.append(")");
+        Class<?>[] exceptions = member.getExceptionTypes();
+        if(exceptions.length > 0) {
+            provider.append(" throws ");
+        }
+        listTypes(exceptions);
+        provider.append(";");
+    }
+
+    public void listRpcProviderDetail(Class<?> c) {
+        if(c.isInterface()) {
+            provider.append(modifiers(c.getModifiers())) // 得到接口的修饰符，在这个导出服务里，只有接口，是面向接口编程。
+                    .append(" ")
+                    .append(c.getName()); // 接口名
+            provider.append(" {\n");
+
+            boolean hasFields = false;
+            Field[] fields = c.getDeclaredFields();
+            if(fields.length != 0) {
+                provider.append("    // Fields");
+                hasFields = true;
+                for(Field field : fields) {
+                    listField(field);
+                }
+            }
+
+            provider.append(hasFields ? "\n    // Methods" : "    // Methods");
+            Method[] methods = c.getDeclaredMethods();
+            for(Method method : methods) {
+                listMethod(method);
+            }
+            provider.append("\n}\n");
         }
     }
 }
