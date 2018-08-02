@@ -1,38 +1,34 @@
 package my.netty.rpc.test;
 
+import com.google.common.io.CharStreams;
 import my.netty.rpc.compiler.AccessAdaptive;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.DefaultResourceLoader;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class RpcServerAccessTest {
-    // TODO:
-    // java source only support public method
-    private static String CODE =
-            "package my.netty.rpc.test;\n" +
-                    "\n" +
-                    "import java.text.SimpleDateFormat;\n" +
-                    "import java.util.Date;\n" +
-                    "\n" +
-                    "public class RpcServerAccessProvider {\n" +
-                    "   public String getRpcServerTime(String message) {\n" +
-                    "       SimpleDateFormat df = new SimpleDateFormat(\"yyyy-MM-dd HH:mm:ss\");\n" +
-                    "       return \"NettyRpc server receive:\" + message + \", server time is:\" + df.format(new Date());\n" +
-                    "   }\n" +
-                    "\n" +
-                    "   public void sayHello() {\n" +
-                    "       System.out.println(\"Hello NettyRpc!\");\n" +
-                    "   }\n" +
-                    "}";
-
     public static void main(String[] args) {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:rpc-invoke-config-client.xml");
+        try {
+            DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+            Reader reader = new InputStreamReader(resourceLoader.getResource("AccessProvider.tpl").getInputStream(), "UTF-8");
+            String javaSource = CharStreams.toString(reader);
 
-        AccessAdaptive provider = (AccessAdaptive) context.getBean("access");
+            ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:rpc-invoke-config-client.xml");
 
-        String result = (String) provider.invoke(CODE, "getRpcServerTime", new Object[]{new String("Soybeanmilk")});
-        System.out.println(result);
+            AccessAdaptive provider = (AccessAdaptive) context.getBean("access");
 
-        provider.invoke(CODE, "sayHello", new Object[0]);
+            String result = (String) provider.invoke(javaSource, "getRpcServerTime", new Object[]{new String("Soybeanmilk")});
+            System.out.println(result);
 
-        context.destroy();
+            provider.invoke(javaSource, "sayHello", new Object[0]);
+
+            reader.close();
+            context.destroy();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

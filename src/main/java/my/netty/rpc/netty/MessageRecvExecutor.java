@@ -50,6 +50,10 @@ public class MessageRecvExecutor implements ApplicationContextAware{
 
     public MessageRecvExecutor() {
         handlerMap.clear();
+        register();
+    }
+
+    private void register() {
         handlerMap.put(RpcSystemConfig.RPC_COMPILER_SPI_ATTR, new AccessAdaptiveProvider());
     }
 

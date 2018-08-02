@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class NettyRpcNamespaceHandler extends NamespaceHandlerSupport {
 
@@ -14,8 +15,10 @@ public class NettyRpcNamespaceHandler extends NamespaceHandlerSupport {
         Resource resource = new ClassPathResource("NettyRPC-logo.txt");
         if(resource.exists()) {
             try {
-                String text = CharStreams.toString(new InputStreamReader(resource.getInputStream(), "UTF-8"));
+                Reader reader = new InputStreamReader(resource.getInputStream(), "UTF-8");
+                String text = CharStreams.toString(reader);
                 System.out.println(text);
+                reader.close();
             }catch (IOException e) {
                 e.printStackTrace();
             }
