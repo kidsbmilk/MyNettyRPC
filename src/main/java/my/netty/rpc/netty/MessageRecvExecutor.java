@@ -10,31 +10,22 @@ import my.netty.rpc.core.AbilityDetailProvider;
 import my.netty.rpc.core.RpcSystemConfig;
 import my.netty.rpc.parallel.NamedThreadFactory;
 import my.netty.rpc.parallel.RpcThreadPool;
-import my.netty.rpc.model.MessageKeyVal;
 import my.netty.rpc.model.MessageRequest;
 import my.netty.rpc.model.MessageResponse;
 import my.netty.rpc.serialize.RpcSerializeProtocol;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import java.nio.channels.spi.SelectorProvider;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.logging.Level;
 
 /**
  * Rpc服务器执行模块
  */
-public class MessageRecvExecutor implements ApplicationContextAware{
+public class MessageRecvExecutor {
 
     private String serverAddress;
     private RpcSerializeProtocol serializeProtocol = RpcSerializeProtocol.JDKSERIALIZE;
@@ -126,35 +117,6 @@ public class MessageRecvExecutor implements ApplicationContextAware{
         }
         if(request.getMethodName().equalsIgnoreCase("multi")) {
             System.out.printf("%s * %s = %s\n", request.getParameters()[0], request.getParameters()[1], response.getResult());
-        }
-    }
-
-    /**
-     * 这个方法在postProcessBeforeInitialization()中调用。
-     * https://blog.csdn.net/xtj332/article/details/20127501
-     *
-     * 因为此类实现了ApplicationContextAware，所以必须要实现此方法。
-     * 在xml里并没有此配置：<context:component-scan base-package="my.netty.rpc.netty"/>　，所以其实在这里没有用到此方法。
-     *
-     * 在早期版本中，在xml中配置MessageKeyVal的值，并且开启自动扫描这个包，所以才会用以下的方法来初始化handlerMap，现在已经不使用此方法了。
-     */
-    public void setApplicationContext(ApplicationContext ctx) throws BeansException {
-        try {
-            MessageKeyVal keyVal = (MessageKeyVal) ctx.getBean(Class.forName("my.netty.rpc.model.MessageKeyVal"));
-            Map<String, Object> rpcServiceObject = keyVal.getMessageKeyVal();
-
-            Set s = rpcServiceObject.entrySet();
-            Iterator<Map.Entry<String, Object>> it = s.iterator();
-            Map.Entry<String, Object> entry;
-
-            while(it.hasNext()) {
-                entry = it.next();
-                handlerMap.put(entry.getKey(), entry.getValue());
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MessageRecvExecutor.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchBeanDefinitionException ex) {
-            java.util.logging.Logger.getLogger(MessageRecvExecutor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

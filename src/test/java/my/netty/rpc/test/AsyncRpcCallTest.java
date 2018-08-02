@@ -45,6 +45,7 @@ public class AsyncRpcCallTest {
                 return calculate.calculate();
             }
         });
+        System.out.println("working...");
 
         /**
          * 关于java中任意对象强制转换为接口类型的问题
