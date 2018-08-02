@@ -6,15 +6,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 
 public class NativeCompiler implements Closeable {
 
     private final File tempFolder;
     private final URLClassLoader classLoader;
+    // Java URLClassLoader 和 ClassLoader类加载器：https://www.cnblogs.com/rogge7/p/7766522.html
 
-    public NativeCompiler(File tempFolder) {
+    NativeCompiler(File tempFolder) {
         this.tempFolder = tempFolder;
         this.classLoader = createClassLoader(tempFolder);
     }
@@ -40,10 +41,12 @@ public class NativeCompiler implements Closeable {
 
     private void compileClass(JavaFileObject sourceFile) throws IOException {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<JavaFileObject>();
+        DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<>(); // DiagnosticCollector实现了DiagnosticListener接口。
+        // DiagnosticListener - 诊断信息监听器, 编译过程触发.生成编译task(JavaCompiler#getTask())或获取FileManager(JavaCompiler#getStandardFileManager())时需要传递DiagnosticListener以便收集诊断信息。
+        // Java动态编译那些事: https://www.jianshu.com/p/44395ef6406f
         try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(collector, Locale.ROOT, null)) {
-            fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(tempFolder));
-            JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, collector, null, null, Arrays.asList(sourceFile));
+            fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singletonList(tempFolder));
+            JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, collector, null, null, Collections.singletonList(sourceFile));
             task.call();
         }
     }
@@ -51,7 +54,7 @@ public class NativeCompiler implements Closeable {
     @Override
     public void close() {
         try {
-            classLoader.close();
+            classLoader.close(); // 见包中此方法的注释。
         } catch (Exception e) {
             throw new AssertionError(e);
         }

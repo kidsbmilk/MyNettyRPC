@@ -11,16 +11,11 @@ import java.lang.reflect.InvocationTargetException;
 public class AccessAdaptiveProvider extends AbstractAccessAdaptive implements AccessAdaptive {
 
     @Override
-    protected Class<?> doCompile(String clsName, String javaSource) throws Throwable {
-        NativeCompiler compiler = null;
+    protected Class<?> doCompile(String clsName, String javaSource) {
 
-        try {
-            File tempFileLocation = Files.createTempDir();
-            compiler = new NativeCompiler(tempFileLocation);
-            Class type = compiler.compile(clsName, javaSource);
-            return type;
-        } finally {
-            compiler.close();
+        File tempFileLocation = Files.createTempDir();
+        try (NativeCompiler compiler = new NativeCompiler(tempFileLocation)) {
+            return compiler.compile(clsName, javaSource);
         }
     }
 
@@ -31,15 +26,12 @@ public class AccessAdaptiveProvider extends AbstractAccessAdaptive implements Ac
         } else {
             try {
                 ClassProxy main = new ClassProxy();
-                Class type = compile(javaSource, null);
+                Class<?> type = compile(javaSource, null);
                 Class<?> objectClass = main.createDynamicSubclass(type);
-                Object object = ReflectionUtils.newInstance(objectClass);
+                Object object = ReflectionUtils.newInstance(objectClass); // 参考AsyncCallResult.getResult中的注释。
+                assert object != null;
                 return MethodUtils.invokeMethod(object, method, args);
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
             return null;
