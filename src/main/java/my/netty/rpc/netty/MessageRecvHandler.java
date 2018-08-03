@@ -23,7 +23,7 @@ public class MessageRecvHandler extends ChannelInboundHandlerAdapter {
 //        System.out.println(ctx.channel().remoteAddress());
     }
 
-    public void execptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         ctx.close();
     }
 }
