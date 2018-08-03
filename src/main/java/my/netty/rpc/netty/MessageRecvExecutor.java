@@ -45,35 +45,6 @@ public class MessageRecvExecutor {
         register();
     }
 
-    private void register() {
-        handlerMap.put(RpcSystemConfig.RPC_COMPILER_SPI_ATTR, new AccessAdaptiveProvider());
-        handlerMap.put(RpcSystemConfig.RPC_ABILITY_DETAIL_SPI_ATTR, new AbilityDetailProvider());
-    }
-
-    public Map<String, Object> getHandlerMap() {
-        return handlerMap;
-    }
-
-    public void setHandlerMap(Map<String, Object> handlerMap) {
-        this.handlerMap = handlerMap;
-    }
-
-    public String getServerAddress() {
-        return serverAddress;
-    }
-
-    public void setServerAddress(String serverAddress) {
-        this.serverAddress = serverAddress;
-    }
-
-    public RpcSerializeProtocol getSerializeProtocol() {
-        return serializeProtocol;
-    }
-
-    public void setSerializeProtocol(RpcSerializeProtocol serializeProtocol) {
-        this.serializeProtocol = serializeProtocol;
-    }
-
     private static class MessageRecvExecutorHolder {
         static final MessageRecvExecutor instance = new MessageRecvExecutor();
     }
@@ -100,7 +71,7 @@ public class MessageRecvExecutor {
                 ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
                         System.out.println("RPC Server Send message-id response:" + request.getMessageId());
-                        output(request, response);
+//                        output(request, response);
                     }
                 });
             }
@@ -148,5 +119,34 @@ public class MessageRecvExecutor {
     public void stop() {
         worker.shutdownGracefully();
         boss.shutdownGracefully();
+    }
+	
+	private void register() {
+        handlerMap.put(RpcSystemConfig.RPC_COMPILER_SPI_ATTR, new AccessAdaptiveProvider());
+        handlerMap.put(RpcSystemConfig.RPC_ABILITY_DETAIL_SPI_ATTR, new AbilityDetailProvider());
+    }
+
+    public Map<String, Object> getHandlerMap() {
+        return handlerMap;
+    }
+
+    public void setHandlerMap(Map<String, Object> handlerMap) {
+        this.handlerMap = handlerMap;
+    }
+
+    public String getServerAddress() {
+        return serverAddress;
+    }
+
+    public void setServerAddress(String serverAddress) {
+        this.serverAddress = serverAddress;
+    }
+
+    public RpcSerializeProtocol getSerializeProtocol() {
+        return serializeProtocol;
+    }
+
+    public void setSerializeProtocol(RpcSerializeProtocol serializeProtocol) {
+        this.serializeProtocol = serializeProtocol;
     }
 }

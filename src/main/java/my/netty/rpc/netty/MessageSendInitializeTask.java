@@ -35,7 +35,7 @@ public class MessageSendInitializeTask implements Callable<Boolean> {
 
         ChannelFuture channelFuture = b.connect(serverAddress);
         channelFuture.addListener(new ChannelFutureListener() {
-            public void operationComplete(ChannelFuture channelFuture) throws Exception {
+            public void operationComplete(final ChannelFuture channelFuture) throws Exception {
                 if(channelFuture.isSuccess()) {
                     MessageSendHandler handler = channelFuture.channel().pipeline().get(MessageSendHandler.class);
                     RpcServerLoader.getInstance().setMessageSendHandler(handler);

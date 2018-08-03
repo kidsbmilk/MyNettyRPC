@@ -41,7 +41,7 @@ public class ProtostuffSerializePool {
     public ProtostuffSerialize borrow() {
         try {
             return getProtostuffPool().borrowObject();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return null;
         }
