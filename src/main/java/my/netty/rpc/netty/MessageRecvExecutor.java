@@ -8,6 +8,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import my.netty.rpc.compiler.AccessAdaptiveProvider;
 import my.netty.rpc.core.AbilityDetailProvider;
 import my.netty.rpc.core.RpcSystemConfig;
+import my.netty.rpc.netty.resolver.ApiEchoResolver;
 import my.netty.rpc.parallel.NamedThreadFactory;
 import my.netty.rpc.parallel.RpcThreadPool;
 import my.netty.rpc.model.MessageRequest;
@@ -17,10 +18,7 @@ import my.netty.rpc.serialize.RpcSerializeProtocol;
 import javax.annotation.Nullable;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 /**
  * Rpc服务器执行模块
@@ -28,6 +26,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class MessageRecvExecutor {
 
     private String serverAddress;
+    private int echoApiPort;
     private RpcSerializeProtocol serializeProtocol = RpcSerializeProtocol.JDKSERIALIZE;
 
     private static final String DELIMITER = RpcSystemConfig.DELIMITER;
@@ -36,6 +35,8 @@ public class MessageRecvExecutor {
     private static int queueNums = RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_QUEUE_NUMS;
     private static volatile ListeningExecutorService threadPoolExecutor;
     private Map<String, Object> handlerMap = new ConcurrentHashMap<String, Object>();
+    private int numberOfEchoThreadPool = 1;
+
     ThreadFactory threadFactory = new NamedThreadFactory("NettyRPC ThreadFactory");
     EventLoopGroup boss = new NioEventLoopGroup();
     EventLoopGroup worker = new NioEventLoopGroup(parallel, threadFactory, SelectorProvider.provider());
@@ -106,8 +107,23 @@ public class MessageRecvExecutor {
                 int port = Integer.parseInt(ipAddr[1]);
                 ChannelFuture future = null;
                 future = bootstrap.bind(host, port).sync();
-                System.out.printf("Netty RPC Server start success!\nip: %s\nport: %d\nprotocol: %s\n\n", host, port, serializeProtocol);
-                future.channel().closeFuture().sync();
+                future.addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(final ChannelFuture channelFuture) throws Exception {
+                        if (channelFuture.isSuccess()) {
+                            ExecutorService executor = Executors.newFixedThreadPool(numberOfEchoThreadPool);
+                            ExecutorCompletionService<Boolean> completionService = new ExecutorCompletionService<Boolean>(executor);
+                            completionService.submit(new ApiEchoResolver(host, echoApiPort));
+                            System.out.printf("Netty RPC Server start success!\nip:%s\nport:%d\nprotocol:%s\n\n", host, port, serializeProtocol);
+                            channelFuture.channel().closeFuture().sync().addListener(new ChannelFutureListener() {
+                                @Override
+                                public void operationComplete(ChannelFuture future) throws Exception {
+                                    executor.shutdownNow();
+                                }
+                            });
+                        }
+                    }
+                });
             } else {
                 System.out.println("Netty RPC Server start fail!");
             }
@@ -148,5 +164,13 @@ public class MessageRecvExecutor {
 
     public void setSerializeProtocol(RpcSerializeProtocol serializeProtocol) {
         this.serializeProtocol = serializeProtocol;
+    }
+
+    public int getEchoApiPort() {
+        return echoApiPort;
+    }
+
+    public void setEchoApiPort(int echoApiPort) {
+        this.echoApiPort = echoApiPort;
     }
 }

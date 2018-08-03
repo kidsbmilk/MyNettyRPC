@@ -54,6 +54,77 @@ TODO:
 有几个请求在客户端反应的特别慢，我看服务器端已经把结果返回去了。这个问题是最近在我这个版本中发现的，作者的版本中没有这个问题，
 难道是我改了什么东西导致的吗？挨个测试历史版本吧，看看中哪里出问题了。
 挨个对着文件查了一遍，改了几个地方，代码不那么 容易卡住了，但是偶尔还是会卡住，感觉还是没彻底解决这个问题，难道真的是正常的线程卡住吗？
+# 这个还是有问题！
+一种猜测：与RpcSystemConfig.SYSTEM_PROPERTY_ASYNC_MESSAGE_CALLBACK_TIMEOUT有关，我这里设置的是60s，而原作者设置的是10s，我把它设置为10s时，依然会卡住。
+
+5、
+如果依赖是以下的情况的话，console里会显示：ERROR StatusLogger No log4j2 configuration file found. Using default configuration: logging only errors to the console.
+即：只显示error，不显示警告。
+<dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jcl</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jul</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
+            <version>2.4.1</version>
+            <scope>runtime</scope>
+        </dependency>
+
+但是，如果显示警告级别的日志的话，会看到一个重要的警告：
+警告: An exception was thrown by my.netty.rpc.netty.MessageRecvExecutor$2.operationComplete()
+io.netty.util.concurrent.BlockingOperationException: AbstractChannel$CloseFuture@6c2a24ec(incomplete)
+	at io.netty.util.concurrent.DefaultPromise.checkDeadLock(DefaultPromise.java:395)
+	at io.netty.channel.DefaultChannelPromise.checkDeadLock(DefaultChannelPromise.java:159)
+	at io.netty.util.concurrent.DefaultPromise.await(DefaultPromise.java:225)
+	at io.netty.channel.DefaultChannelPromise.await(DefaultChannelPromise.java:131)
+	at io.netty.channel.DefaultChannelPromise.await(DefaultChannelPromise.java:30)
+	at io.netty.util.concurrent.DefaultPromise.sync(DefaultPromise.java:337)
+	at io.netty.channel.DefaultChannelPromise.sync(DefaultChannelPromise.java:119)
+	at io.netty.channel.DefaultChannelPromise.sync(DefaultChannelPromise.java:30)
+	at my.netty.rpc.netty.MessageRecvExecutor$2.operationComplete(MessageRecvExecutor.java:118)
+	at my.netty.rpc.netty.MessageRecvExecutor$2.operationComplete(MessageRecvExecutor.java:110)
+	at io.netty.util.concurrent.DefaultPromise.notifyListener0(DefaultPromise.java:511)
+	at io.netty.util.concurrent.DefaultPromise.notifyListeners0(DefaultPromise.java:504)
+	at io.netty.util.concurrent.DefaultPromise.notifyListenersNow(DefaultPromise.java:483)
+	at io.netty.util.concurrent.DefaultPromise.notifyListeners(DefaultPromise.java:424)
+	at io.netty.util.concurrent.DefaultPromise.addListener(DefaultPromise.java:162)
+	at io.netty.channel.DefaultChannelPromise.addListener(DefaultChannelPromise.java:95)
+	at io.netty.channel.DefaultChannelPromise.addListener(DefaultChannelPromise.java:30)
+	at io.netty.bootstrap.AbstractBootstrap$2.run(AbstractBootstrap.java:366)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:404)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:886)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.lang.Thread.run(Thread.java:748)
+
 
 
 

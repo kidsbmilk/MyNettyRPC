@@ -130,17 +130,17 @@ public class ReflectionUtils {
         }
     }
 
-    private void listField(Field f) {
-        provider.append("\n    ")
+    private void listField(Field f, boolean html) {
+        provider.append(html ? "&nbsp&nbsp&nbsp&nbsp" : "    ")
                 .append(modifiers(f.getModifiers()))
                 .append(getType(f.getType()))
                 .append(" ")
                 .append(f.getName())
-                .append(";");
+                .append(html ? ";<br>" : ";\n");
     }
 
-    private void listMethod(Executable member) {
-        provider.append("\n    ")
+    private void listMethod(Executable member, boolean html) {
+        provider.append(html ? "<br>&nbsp&nbsp&nbsp&nbsp" : "\n    ")
                 .append(modifiers(member.getModifiers()));
         if(member instanceof Method) {
             provider.append(getType(((Method) member).getReturnType()))
@@ -158,29 +158,29 @@ public class ReflectionUtils {
         provider.append(";");
     }
 
-    public void listRpcProviderDetail(Class<?> c) {
+    public void listRpcProviderDetail(Class<?> c, boolean html) {
         if(c.isInterface()) {
             provider.append(modifiers(c.getModifiers())) // 得到接口的修饰符，在这个导出服务里，只有接口，是面向接口编程。
                     .append(" ")
                     .append(c.getName()); // 接口名
-            provider.append(" {\n");
+            provider.append(html ? "&nbsp{<br>" : " {\n");
 
             boolean hasFields = false;
             Field[] fields = c.getDeclaredFields();
             if(fields.length != 0) {
-                provider.append("    // Fields");
+                provider.append(html ? "&nbsp&nbsp&nbsp&nbsp//&nbspFields<br>" : "    // Fields\n");
                 hasFields = true;
                 for(Field field : fields) {
-                    listField(field);
+                    listField(field, html);
                 }
             }
 
-            provider.append(hasFields ? "\n    // Methods" : "    // Methods");
+            provider.append(hasFields ? (html ? "<br>&nbsp&nbsp&nbsp&nbsp//&nbspMethods" : "\n    // Methods") : (html ? "&nbsp&nbsp&nbsp&nbsp//&nbspMethods" : "    // Methods"));
             Method[] methods = c.getDeclaredMethods();
             for(Method method : methods) {
-                listMethod(method);
+                listMethod(method, html);
             }
-            provider.append("\n}\n");
+            provider.append(html ? "<br>}<p>" : "\n}\n\n");
         }
     }
 }
