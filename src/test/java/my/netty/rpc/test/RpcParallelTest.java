@@ -81,6 +81,8 @@ public class RpcParallelTest {
         // 在这2000次多线程并发请求时，只会使用一个连接来发请求，相当于还是只有一个单线程在发请求。
         // 我想作者的本意应该是保留4份MessageSendExecutor.loader.messageSendHandler，或者是4个连接共享一个MessageSendExecutor.loader.messageSendHandler。
 
+        // 注意：不一定是4个，具体地应该看NettyRpcReference.afterPropertiesSet里的说明。
+
         /**
          * 对比1.0版（commit 764ac705f33b58cbef0e7981c3c40b0055fcf138）中有如下代码：
          * //JDK本地序列化协议

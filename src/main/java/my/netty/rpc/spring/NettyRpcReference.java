@@ -53,7 +53,8 @@ public class NettyRpcReference implements FactoryBean, InitializingBean, Disposa
      * https://blog.csdn.net/u013013553/article/details/79038702
      */
     public void afterPropertiesSet() throws Exception {
-        MessageSendExecutor.getInstance().setRpcServerLoader(ipAddr, RpcSerializeProtocol.valueOf(protocol));
+        MessageSendExecutor.getInstance().setRpcServerLoader(ipAddr, RpcSerializeProtocol.valueOf(protocol)); // 这里执行多少次，就会有多少个连接被建立。
+        // 而rpc-invoke-config-client中nettyrpc:reference的个数决定了这里被调用多少次。
         ClientStopEventListener listener = new ClientStopEventListener();
         // Google EventBus 使用详解
         // https://blog.csdn.net/zhglance/article/details/54314823
