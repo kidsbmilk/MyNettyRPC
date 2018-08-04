@@ -58,6 +58,10 @@ public class RpcThreadPool {
         String name = "RpcThreadPool";
         return new ThreadPoolExecutor(threads, threads, 0, TimeUnit.MILLISECONDS,
                 createBlockingQueue(queues), new NamedThreadFactory(name, true), createPolicy());
+        // Java并发包：ExecutorService和ThreadPoolExecutor
+        // https://blog.csdn.net/zxc123e/article/details/51891200
+        // ThreadPoolExecutor使用详解
+        // https://www.cnblogs.com/zedosu/p/6665306.html
     }
 
     public static Executor getExecutorWithJmx(int threads, int queues) {

@@ -106,6 +106,11 @@ public class MessageRecvExecutor {
                 String host = ipAddr[0];
                 int port = Integer.parseInt(ipAddr[1]);
                 final ExecutorService executor = Executors.newFixedThreadPool(numberOfEchoThreadPool);
+                // Java四种线程池newCachedThreadPool,newFixedThreadPool,newScheduledThreadPool,newSingleThreadExecutor
+                // https://www.cnblogs.com/baizhanshi/p/5469948.html
+                // Executor, ExecutorService 和 Executors 间的不同
+                // https://www.cnblogs.com/gsonkeno/p/6607460.html
+
                 ChannelFuture future = null;
 
 //                这里作者写的非常混乱，作者把两种写法混一块了。
