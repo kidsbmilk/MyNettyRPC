@@ -14,5 +14,7 @@
     <nettyrpc:reference id="costTime" interfaceName="my.netty.rpc.services.CostTimeCalculate" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
     <nettyrpc:reference id="access" interfaceName="my.netty.rpc.compiler.AccessAdaptive" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
     <nettyrpc:reference id="ability" interfaceName="my.netty.rpc.core.AbilityDetail" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
+    <nettyrpc:reference id="cache" interfaceName="my.netty.rpc.services.Cache" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
+    <nettyrpc:reference id="store" interfaceName="my.netty.rpc.services.Store" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
 
 </beans>

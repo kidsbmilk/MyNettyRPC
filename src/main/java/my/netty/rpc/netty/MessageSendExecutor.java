@@ -33,7 +33,7 @@ public class MessageSendExecutor {  // 这是一个单例对象。是工具类�
         loader.unLoad();
     }
 
-    public static <T> T execute(Class<T> rpcInterface) {
+    public static <T> T execute(Class<T> rpcInterface) throws Exception {
         return (T) Reflection.newProxy(rpcInterface, new MessageSendProxy<T>()); // 注意：仅仅是返回一个对象（代理对象），并没有其他的动作。
     }
 

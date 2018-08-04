@@ -39,6 +39,8 @@ public class PojoCallTest {
         Person p2 = manage.getPerson(p);
         System.out.println(p2);
 
+        manage.query(p);
+
         System.out.println("call pojo rpc result: " + result);
 
         context.destroy();

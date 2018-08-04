@@ -12,6 +12,8 @@
     <nettyrpc:service id="demoMultiService" interfaceName="my.netty.rpc.services.MultiCalculate" ref="calcMultiService"></nettyrpc:service>
     <nettyrpc:service id="demoPersonManage" interfaceName="my.netty.rpc.services.PersonManage" ref="personManageService"></nettyrpc:service>
     <nettyrpc:service id="demoCostTime" interfaceName="my.netty.rpc.services.CostTimeCalculate" ref="costTimeCalculateService"></nettyrpc:service>
+    <nettyrpc:service id="demoCache" interfaceName="my.netty.rpc.services.Cache" ref="cacheService" filter="simpleFilter"></nettyrpc:service>
+    <nettyrpc:service id="demoStore" interfaceName="my.netty.rpc.services.Store" ref="storeService" filter="simpleFilter"></nettyrpc:service>
 
     <nettyrpc:registry id="rpcRegistry" ipAddr="${rpc.server.addr}" echoApiPort="${rpc.server.echo.api.port}" protocol="PROTOSTUFFSERIALIZE"></nettyrpc:registry>
 
@@ -19,5 +21,9 @@
     <bean id="calcMultiService" class="my.netty.rpc.services.impl.MultiCalculateImpl"></bean>
     <bean id="personManageService" class="my.netty.rpc.services.impl.PersonManageImpl"></bean>
     <bean id="costTimeCalculateService" class="my.netty.rpc.services.impl.CosTimeCalculateImpl"></bean>
+    <bean id="cacheService" class="my.netty.rpc.services.impl.CacheImpl"></bean>
+    <bean id="storeService" class="my.netty.rpc.services.impl.StoreImpl"></bean>
+
+    <bean id="simpleFilter" class="my.netty.rpc.filter.support.SimpleFilter"></bean>
 
 </beans>

@@ -1,7 +1,10 @@
 package my.netty.rpc.spring;
 
 import my.netty.rpc.event.ServerStartEvent;
+import my.netty.rpc.filter.Filter;
+import my.netty.rpc.filter.ServiceFilterBinder;
 import my.netty.rpc.netty.MessageRecvExecutor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -14,6 +17,8 @@ public class NettyRpcService implements ApplicationContextAware, ApplicationList
 
     private String ref;
 
+    private String filter;
+
     private ApplicationContext applicationContext;
 
     public String getRef() {
@@ -25,8 +30,17 @@ public class NettyRpcService implements ApplicationContextAware, ApplicationList
     }
 
     public void onApplicationEvent(ApplicationEvent event) {
+        ServiceFilterBinder binder = new ServiceFilterBinder();
+
+        if(StringUtils.isBlank(filter) || !(applicationContext.getBean(filter) instanceof Filter)) {
+            binder.setObject(applicationContext.getBean(ref));
+        } else {
+            binder.setObject(applicationContext.getBean(ref));
+            binder.setFilter((Filter) applicationContext.getBean(filter));
+        }
+
         // 这里保存了所有可用的服务
-        MessageRecvExecutor.getInstance().getHandlerMap().put(interfaceName, applicationContext.getBean(ref));
+        MessageRecvExecutor.getInstance().getHandlerMap().put(interfaceName, binder);
     }
 
     public String getInterfaceName() {
@@ -52,5 +66,13 @@ public class NettyRpcService implements ApplicationContextAware, ApplicationList
 
     public ApplicationContext getApplicationContext() {
         return applicationContext;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 }

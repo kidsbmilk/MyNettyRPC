@@ -13,6 +13,7 @@ public class RpcSystemConfig {
     public static final String DELIMITER = ":";
     public static final String RPC_COMPILER_SPI_ATTR = "my.netty.rpc.compiler.AccessAdaptive";
     public static final String RPC_ABILITY_DETAIL_SPI_ATTR = "my.netty.rpc.core.AbilityDetail";
+    public static final String FILTER_RESPONSE_MSG = "Illegal request, NettyRPC server refused to response!";
 
     private static boolean monitorServerSupport = false;
 

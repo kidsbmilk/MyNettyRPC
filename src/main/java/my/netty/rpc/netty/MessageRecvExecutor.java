@@ -85,10 +85,10 @@ public class MessageRecvExecutor {
 
     private static void output(final MessageRequest request, final MessageResponse response) {
         if(request.getMethodName().equalsIgnoreCase("add")) {
-            System.out.printf("%s + %s = %s\n", request.getParameters()[0], request.getParameters()[1], response.getResult());
+            System.out.printf("%s + %s = %s\n", request.getParametersVal()[0], request.getParametersVal()[1], response.getResult());
         }
         if(request.getMethodName().equalsIgnoreCase("multi")) {
-            System.out.printf("%s * %s = %s\n", request.getParameters()[0], request.getParameters()[1], response.getResult());
+            System.out.printf("%s * %s = %s\n", request.getParametersVal()[0], request.getParametersVal()[1], response.getResult());
         }
     }
 

@@ -13,4 +13,9 @@ public class PersonManageImpl implements PersonManage {
     public Person getPerson(Person p) {
         return p;
     }
+
+    public void query(Person p) {
+        // your business logic code here!
+        System.out.println("person data[" + p + "] has query!");
+    }
 }

@@ -8,7 +8,8 @@ public class MessageResponse implements Serializable {
 
     private String messageId;
     private String error;
-    private Object resultDesc;
+    private Object result;
+    private boolean returnNotNull;
 
     public String getMessageId() {
         return messageId;
@@ -27,14 +28,22 @@ public class MessageResponse implements Serializable {
     }
 
     public Object getResult() {
-        return resultDesc;
+        return result;
     }
 
-    public void setResult(Object resultDesc) {
-        this.resultDesc = resultDesc;
+    public void setResult(Object result) {
+        this.result = result;
     }
 
     public String toString() {
         return ReflectionToStringBuilder.toString(this);
+    }
+
+    public boolean isReturnNotNull() {
+        return returnNotNull;
+    }
+
+    public void setReturnNotNull(boolean returnNotNull) {
+        this.returnNotNull = returnNotNull;
     }
 }

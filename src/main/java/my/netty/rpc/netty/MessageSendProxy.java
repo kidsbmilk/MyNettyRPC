@@ -16,7 +16,7 @@ public class MessageSendProxy<T> extends AbstractInvocationHandler { // 见Messa
         request.setClassName(method.getDeclaringClass().getName());
         request.setMethodName(method.getName());
         request.setTypeParameters(method.getParameterTypes());
-        request.setParameters(args);
+        request.setParametersVal(args);
 
         MessageSendHandler handler = RpcServerLoader.getInstance().getMessageSendHandler();
         MessageCallBack callBack = handler.sendRequest(request); // 远程调用已开始
