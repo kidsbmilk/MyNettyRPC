@@ -125,7 +125,10 @@ io.netty.util.concurrent.BlockingOperationException: AbstractChannel$CloseFuture
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.lang.Thread.run(Thread.java:748)
 
-
+分析 Netty 死锁异常 BlockingOperationException
+http://www.linkedkeeper.com/detail/blog.action?bid=1027&utm_medium=hao.caibaojian.com&utm_source=hao.caibaojian.com
+这个文章太好了！
+此问题已解决。
 
 
 

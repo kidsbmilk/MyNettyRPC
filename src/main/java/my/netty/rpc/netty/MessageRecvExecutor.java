@@ -105,29 +105,62 @@ public class MessageRecvExecutor {
             if(ipAddr.length == 2) {
                 String host = ipAddr[0];
                 int port = Integer.parseInt(ipAddr[1]);
+                final ExecutorService executor = Executors.newFixedThreadPool(numberOfEchoThreadPool);
                 ChannelFuture future = null;
-                future = bootstrap.bind(host, port).sync();
-                future.addListener(new ChannelFutureListener() {
-                    @Override
-                    public void operationComplete(final ChannelFuture channelFuture) throws Exception {
-                        if (channelFuture.isSuccess()) {
-                            ExecutorService executor = Executors.newFixedThreadPool(numberOfEchoThreadPool);
-                            ExecutorCompletionService<Boolean> completionService = new ExecutorCompletionService<Boolean>(executor);
-                            completionService.submit(new ApiEchoResolver(host, echoApiPort));
-                            System.out.printf("Netty RPC Server start success!\nip:%s\nport:%d\nprotocol:%s\n\n", host, port, serializeProtocol);
-                            channelFuture.channel().closeFuture().sync().addListener(new ChannelFutureListener() {
-                                @Override
-                                public void operationComplete(ChannelFuture future) throws Exception {
-                                    executor.shutdownNow();
-                                }
-                            });
-                        }
-                    }
-                });
+
+//                这里作者写的非常混乱，作者把两种写法混一块了。
+
+
+                // 对于bind事件，法一：sync()后按顺序写代码，后面的代码是在主线程中执行的。
+                future = bootstrap.bind(host, port).sync(); // 这个future绑定到boss中的一个nioEventLoopGroup上。
+                // 单步调试会发现：bind操作中，启动boss的nioEventLoopGroup去绑定端口，并会创建future，然后返回这个future。
+                // sync()操作会阻塞main线程，就是等待绑定端口动作的完成。而下面的addListener，是在sync()操作完成后，也就是绑定动作完成后，
+                // 下面的addListener才会执行，执行后，将operationComplete的操作转移到boss的nioEventLoopGroup中去执行。
+                // 这也体现了，future与nioEventLoopGroup中线程绑定，一个线程处理一个连接的所有生命周期内的事件（注意，这里是监听连接）。
+                // 以前理解错了：以前以为是sync()后立即执行这个addListener了。对比:bind()和writeAndFlush()是不会阻塞当前线程的，
+                // 返回future后当前线程继续运行。
+
+                // 分析 Netty 死锁异常 BlockingOperationException
+                // http://www.linkedkeeper.com/detail/blog.action?bid=1027&utm_medium=hao.caibaojian.com&utm_source=hao.caibaojian.com
+                // 这个文章太好了！
+                // System.out.println("create future thread : " + Thread.currentThread()); // 在主线程中执行。
+                System.out.printf("Netty RPC Server start success!\nip:%s\nport:%d\nprotocol:%s\n\n", host, port, serializeProtocol);
+                ExecutorCompletionService<Boolean> completionService = new ExecutorCompletionService<Boolean>(executor);
+                completionService.submit(new ApiEchoResolver(host, echoApiPort));
+
+
+//                // 对于bind事件，法二：不用sync()，而是bind()后调用addListener，addListener中的代码是在boss的nioEventLoopGroup中去执行。
+//                future = bootstrap.bind(host, port).addListener(new ChannelFutureListener() {
+//                    @Override
+//                    public void operationComplete(final ChannelFuture channelFuture) throws Exception {
+////                        System.out.println("run future Listener thread : " + Thread.currentThread()); // 在boss的nioEventLoopGroup中执行。
+//                        if (channelFuture.isSuccess()) {
+//                            System.out.printf("Netty RPC Server start success!\nip:%s\nport:%d\nprotocol:%s\n\n", host, port, serializeProtocol);
+//                            ExecutorCompletionService<Boolean> completionService = new ExecutorCompletionService<Boolean>(executor);
+//                            completionService.submit(new ApiEchoResolver(host, echoApiPort));
+//                        }
+//                    }
+//                });
+
+
+                // 对于关闭监听连接（关闭服务器）的事件，法一：sync()后按顺序写代码，后面的代码是在主线程中执行的。
+                future.channel().closeFuture().sync();
+                executor.shutdownNow();
+
+
+//                // 对于关闭监听连接（关闭服务器）的事件，法二：不用sync()，而是closeFuture()后调用addListener，addListener中的代码是在boss的nioEventLoopGroup中去执行。
+//                future.channel().closeFuture().addListener(new ChannelFutureListener() {
+//                    @Override
+//                    public void operationComplete(ChannelFuture future) throws Exception {
+//                        executor.shutdownNow();
+//                    }
+//                });
+
+
             } else {
                 System.out.println("Netty RPC Server start fail!");
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException e) { // 这个中断异常是针对上面代码中有sync()而写的，如果上面不使用sync()的话，这个可以去掉了。
             e.printStackTrace();
         }
     }
