@@ -24,6 +24,15 @@ Netty实现高性能RPC服务器优化篇之消息序列化 http://www.cnblogs.c
 * 在原来编码解码器：JDK原生的对象序列化方式、kryo、hessian，新增了：protostuff。
 * 优化了NettyRPC服务端的线程池模型，支持LinkedBlockingQueue、ArrayBlockingQueue、SynchronousQueue，并扩展了多个线程池任务处理策略。
 
+在NettyRPC 2.0的基础上新增NettyRPC异步回调功能模块：
+基于cglib生成异步代理Mock对象，针对一些极端耗时的RPC调用场景进行异步回调，从而提高客户端的并行吞吐量。
+
+在2.1版本的基础上，提供NettyRPC服务端接口能力展现功能：
+接口能力展现功能模块部署在服务端的18889端口，可以在浏览器中输入：http://ip地址:18889/NettyRPC.html 进行查看。
+
+NettyRPC客户端支持重连功能：这点主要是针对RPC服务器宕机的情形下，RPC客户端可以检测链路情况，如果链路不通，则自动重连。重连重试的时间默认为10s。
+ 
+
 **基于Netty打造RPC服务器设计经验谈**
 http://www.cnblogs.com/jietang/p/5983038.html
 
@@ -36,12 +45,6 @@ https://blog.csdn.net/xtj332/article/details/20127501
 Spring afterPropertiesSet方法
 https://blog.csdn.net/u013013553/article/details/79038702
 
-在NettyRPC 2.0的基础上新增NettyRPC异步回调功能模块：
-基于cglib生成异步代理Mock对象，针对一些极端耗时的RPC调用场景进行异步回调，从而提高客户端的并行吞吐量。
-
-在2.1版本的基础上，提供NettyRPC服务端接口能力展现功能：**
-接口能力展现功能模块部署在服务端的18889端口，可以在浏览器中输入：http://ip地址:18889/NettyRPC.html 进行查看。
- 
 TODO:
 1、整体设计上，服务器端目前只能在启动的确定并设置一种序列化方式。
 改进：其实可以将多个序列化方式实现的handler全部放在pipeline中，然后以某个字段来标识使用哪个来反序列化或者序列化。
