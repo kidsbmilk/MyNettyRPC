@@ -31,6 +31,14 @@ Netty实现高性能RPC服务器优化篇之消息序列化 http://www.cnblogs.c
 接口能力展现功能模块部署在服务端的18889端口，可以在浏览器中输入：http://ip地址:18889/NettyRPC.html 进行查看。
 
 NettyRPC客户端支持重连功能：这点主要是针对RPC服务器宕机的情形下，RPC客户端可以检测链路情况，如果链路不通，则自动重连。重连重试的时间默认为10s。
+
+** 新增NettyRPC过滤器功能：**
+ * 进一步合理地分配和利用服务端的系统资源，NettyRPC可以针对某些特定的RPC请求，进行过滤拦截。
+ * 具体过滤器要实现：com.newlandframework.rpc.filter.Filter接口定义的方法。
+ * 被拦截到的RPC请求，如果出现异常，NettyRPC框架会抛出com.newlandframework.rpc.exception.RejectResponeException异常，框架使用者可以根据需要进行捕获。
+ * spring配置文件中的nettyrpc:service标签，新增filter属性，用来定义这个服务对应的过滤器的实现。当然，filter属性是可选的。
+ （注意：框架分为客户端部分与服务器端部分，与框架使用者不同，框架使用者使用框架的客户端部分来进行远程过程调用。上面抛异常的代码具体在框架的客户端部分，
+    也是框架的一部分，框架的使用者可以根据需要捕获框架抛出的异常做进一步处理。）
  
 
 **基于Netty打造RPC服务器设计经验谈**
