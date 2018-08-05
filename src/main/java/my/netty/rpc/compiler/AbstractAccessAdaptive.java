@@ -1,5 +1,8 @@
 package my.netty.rpc.compiler;
 
+import my.netty.rpc.compiler.weaver.ProxyProvider;
+import my.netty.rpc.compiler.weaver.ClassProxy;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.regex.Matcher;
@@ -11,6 +14,9 @@ public abstract class AbstractAccessAdaptive implements Compiler {
     private static final Pattern PACKAGE_PATTERN = Pattern.compile("package\\s+(([$_a-zA-Z][$_a-zA-Z0-9]*[.])*([$_a-zA-Z][$_a-zA-Z0-9]*))\\s*;");
 //    private static final Pattern CLASS_PATTERN = Pattern.compile("class\\s+([$_a-zA-Z][$_a-zA-Z0-9]*)\\s+"); // 原作者写的。
     private static final Pattern CLASS_PATTERN = Pattern.compile("class\\s+([$_a-zA-Z][$_a-zA-Z0-9]*)\\s*\\{");
+
+    protected ClassProxy factory = new ProxyProvider();
+    protected NativeCompiler compiler = null;
 
     // ClassLoader，Thread.currentThread().setContextClassLoader，tomcat的ClassLoader
     // https://www.cnblogs.com/549294286/p/3714692.html
@@ -90,9 +96,16 @@ public abstract class AbstractAccessAdaptive implements Compiler {
                 throw t;
             } catch (Throwable t) {
                 throw new IllegalStateException("failed to compile class, cause: " + t.getMessage() + ", class: " + className + ", code: \n" + code + "\n, stack: " + report(t));
+            } finally {
+                overrideThreadContextClassLoader(compiler.getClassLoader());
+                compiler.close();
             }
         }
     }
 
     protected abstract Class<?> doCompile(String clsName, String javaSource) throws Throwable;
+
+    public ClassProxy getFactory() {
+        return factory;
+    }
 }

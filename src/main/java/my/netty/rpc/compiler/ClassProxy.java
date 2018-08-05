@@ -5,6 +5,7 @@ import net.sf.cglib.proxy.NoOp;
 
 import java.util.List;
 
+@Deprecated
 public class ClassProxy {
 
     public <T> Class createDynamicSubclass(Class<T> superClass) {

@@ -32,13 +32,21 @@ Netty实现高性能RPC服务器优化篇之消息序列化 http://www.cnblogs.c
 
 NettyRPC客户端支持重连功能：这点主要是针对RPC服务器宕机的情形下，RPC客户端可以检测链路情况，如果链路不通，则自动重连。重连重试的时间默认为10s。
 
-** 新增NettyRPC过滤器功能：**
- * 进一步合理地分配和利用服务端的系统资源，NettyRPC可以针对某些特定的RPC请求，进行过滤拦截。
- * 具体过滤器要实现：com.newlandframework.rpc.filter.Filter接口定义的方法。
- * 被拦截到的RPC请求，如果出现异常，NettyRPC框架会抛出com.newlandframework.rpc.exception.RejectResponeException异常，框架使用者可以根据需要进行捕获。
- * spring配置文件中的nettyrpc:service标签，新增filter属性，用来定义这个服务对应的过滤器的实现。当然，filter属性是可选的。
- （注意：框架分为客户端部分与服务器端部分，与框架使用者不同，框架使用者使用框架的客户端部分来进行远程过程调用。上面抛异常的代码具体在框架的客户端部分，
-    也是框架的一部分，框架的使用者可以根据需要捕获框架抛出的异常做进一步处理。）
+新增NettyRPC过滤器功能：
+* 进一步合理地分配和利用服务端的系统资源，NettyRPC可以针对某些特定的RPC请求，进行过滤拦截。
+* 具体过滤器要实现：my.netty.rpc.filter.Filter接口定义的方法。
+* 被拦截到的RPC请求，NettyRPC框架会抛出my.netty.rpc.exception.RejectResponeException异常，可以根据需要进行捕获。
+* spring配置文件中的nettyrpc:service标签，新增filter属性，用来定义这个服务对应的过滤器的实现。当然，filter属性是可选的。
+
+----------
+## NettyRPC 2.4 Build 2017/8/31 by tangjie
+
+增强了RPC服务端动态加载字节码时，对于热点方法的拦截判断能力：
+* 在之前的NettyRPC版本中，RPC服务端集成了一个功能：针对Java HotSpot虚拟机的热加载特性，可以动态加载、生成并执行客户端的热点代码。然而却有一定的风险。因为这些代码中的某些方法，可能存在一些危及服务端安全的操作，所以有必要对这些方法进行拦截控制。
+* 技术难点在于：如何对服务端生成的字节码文件进行渲染加工？以往传统的方式，都是基于类进行代理渲染，而这次是针对字节码文件进行织入渲染，最终把拦截方法织入原有的字节码文件中。
+* 对字节码操作可选的方案有Byte Code Engineering Library (BCEL)、ASM等。最终从执行性能上考虑，决定采用偏向底层的ASM，对字节码进行渲染织入增强，以节省性能开销。最终通过类加载器，重新把渲染后的字节码，载入运行时上下文环境。
+* 具体方法拦截器要实现：my.netty.rpc.compiler.intercept.Interceptor接口定义的方法。NettyRPC框架提供了一个简易的拦截器实现：SimpleMethodInterceptor，可以在这里加入你的拦截判断逻辑。
+
  
 
 **基于Netty打造RPC服务器设计经验谈**

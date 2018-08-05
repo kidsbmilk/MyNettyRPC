@@ -1,6 +1,7 @@
 package my.netty.rpc.compiler;
 
 import com.google.common.io.Files;
+import my.netty.rpc.compiler.intercept.SimpleMethodInterceptor;
 import my.netty.rpc.core.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -14,9 +15,10 @@ public class AccessAdaptiveProvider extends AbstractAccessAdaptive implements Ac
     protected Class<?> doCompile(String clsName, String javaSource) {
 
         File tempFileLocation = Files.createTempDir();
-        try (NativeCompiler compiler = new NativeCompiler(tempFileLocation)) {
-            return compiler.compile(clsName, javaSource);
-        }
+        compiler = new NativeCompiler(tempFileLocation); // 在父类AbstractAccessAdaptive中定义，也在父类的方法中关闭。
+        Class type = compiler.compile(clsName, javaSource);
+        tempFileLocation.deleteOnExit();
+        return type;
     }
 
     @Override
@@ -25,13 +27,12 @@ public class AccessAdaptiveProvider extends AbstractAccessAdaptive implements Ac
             return null;
         } else {
             try {
-                ClassProxy main = new ClassProxy();
-                Class<?> type = compile(javaSource, null);
-                Class<?> objectClass = main.createDynamicSubclass(type);
-                Object object = ReflectionUtils.newInstance(objectClass); // 参考AsyncCallResult.getResult中的注释。
-                assert object != null;
-                return MethodUtils.invokeMethod(object, method, args);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                Class type = compile(javaSource, Thread.currentThread().getContextClassLoader());
+                Object object = ReflectionUtils.newInstance(type);
+                Thread.currentThread().getContextClassLoader().loadClass(type.getName());
+                Object proxy = getFactory().createProxy(object, new SimpleMethodInterceptor(), new Class[]{type});
+                return MethodUtils.invokeMethod(proxy, method, args);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
             return null;
