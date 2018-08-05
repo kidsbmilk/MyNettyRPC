@@ -53,7 +53,7 @@ public class MethodProxyAdvisor implements MethodInterceptor {
                 Class<?>[] parameterTypes = ClassUtils.toClass(args);
                 Method method = MethodUtils.getMatchingAccessibleMethod(procesors.getObject().getClass(), methodName, parameterTypes);
                 if(filter.before(method, procesors.getObject(), parameters)) {
-                    Object result = invocation.proceed();
+                    Object result = invocation.proceed(); // 看这个方法的文档说明。
                     filter.after(method, procesors.getObject(), parameters);
                     setReturnNotNull(result != null);
                     return result;

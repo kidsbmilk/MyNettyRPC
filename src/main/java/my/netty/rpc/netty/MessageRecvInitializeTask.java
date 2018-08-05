@@ -47,9 +47,9 @@ public class MessageRecvInitializeTask implements Callable<Boolean> {
     }
 
     private Object reflect(MessageRequest request) throws Throwable {
-//        String className = request.getClassName();
+//        String className = request.getClassName(); // 这两行代码移到MethodProxyAdvisor.invoke中了。
 //        Object serviceBean = handlerMap.get(className);
-//        String methodName = request.getMethodName();
+//        String methodName = request.getMethodName(); // 这三行代码移到MethodInvoker.invoke中了。
 //        Object[] parameters = request.getParametersVal();
 //        return MethodUtils.invokeMethod(serviceBean, methodName, parameters); // 在这里服务器端处理客户端发来的调用请求。
         ProxyFactory weaver = new ProxyFactory(new MethodInvoker());
