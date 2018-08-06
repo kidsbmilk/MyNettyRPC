@@ -46,6 +46,11 @@ public class MessageRecvExecutor {
         register();
     }
 
+    private void register() {
+        handlerMap.put(RpcSystemConfig.RPC_COMPILER_SPI_ATTR, new AccessAdaptiveProvider());
+        handlerMap.put(RpcSystemConfig.RPC_ABILITY_DETAIL_SPI_ATTR, new AbilityDetailProvider());
+    }
+
     private static class MessageRecvExecutorHolder {
         static final MessageRecvExecutor instance = new MessageRecvExecutor();
     }
@@ -173,11 +178,6 @@ public class MessageRecvExecutor {
     public void stop() {
         worker.shutdownGracefully();
         boss.shutdownGracefully();
-    }
-	
-	private void register() {
-        handlerMap.put(RpcSystemConfig.RPC_COMPILER_SPI_ATTR, new AccessAdaptiveProvider());
-        handlerMap.put(RpcSystemConfig.RPC_ABILITY_DETAIL_SPI_ATTR, new AbilityDetailProvider());
     }
 
     public Map<String, Object> getHandlerMap() {
