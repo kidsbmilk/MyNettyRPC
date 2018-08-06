@@ -9,6 +9,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
+// 这个类的实例在MessageRecvExecutor.register中被添加到handlerMap中。
 public class AccessAdaptiveProvider extends AbstractAccessAdaptive implements AccessAdaptive {
 
     @Override
