@@ -153,6 +153,23 @@ http://www.linkedkeeper.com/detail/blog.action?bid=1027&utm_medium=hao.caibaojia
 
 6、MessageRecvInitializeTask.reflect中的注释。
 
+7、线程分析：
+服务器端：
+主线程
+boss
+worker
+threadPoolExecutor(见MessageRecvExecutor.submit，多个任务共用一个线程池，可处理阻塞任务)
+
+客户端：
+主线程
+eventLoopGroup
+threadPoolExecutor（见RpcServerLoader.load，用于发起多个连接，最终连接都绑定到eventLoopGroup中的线程上）
+executor（见AsyncInvoker.executor，用于客户端向服务器端提交异步执行的任务）
+
+服务器端耗时任务是在threadPoolExecutor中执行的，而客户端对于非异步的且是阻塞执行的任务，阻塞发生在主线程中。
+
+对于客户端，在发起连接后，threadPoolExecutor就会闲置，不如将executor也替换为threadPoolExecutor，这样可以减小客户端的线程数，节约资源。
+
 
 
 

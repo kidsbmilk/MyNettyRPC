@@ -50,6 +50,9 @@ public class AsyncInvoker {
     /**
      * 反射 Reflect Modifier 修饰符工具类
      * https://www.cnblogs.com/baiqiantao/p/7478523.html
+     *
+     * 这里面一些if条件直接调用callback.call()，是因为要么是无法使用cglib生成动态代理或者是没必要进行动态代理。
+     * 那个returnClass.isArray()以及returnClass == Object.class为什么也是直接调用callback.call呢？ ?zz? TODO-THIS
      */
     private <R> R intercept(final AsyncCallback<R> callback, Class<?> returnClass) {
         if(!Modifier.isPublic(returnClass.getModifiers())) { // 注意：这个前面有个取反的符号，表示返回类型不是公有的。
