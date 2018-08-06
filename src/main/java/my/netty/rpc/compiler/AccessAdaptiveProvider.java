@@ -31,7 +31,7 @@ public class AccessAdaptiveProvider extends AbstractAccessAdaptive implements Ac
                 Class type = compile(javaSource, Thread.currentThread().getContextClassLoader());
                 Object object = ReflectionUtils.newInstance(type);
                 Thread.currentThread().getContextClassLoader().loadClass(type.getName());
-                Object proxy = getFactory().createProxy(object, new SimpleMethodInterceptor(), new Class[]{type});
+                Object proxy = getProxyFactory().createProxy(object, new SimpleMethodInterceptor(), new Class[]{type}); // 这行代码在原来框架的基础上，把asm方法的拦截代码添加到框架里了。
                 return MethodUtils.invokeMethod(proxy, method, args);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
                 e.printStackTrace();

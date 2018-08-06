@@ -1,7 +1,7 @@
 package my.netty.rpc.compiler;
 
-import my.netty.rpc.compiler.weaver.ProxyProvider;
-import my.netty.rpc.compiler.weaver.ClassProxy;
+import my.netty.rpc.compiler.weaver.ProxyFactory;
+import my.netty.rpc.compiler.weaver.ClassProxyFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -15,7 +15,7 @@ public abstract class AbstractAccessAdaptive implements Compiler {
 //    private static final Pattern CLASS_PATTERN = Pattern.compile("class\\s+([$_a-zA-Z][$_a-zA-Z0-9]*)\\s+"); // 原作者写的。
     private static final Pattern CLASS_PATTERN = Pattern.compile("class\\s+([$_a-zA-Z][$_a-zA-Z0-9]*)\\s*\\{");
 
-    protected ClassProxy factory = new ProxyProvider();
+    protected ClassProxyFactory proxyFactory = new ProxyFactory();
     protected NativeCompiler compiler = null;
 
     // ClassLoader，Thread.currentThread().setContextClassLoader，tomcat的ClassLoader
@@ -105,7 +105,7 @@ public abstract class AbstractAccessAdaptive implements Compiler {
 
     protected abstract Class<?> doCompile(String clsName, String javaSource) throws Throwable;
 
-    public ClassProxy getFactory() {
-        return factory;
+    public ClassProxyFactory getProxyFactory() {
+        return proxyFactory;
     }
 }

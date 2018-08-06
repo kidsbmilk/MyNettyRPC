@@ -2,7 +2,7 @@ package my.netty.rpc.compiler.weaver;
 
 import my.netty.rpc.compiler.intercept.Interceptor;
 
-public interface ClassProxy {
+public interface ClassProxyFactory {
 
     <T> T createProxy(Object target, Interceptor interceptor, Class<?>... proxyClasses);
 
