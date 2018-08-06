@@ -8,12 +8,16 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import my.netty.rpc.compiler.AccessAdaptiveProvider;
 import my.netty.rpc.core.AbilityDetailProvider;
 import my.netty.rpc.core.RpcSystemConfig;
+import my.netty.rpc.filter.Filter;
+import my.netty.rpc.filter.ServiceFilterBinder;
+import my.netty.rpc.filter.support.SimpleFilter;
 import my.netty.rpc.netty.resolver.ApiEchoResolver;
 import my.netty.rpc.parallel.NamedThreadFactory;
 import my.netty.rpc.parallel.RpcThreadPool;
 import my.netty.rpc.model.MessageRequest;
 import my.netty.rpc.model.MessageResponse;
 import my.netty.rpc.serialize.RpcSerializeProtocol;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.nio.channels.spi.SelectorProvider;
@@ -47,7 +51,11 @@ public class MessageRecvExecutor {
     }
 
     private void register() {
-        handlerMap.put(RpcSystemConfig.RPC_COMPILER_SPI_ATTR, new AccessAdaptiveProvider());
+        //        handlerMap.put(RpcSystemConfig.RPC_COMPILER_SPI_ATTR, new AccessAdaptiveProvider());
+        ServiceFilterBinder binder = new ServiceFilterBinder();
+        binder.setObject(new AccessAdaptiveProvider());
+        binder.setFilter(new SimpleFilter());
+        handlerMap.put(RpcSystemConfig.RPC_COMPILER_SPI_ATTR, binder);
         handlerMap.put(RpcSystemConfig.RPC_ABILITY_DETAIL_SPI_ATTR, new AbilityDetailProvider());
     }
 
