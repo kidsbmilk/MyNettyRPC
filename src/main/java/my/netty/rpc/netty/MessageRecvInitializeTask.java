@@ -47,18 +47,19 @@ public class MessageRecvInitializeTask implements Callable<Boolean> {
     }
 
     private Object reflect(MessageRequest request) throws Throwable {
+        // 对下面五行代码的重新安排是为了实现aop的过滤功能
 //        String className = request.getClassName(); // 这两行代码移到MethodProxyAdvisor.invoke中了。
 //        Object serviceBean = handlerMap.get(className);
 //        String methodName = request.getMethodName(); // 这三行代码移到MethodInvoker.invoke中了。
 //        Object[] parameters = request.getParametersVal();
 //        return MethodUtils.invokeMethod(serviceBean, methodName, parameters); // 在这里服务器端处理客户端发来的调用请求。
-        ProxyFactory weaver = new ProxyFactory(new MethodInvoker());
+        ProxyFactory weaver = new ProxyFactory(new MethodInvoker()); // 这里的aop主要用于实现过滤，见MethodProxyAdvisor.invoke的实现。
         NameMatchMethodPointcutAdvisor advisor = new NameMatchMethodPointcutAdvisor();
         advisor.setMappedName(METHOD_MAPPED_NAME);
         advisor.setAdvice(new MethodProxyAdvisor(handlerMap));
         weaver.addAdvisor(advisor);
         MethodInvoker mi = (MethodInvoker) weaver.getProxy();
-        Object obj = mi.invoke(request);
+        Object obj = mi.invoke(request); // AccessAdaptive服务是在MessageRecvExecutor.register手动注册的，这里将AccessAdaptiveProvider与原有框架结合起来。
         setReturnNotNull(((MethodProxyAdvisor) advisor.getAdvice()).isReturnNotNull());
         return obj;
     }
