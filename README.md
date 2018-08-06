@@ -151,6 +151,9 @@ http://www.linkedkeeper.com/detail/blog.action?bid=1027&utm_medium=hao.caibaojia
 这个文章太好了！
 此问题已解决。
 
+6、MessageRecvInitializeTask.reflect中的注释。
+
+
 
 
 
