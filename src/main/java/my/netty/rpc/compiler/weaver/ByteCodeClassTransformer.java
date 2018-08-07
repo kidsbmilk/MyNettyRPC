@@ -69,9 +69,9 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
                 "<init>", Type.VOID_TYPE, new Type[]{INVOKER_TYPE}), null, null, cw);
         adapter.loadThis();
         adapter.invokeConstructor(superType, org.objectweb.asm.commons.Method.getMethod("void <init> ()"));
-        adapter.loadThis(); // 这个是干什么的 ?zz?
-        adapter.loadArg(0);
-        adapter.putField(proxyType, HANDLER_NAME, INVOKER_TYPE);
+        adapter.loadThis(); // 把this放栈上
+        adapter.loadArg(0); // 把栈上的this加载进来
+        adapter.putField(proxyType, HANDLER_NAME, INVOKER_TYPE); // 上面两行分析的对吗 ?zz?
         adapter.returnValue();
         adapter.endMethod();
     }
