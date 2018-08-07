@@ -54,6 +54,9 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
     // FIXME:
     // 字节码中的init方法必须先行初始化。
     // clinit就暂时不考虑了
+
+    // java字节码中的aload_0 : https://blog.csdn.net/DViewer/article/details/51138148
+    // 在非静态方法中，aload_0 表示对this的操作，在static 方法中，aload_0表示对方法的第一参数的操作。
     private void initialize(ClassWriter cw, Type proxyType, Type superType) {
         GeneratorAdapter adapter = new GeneratorAdapter(ACC_PUBLIC, new org.objectweb.asm.commons.Method(
                 "<init>", Type.VOID_TYPE, new Type[]{INVOKER_TYPE}), null, null, cw);
