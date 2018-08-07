@@ -55,14 +55,21 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
     // 字节码中的init方法必须先行初始化。
     // clinit就暂时不考虑了
 
+    // 深入理解jvm--Java中init和clinit区别完全解析 : https://blog.csdn.net/u013309870/article/details/72975536
+
     // java字节码中的aload_0 : https://blog.csdn.net/DViewer/article/details/51138148
     // 在非静态方法中，aload_0 表示对this的操作，在static 方法中，aload_0表示对方法的第一参数的操作。
+
+    // TODO:
+    // GeneratorAdapter虽然方便，但是速度太慢了，改为asm核心包中的方法。
+
+    // ASM（字节码处理工具）: https://blog.csdn.net/teaandnoodle/article/details/52331403
     private void initialize(ClassWriter cw, Type proxyType, Type superType) {
         GeneratorAdapter adapter = new GeneratorAdapter(ACC_PUBLIC, new org.objectweb.asm.commons.Method(
                 "<init>", Type.VOID_TYPE, new Type[]{INVOKER_TYPE}), null, null, cw);
         adapter.loadThis();
         adapter.invokeConstructor(superType, org.objectweb.asm.commons.Method.getMethod("void <init> ()"));
-        adapter.loadThis();
+        adapter.loadThis(); // 这个是干什么的 ?zz?
         adapter.loadArg(0);
         adapter.putField(proxyType, HANDLER_NAME, INVOKER_TYPE);
         adapter.returnValue();
