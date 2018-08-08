@@ -44,6 +44,7 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
         Type superType = Type.getType(classToProxy);
         cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, proxyType.getInternalName(), null, superType.getInternalName(), interfaceNames);
         cw.visitField(ACC_FINAL + ACC_PRIVATE, HANDLER_NAME, INVOKER_TYPE.getDescriptor(), null, null).visitEnd();
+        // 这个HANDLER_NAME在子类的构造函数中初始化，见initialize的说明
         initialize(cw, proxyType, superType);
         for(final Method method : methods) {
             transformMethod(cw, method, proxyType, HANDLER_NAME);
@@ -64,14 +65,19 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
     // GeneratorAdapter虽然方便，但是速度太慢了，改为asm核心包中的方法。
 
     // ASM（字节码处理工具）: https://blog.csdn.net/teaandnoodle/article/details/52331403
+
     private void initialize(ClassWriter cw, Type proxyType, Type superType) {
         GeneratorAdapter adapter = new GeneratorAdapter(ACC_PUBLIC, new org.objectweb.asm.commons.Method(
-                "<init>", Type.VOID_TYPE, new Type[]{INVOKER_TYPE}), null, null, cw);
-        adapter.loadThis();
+                "<init>", Type.VOID_TYPE, new Type[]{INVOKER_TYPE}), null, null, cw); // 从这个可以看到，子类的构造函数有一个参数
+        adapter.loadThis(); // 把this放栈上，用于下面调用父类的构造函数
         adapter.invokeConstructor(superType, org.objectweb.asm.commons.Method.getMethod("void <init> ()"));
-        adapter.loadThis(); // 把this放栈上
-        adapter.loadArg(0); // 把栈上的this加载进来
-        adapter.putField(proxyType, HANDLER_NAME, INVOKER_TYPE); // 上面两行分析的对吗 ?zz?
+        adapter.loadThis(); // 把this放栈上，用于下面调用子类的构造函数对成员变量初始化，表示下面这个变量所属的类实例对象
+        adapter.loadArg(0); // 把子类型构造函数中的参数（此构造函数只有一个参数，见adapter创建时的参数说明）加载进来
+        adapter.putField(proxyType, HANDLER_NAME, INVOKER_TYPE); // 将构造函数中的参数赋值给子类中的变量
+        /**
+         * 我在网上找了很多资料，都没有找到上面三句是什么意思，然后自己写了个继承关系，然后编译，然后用javap -verbose [类名] > [文本]，
+         * 最后观察文本得出的上面的结论。
+         */
         adapter.returnValue();
         adapter.endMethod();
     }
@@ -88,6 +94,7 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
     // FIXME:
     // 本来想用cglib来实现对字节码的控制，但是考虑到性能问题，决定采用偏向底层的ASM对JVM的字节码进行渲染织入增强。
     // 其中获取方法签名通过反射方式取得，虽然性能上可能有所损失，但是编码方式比较简洁，不会出现大量的ASM堆栈操作的API序列。
+
     private void transformMethod(ClassWriter cw, Method method, Type proxyType, String handlerName) throws CreateProxyException {
         int access = (ACC_PUBLIC | ACC_PROTECTED) & method.getModifiers();
         org.objectweb.asm.commons.Method m = org.objectweb.asm.commons.Method.getMethod(method);
@@ -100,17 +107,17 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
 
         // 创建Class对象
         Type classType = Type.getType(Class.class);
-        adapter.newArray(classType);
+        adapter.newArray(classType); // 用classType这个Type来表示创建好的数组，即便是两个类型相同的数组，只要Type名不同，就可以表示两个不同的数组
 
         // 获取方法参数列表
         for(int i = 0; i < Type.getArgumentTypes(method).length; i ++) {
             // 从方法堆栈顶复制一份参数类型
-            adapter.dup();
+            adapter.dup(); // 将当前的栈顶元素复制一份，并压入栈中，当前栈顶的元素是数组长度
 
             // 把参数索引入栈
-            adapter.push(i);
-            adapter.push(Type.getArgumentTypes(method)[i]);
-            adapter.arrayStore(classType);
+            adapter.push(i); // 数组元素中的索引
+            adapter.push(Type.getArgumentTypes(method)[i]); // 数组元素中的索引对应的数组中的元素
+            adapter.arrayStore(classType); // 将此classType表示的数组中的对应索引处的值设置为给定的元素值
         }
 
         // 调用getDeclaredMethod方法
@@ -121,7 +128,7 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
         adapter.getField(proxyType, handlerName, INVOKER_TYPE);
 
         // 偏移堆栈指针
-        adapter.swap();
+        adapter.swap(); // 将栈顶两个非long或者double类型的数值交换
         adapter.loadThis();
 
         // 偏移堆栈指针
@@ -134,7 +141,7 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
 
         for(int i = 0; i < Type.getArgumentTypes(method).length; i ++) {
             // 从方法堆栈顶复制一份参数类型
-            adapter.dup();
+            adapter.dup(); // 前栈顶的元素是数组长度
             adapter.push(i);
             adapter.loadArg(i);
             adapter.valueOf(Type.getArgumentTypes(method)[i]);
