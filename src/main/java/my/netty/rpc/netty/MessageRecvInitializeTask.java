@@ -50,6 +50,12 @@ public class MessageRecvInitializeTask implements Callable<Boolean> {
      * 注意：虽然这里用到了aop，但是并不是切面编程，而仅仅是把它当作代理来用了。拦截invoke方法，而这里所有调用都是通过invoke发生的，也就拦截了所有调用，
      * 但是，又在拦截后判断是否有过滤器，感觉多此一举，而且对于没有过滤器的调用操作多了一层，会导致性能损失。
      * TODO: 不如只用aop拦截有过滤器的调用操作，而没有过滤器的调用操作还是正常的发生调用过程。
+     *
+     * springboot aop简单示例
+     * https://blog.csdn.net/bombsklk/article/details/79143145
+     *
+     * Spring boot中使用aop详解
+     * https://www.cnblogs.com/bigben0123/p/7779357.html
      */
     private Object reflect(MessageRequest request) throws Throwable {
         // 对下面五行代码的重新安排是为了实现aop的过滤功能
