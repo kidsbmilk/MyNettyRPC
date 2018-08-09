@@ -16,26 +16,27 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
     private static final AtomicLong CLASS_NUMBER = new AtomicLong(0);
     private static final String CLASSNAME_PREFIX = "ASMPROXY_";
     private static final String HANDLER_NAME = "__handler";
-    private static final Type INVOKER_TYPE = Type.getType(ObjectInvoker.class);
+    private static final Type INVOKER_TYPE = Type.getType(ObjectInvoker.class); // 注意这个类型
 
     @Override
     public Class<?> transform(ClassLoader classLoader, Class<?>... proxyClasses) {
         Class<?> superclass = ReflectionUtils.getParentClass(proxyClasses);
         String proxyName = CLASSNAME_PREFIX + CLASS_NUMBER.incrementAndGet();
-        Method[] implementationMethods = super.findImplementationMethods(proxyClasses);
+        Method[] implementationMethods = super.findImplementationMethods(proxyClasses); // 这里调用父类里的方法
         Class<?>[] interfaces = ReflectionUtils.filterInterfaces(proxyClasses);
         String classFileName = proxyName.replace('.', '/');
+        // 上面这里是收集proxyClasses的基本信息，如父类、代理名称、要实现的方法、实现的接口、类存储路径。
 
         try {
             byte[] proxyBytes = generate(superclass, classFileName, implementationMethods, interfaces);
-            return loadClass(classLoader, proxyName, proxyBytes);
+            return loadClass(classLoader, proxyName, proxyBytes); // 加载上面生成的类，并返回
         } catch (final Exception e) {
             throw new CreateProxyException(e);
         }
     }
 
     private byte[] generate(Class<?> classToProxy, String proxyName, Method[] methods, Class<?>... interfaces) throws CreateProxyException {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS); // 注意这个ClassWriter.COMPUTE_MAXS
         Type proxyType = Type.getObjectType(proxyName);
         String[] interfaceNames = new String[interfaces.length];
         for(int i = 0; i < interfaces.length; i ++) {
@@ -43,11 +44,11 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
         }
         Type superType = Type.getType(classToProxy);
         cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, proxyType.getInternalName(), null, superType.getInternalName(), interfaceNames);
-        cw.visitField(ACC_FINAL + ACC_PRIVATE, HANDLER_NAME, INVOKER_TYPE.getDescriptor(), null, null).visitEnd();
+        cw.visitField(ACC_FINAL + ACC_PRIVATE, HANDLER_NAME, INVOKER_TYPE.getDescriptor(), null, null).visitEnd(); // 注意这个INVOKER_TYPE.getDescriptor()
         // 这个HANDLER_NAME在子类的构造函数中初始化，见initialize的说明
-        initialize(cw, proxyType, superType);
+        initialize(cw, proxyType, superType); // 创建带有一个参数的构造函数
         for(final Method method : methods) {
-            transformMethod(cw, method, proxyType, HANDLER_NAME);
+            transformMethod(cw, method, proxyType, HANDLER_NAME); // 这个HANDLER_NAME当作私有成员变量来用的。
         }
         return cw.toByteArray();
     }
@@ -69,6 +70,9 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
     private void initialize(ClassWriter cw, Type proxyType, Type superType) {
         GeneratorAdapter adapter = new GeneratorAdapter(ACC_PUBLIC, new org.objectweb.asm.commons.Method(
                 "<init>", Type.VOID_TYPE, new Type[]{INVOKER_TYPE}), null, null, cw); // 从这个可以看到，子类的构造函数有一个参数
+        // 注意上面的INVOKER_TYPE
+
+        adapter.visitCode();
         adapter.loadThis(); // 把this放栈上，用于下面调用父类的构造函数
         adapter.invokeConstructor(superType, org.objectweb.asm.commons.Method.getMethod("void <init> ()"));
         adapter.loadThis(); // 把this放栈上，用于下面调用子类的构造函数对成员变量初始化，表示下面这个变量所属的类实例对象
@@ -80,6 +84,7 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
          */
         adapter.returnValue();
         adapter.endMethod();
+        adapter.visitEnd();
     }
 
     private Type[] getTypes(Class<?>... src) {
@@ -99,9 +104,11 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
     // Java栈和局部变量操作（二）: https://www.cnblogs.com/chenqiangjsj/archive/2011/04/03/2004231.html
 
     private void transformMethod(ClassWriter cw, Method method, Type proxyType, String handlerName) throws CreateProxyException {
-        int access = (ACC_PUBLIC | ACC_PROTECTED) & method.getModifiers();
+        int accessType = (ACC_PUBLIC | ACC_PROTECTED) & method.getModifiers();
         org.objectweb.asm.commons.Method m = org.objectweb.asm.commons.Method.getMethod(method);
-        GeneratorAdapter adapter = new GeneratorAdapter(access, m, null, getTypes(method.getExceptionTypes()), cw);
+        GeneratorAdapter adapter = new GeneratorAdapter(accessType, m, null, getTypes(method.getExceptionTypes()), cw);
+
+        adapter.visitCode();
 
         // 方法签名入栈
         adapter.push(Type.getType(method.getDeclaringClass())); // 将声明此方法的接口或者类入栈，这个信息是invokeVirtual要用的
@@ -129,6 +136,7 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
         adapter.invokeVirtual(classType,
                 org.objectweb.asm.commons.Method.getMethod("java.lang.reflect.Method getDeclaredMethod(String, Class[])")); // 注意字符串最后面的')'
         // 上面的调用会有返回Method的，此时栈顶为：...,Method（往右为栈顶的方向）
+        // getDeclaredMethod(String, Class[])是根据指定的参数列表，返回相应的方法。
 
         /**
          * 上面的注释，可以自己写一个类继承关系，然后用javap -verbose [类名] > [文本]，观察一下结果。
@@ -167,11 +175,14 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
                 org.objectweb.asm.commons.Method.getMethod("Object invoke(Object, java.lang.reflect.Method, Object[])")); // 注意字符串最后面的')'
         // 在调用invokeInterface之前，栈的情况为：this.handlerName, this, Method, objectType（数组）（往右为栈顶的方向）
         // 在调用invokeInterface时，是指，调用this.handlerName的invoke方法，栈顶的3个值为invoke的参数。
+        // 这个是调用InvocationHandler接口的invoke方法，用的是java的反射来创建对象，并返回这个对象-----这句话的理解是错的
+        // 正确的理解：要结合这里的接口来看，调用的是ObjectInvoker.invoke方法。
 
         // 从方法的返回值拆箱
         adapter.unbox(Type.getReturnType(method)); // 将上面的invokeInterface返回的Object拆箱
         adapter.returnValue(); // 此时栈中有拆箱后的Object，返回给调用方了。
         adapter.endMethod();
+        adapter.visitEnd();
     }
 
     // 验证下上面的注释是否正确，重排一个代码，实验成功了，说明我上面的理解是正确的。
@@ -179,6 +190,8 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
         int access = (ACC_PUBLIC | ACC_PROTECTED) & method.getModifiers();
         org.objectweb.asm.commons.Method m = org.objectweb.asm.commons.Method.getMethod(method);
         GeneratorAdapter adapter = new GeneratorAdapter(access, m, null, getTypes(method.getExceptionTypes()), cw);
+
+        adapter.visitCode();
 
         adapter.loadThis();
         adapter.getField(proxyType, handlerName, INVOKER_TYPE);
@@ -218,6 +231,7 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
         adapter.unbox(Type.getReturnType(method));
         adapter.returnValue();
         adapter.endMethod();
+        adapter.visitEnd();
     }
 
     // FIXME:
@@ -226,13 +240,14 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
     private Class<?> loadClass(ClassLoader loader, String className, byte[] b) {
         try {
             Method method = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
+            // 通过反射得到ClassLoader.defineClass方法。
 
             boolean accessible = method.isAccessible();
             if(!accessible) {
                 method.setAccessible(true);
             }
             try {
-                return (Class<?>) method.invoke(loader, className, b, Integer.valueOf(0), Integer.valueOf(b.length));
+                return (Class<?>) method.invoke(loader, className, b, Integer.valueOf(0), Integer.valueOf(b.length)); // 这里是加载类的地方
             } finally {
                 if(!accessible) {
                     method.setAccessible(false);

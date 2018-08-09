@@ -64,7 +64,7 @@ public class ReflectionUtils {
     }
 
     public static boolean existDefaultConstructor(Class<?> superclass) {
-        final Constructor<?>[] declaredConstructors = superclass.getDeclaredConstructors();
+        final Constructor<?>[] declaredConstructors = superclass.getDeclaredConstructors(); // jdk里的方法
         for(int i = 0; i < declaredConstructors.length; i ++) {
             Constructor<?> constructor = declaredConstructors[i];
             if(constructor.getParameterTypes().length == 0
@@ -86,7 +86,7 @@ public class ReflectionUtils {
                     if (Modifier.isFinal(superClass.getModifiers())) {
                         throw new CreateProxyException("proxy can't build " + superClass.getName() + ", because it is final");
                     }
-                    if (!existDefaultConstructor(superClass)) {
+                    if (!existDefaultConstructor(superClass)) { // 因为后面的反射都是通过无参的newInstance创建对象的，所以这里需要找到存在默认构造函数的父类
                         throw new CreateProxyException("proxy can't build " + superClass.getName() + ", because it has no default constructor");
                     }
                     return superClass;
@@ -118,7 +118,7 @@ public class ReflectionUtils {
         return "equals".equals(method.getName())
                 && Boolean.TRUE.equals(method.getReturnType())
                 && method.getParameterTypes().length == 1
-                && Object.class.equals(method.getParameterTypes()[0]);
+                && Object.class.equals(method.getParameterTypes()[0]); // 注意最后这个类型
     }
 
     /**
