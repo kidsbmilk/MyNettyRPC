@@ -30,7 +30,7 @@ public abstract class ClassTransformer implements Transformer {
 
         Collection<Method> results = descriptorMethodMap.values();
         for(MethodDescriptor signature : finalSet) {
-            results.remove(descriptorMethodMap.get(signature));
+            results.remove(descriptorMethodMap.get(signature)); // 去除final方法，这个效率可能比较低，改进一下。TODO-THIS。
         }
 
         return results.toArray(new Method[results.size()]);
