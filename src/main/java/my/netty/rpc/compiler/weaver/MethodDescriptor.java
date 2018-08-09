@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+// 这个类像是参考org.objectweb.asm.Type.getMethodDescriptor写的，参考那里的实现，和这里是一样的思路
 public class MethodDescriptor {
 
     private static final Map<Class<?>, Character> BUILDER = new ImmutableMap.Builder<Class<?>, Character>()
@@ -21,7 +22,7 @@ public class MethodDescriptor {
 
     private final String internal;
 
-    public MethodDescriptor(Method method) {
+    MethodDescriptor(Method method) {
         final StringBuilder buf = new StringBuilder(method.getName()).append('(');
         for(Class<?> p : method.getParameterTypes()) {
             appendTo(buf, p);
@@ -32,7 +33,7 @@ public class MethodDescriptor {
     }
 
     private static void appendTo(StringBuilder buf, Class<?> type) {
-        if(type.isPrimitive()) {
+        if(type.isPrimitive()) { // 判断是否是原始类型
             buf.append(BUILDER.get(type));
         } else if(type.isArray()) {
             buf.append('[');
