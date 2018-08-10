@@ -140,7 +140,7 @@ public class ReflectionUtils {
             if(constructors.length == 0) {
                 return null;
             }
-            constructor = constructors[0];
+            constructor = constructors[0]; // 这里选择了第一个构造函数。这样会不会有总是。TODO-this。
             Class[] params = constructor.getParameterTypes();
             args = new Object[params.length];
             for(int i = 0; i < params.length; i ++) {
@@ -149,7 +149,7 @@ public class ReflectionUtils {
         }
 
         try {
-            return constructor.newInstance(args);
+            return constructor.newInstance(args); // 使用默认的参数列表创建对象。
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
