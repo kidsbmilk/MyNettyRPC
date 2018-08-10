@@ -81,6 +81,7 @@ public class ByteCodeClassTransformer extends ClassTransformer implements Opcode
         /**
          * 我在网上找了很多资料，都没有找到上面三句是什么意思，然后自己写了个继承关系，然后编译，然后用javap -verbose [类名] > [文本]，
          * 最后观察文本得出的上面的结论。
+         * 其实asm的手册上的解释，但是很少有人去看整个手册。
          */
         adapter.returnValue();
         adapter.endMethod();
