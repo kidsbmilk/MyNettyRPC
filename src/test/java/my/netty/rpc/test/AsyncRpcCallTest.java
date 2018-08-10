@@ -61,6 +61,7 @@ public class AsyncRpcCallTest {
         // System.out.println("1 async nettyrpc call:[" + "result:" + elapse0 + ", status:[" + ((AsyncCallObject) elapse0)._getStatus() + "]");
         // 会调用elapse0.toString()，然后会被AsyncCallResultInterceptor拦截，调用loadObject()方法。
         // 这是延迟加载，当AsyncRpcCallTest中开始使用这个对象时，才会拦截加载。
+        // 虽然AsyncCallResultInterceptor是延迟的加载拦截的，但是，请求却早已发出，在AsyncInvoker的submit(Callable<T> task)里executor.submit(future)是发请求的触发代码。
         System.out.println("1 async nettyrpc call:[" + "result:" + elapse0 + ", status:[" + ((AsyncCallObject) elapse0)._getStatus() + "]");
         System.out.println("2 async nettyrpc call:[" + "result:" + elapse1 + ", status:[" + ((AsyncCallObject) elapse1)._getStatus() + "]");
         System.out.println("3 async nettyrpc call:[" + "result:" + elapse2 + ", status:[" + ((AsyncCallObject) elapse2)._getStatus() + "]");
