@@ -31,7 +31,11 @@ public class MessageCallBack {
                 if (!this.response.getError().equals(RpcSystemConfig.FILTER_RESPONSE_MSG)
                         && (!this.response.isReturnNotNull() ||
                         (this.response.isReturnNotNull() && this.response.getResult() != null))) {
-                    return this.response.getResult();
+                    if(this.response.getError().isEmpty()) {
+                        return this.response.getResult();
+                    } else {
+                        throw new InvokeModuleException(this.response.getError());
+                    }
                 } else {
                     throw new RejectResponseException(RpcSystemConfig.FILTER_RESPONSE_MSG);
                 }

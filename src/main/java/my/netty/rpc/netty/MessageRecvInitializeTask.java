@@ -7,6 +7,8 @@ import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.NameMatchMethodPointcutAdvisor;
 
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -39,7 +41,7 @@ public class MessageRecvInitializeTask implements Callable<Boolean> {
             }
             return Boolean.TRUE;
         } catch (Throwable t) {
-            response.setError(t.toString());
+            response.setError(getStackTrace(t));
             t.printStackTrace();
             System.err.printf("RPC Server invoke error!\n");
             return Boolean.FALSE;
@@ -75,6 +77,13 @@ public class MessageRecvInitializeTask implements Callable<Boolean> {
         // 具体的MethodInvoker.serviceBean的设置是在MethodProxyAdvisor.invoke中设置的。
         setReturnNotNull(((MethodProxyAdvisor) advisor.getAdvice()).isReturnNotNull());
         return obj;
+    }
+
+    public String getStackTrace(Throwable e) {
+        StringWriter buf = new StringWriter();
+        e.printStackTrace(new PrintWriter(buf));
+
+        return buf.toString();
     }
 
     public boolean isReturnNotNull() {

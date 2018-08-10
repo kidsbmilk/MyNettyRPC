@@ -14,6 +14,10 @@ public class RpcSystemConfig {
     public static final String RPC_COMPILER_SPI_ATTR = "my.netty.rpc.compiler.AccessAdaptive";
     public static final String RPC_ABILITY_DETAIL_SPI_ATTR = "my.netty.rpc.core.AbilityDetail";
     public static final String FILTER_RESPONSE_MSG = "Illegal request, NettyRPC server refused to response!";
+    public static final int SERIALIZE_POOL_MAX_TOTAL = 500;
+    public static final int SERIALIZE_POOL_MIN_IDLE = 10;
+    public static final int SERIALIZE_POOL_MAX_WAIT_MILLIS = 5000;
+    public static final int SERIALIZE_POOL_MIN_EVICTABLE_IDLE_TIME_MILLIS = 600000;
 
     private static boolean monitorServerSupport = false;
 
