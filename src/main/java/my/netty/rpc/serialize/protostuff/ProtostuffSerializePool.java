@@ -3,6 +3,8 @@ package my.netty.rpc.serialize.protostuff;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
+import static my.netty.rpc.core.RpcSystemConfig.*;
+
 public class ProtostuffSerializePool {
 
     private GenericObjectPool<ProtostuffSerialize> protostuffPool;
@@ -17,8 +19,8 @@ public class ProtostuffSerializePool {
     public static ProtostuffSerializePool getProtostuffPoolInstance() {
         if(poolFactory == null) {
             synchronized (ProtostuffSerializePool.class) {
-                if(poolFactory == null) {
-                    poolFactory = new ProtostuffSerializePool();
+                if (poolFactory == null) {
+                    poolFactory = new ProtostuffSerializePool(SERIALIZE_POOL_MAX_TOTAL, SERIALIZE_POOL_MIN_IDLE, SERIALIZE_POOL_MAX_WAIT_MILLIS, SERIALIZE_POOL_MIN_EVICTABLE_IDLE_TIME_MILLIS);
                 }
             }
         }

@@ -4,8 +4,11 @@ package my.netty.rpc.serialize.protostuff;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import io.protostuff.Schema;
-import io.protostuff.runtime.RuntimeSchema;
+//import io.protostuff.Schema;
+//import io.protostuff.runtime.RuntimeSchema;
+
+import com.dyuproject.protostuff.Schema;
+import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;

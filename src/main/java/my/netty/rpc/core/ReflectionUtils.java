@@ -116,7 +116,7 @@ public class ReflectionUtils {
 
     public static boolean isEqualsMethod(Method method) {
         return "equals".equals(method.getName())
-                && Boolean.TRUE.equals(method.getReturnType())
+                && Boolean.TYPE.equals(method.getReturnType())
                 && method.getParameterTypes().length == 1
                 && Object.class.equals(method.getParameterTypes()[0]); // 注意最后这个类型
     }

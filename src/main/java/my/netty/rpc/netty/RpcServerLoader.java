@@ -7,7 +7,6 @@ import my.netty.rpc.core.RpcSystemConfig;
 import my.netty.rpc.parallel.RpcThreadPool;
 import my.netty.rpc.serialize.RpcSerializeProtocol;
 
-import javax.annotation.Nullable;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.Condition;
@@ -67,7 +66,7 @@ public class RpcServerLoader {
 
             // 在MessageSendInitializeTask中会设置messageSendHandler
             Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
-                public void onSuccess(@Nullable Boolean result) {
+                public void onSuccess(Boolean result) {
                     try {
                         lock.lock();
 

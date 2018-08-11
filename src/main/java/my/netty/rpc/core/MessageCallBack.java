@@ -1,5 +1,6 @@
 package my.netty.rpc.core;
 
+import my.netty.rpc.exception.InvokeModuleException;
 import my.netty.rpc.exception.RejectResponseException;
 import my.netty.rpc.model.MessageRequest;
 import my.netty.rpc.model.MessageResponse;

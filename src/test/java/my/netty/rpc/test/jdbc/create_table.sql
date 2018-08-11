@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS `person` (
+    `id` INT UNSIGNED AUTO_INCREMENT,
+    `name` VARCHAR(32) NOT NULL,
+    `age` INT,
+    `birthday` DATE,
+    PRIMARY KEY (`id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;

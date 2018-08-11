@@ -3,6 +3,8 @@ package my.netty.rpc.serialize.hessian;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
+import static my.netty.rpc.core.RpcSystemConfig.*;
+
 public class HessianSerializePool {
 
     private GenericObjectPool<HessianSerialize> hessianPool;
@@ -18,7 +20,7 @@ public class HessianSerializePool {
         if(poolFactory == null) {
             synchronized (HessianSerializePool.class) {
                 if(poolFactory == null) {
-                    poolFactory = new HessianSerializePool();
+                    poolFactory = new HessianSerializePool(SERIALIZE_POOL_MAX_TOTAL, SERIALIZE_POOL_MIN_IDLE, SERIALIZE_POOL_MAX_WAIT_MILLIS, SERIALIZE_POOL_MIN_EVICTABLE_IDLE_TIME_MILLIS);
                 }
             }
         }

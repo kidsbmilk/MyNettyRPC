@@ -2,13 +2,13 @@ package my.netty.rpc.services;
 
 import my.netty.rpc.services.pojo.Person;
 
-public interface PersonManage {
+import java.util.List;
+
+public interface JdbcPersonManage {
+
     int save(Person p);
-    Person getPerson(Person p);
 
     void query(Person p);
 
-    void check();
-
-    boolean checkAge(Person p);
+    List<Person> query();
 }

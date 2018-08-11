@@ -3,7 +3,7 @@ package my.netty.rpc.services.impl;
 import my.netty.rpc.services.CostTimeCalculate;
 import my.netty.rpc.services.pojo.CostTime;
 
-public class CosTimeCalculateImpl implements CostTimeCalculate {
+public class CostTimeCalculateImpl implements CostTimeCalculate {
 
     public CostTime calculate() {
         CostTime elapse = new CostTime();

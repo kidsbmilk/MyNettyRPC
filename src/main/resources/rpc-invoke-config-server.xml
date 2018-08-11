@@ -20,7 +20,7 @@
     <bean id="calcAddService" class="my.netty.rpc.services.impl.AddCalculateImpl"></bean>
     <bean id="calcMultiService" class="my.netty.rpc.services.impl.MultiCalculateImpl"></bean>
     <bean id="personManageService" class="my.netty.rpc.services.impl.PersonManageImpl"></bean>
-    <bean id="costTimeCalculateService" class="my.netty.rpc.services.impl.CosTimeCalculateImpl"></bean>
+    <bean id="costTimeCalculateService" class="my.netty.rpc.services.impl.CostTimeCalculateImpl"></bean>
     <bean id="cacheService" class="my.netty.rpc.services.impl.CacheImpl"></bean>
     <bean id="storeService" class="my.netty.rpc.services.impl.StoreImpl"></bean>
 
