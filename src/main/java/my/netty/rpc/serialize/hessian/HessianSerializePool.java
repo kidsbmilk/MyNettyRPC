@@ -32,10 +32,11 @@ public class HessianSerializePool {
 
         GenericObjectPoolConfig config = new GenericObjectPoolConfig();
 
-        config.setMaxTotal(maxTotal);
-        config.setMinIdle(minIdle);
-        config.setMaxWaitMillis(maxWaitMillis);
-        config.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+        // GenericObjectPool参数解析：https://segmentfault.com/a/1190000011608913
+        config.setMaxTotal(maxTotal); // 设置对象池中最大的对象数，默认为8
+        config.setMinIdle(minIdle); // 设置对象池中最少空闲的对象数，默认为0
+        config.setMaxWaitMillis(maxWaitMillis); // 当对象池资源耗尽时，等待时间，超出则抛出异常，默认为-1即永不超时
+        config.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis); // 对象空闲的最小时间，达到此值后空闲对象将可能会被移除。
 
         hessianPool.setConfig(config);
     }

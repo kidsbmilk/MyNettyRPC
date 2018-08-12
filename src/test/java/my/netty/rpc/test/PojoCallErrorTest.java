@@ -37,6 +37,7 @@ public class PojoCallErrorTest {
             test1(manage);
             test2(manage);
         } finally {
+            System.out.println("checks done.");
             context.destroy();
         }
     }

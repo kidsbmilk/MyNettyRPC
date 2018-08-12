@@ -51,6 +51,8 @@ public abstract class AbstractAccessAdaptive implements Compiler {
 
     // StringWriter/PrintWriter在Java异常中的作用
     // https://blog.csdn.net/ititii/article/details/80502220
+    // 异常类的toString()、getMessage()和printStackTrace()方法
+    // https://blog.csdn.net/qq_15087157/article/details/78051400
     private String report(Throwable e) {
         StringWriter w = new StringWriter();
         PrintWriter p = new PrintWriter(w);

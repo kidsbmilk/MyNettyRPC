@@ -14,10 +14,11 @@ public class NettyRpcJdbcClientErrorTest {
         JdbcPersonManage manage = (JdbcPersonManage) context.getBean("personManageJdbc");
 
         // 验证RPC调用服务器端执行失败的情况！
+        // 服务器端执行的sql需要4个参数，而这里只给了3个，在mysql下也没有出错。
         Person p = new Person();
-        p.setId(20180811);
+        p.setId(20180812);
         p.setName("hello");
-        p.setAge(9999);
+        p.setAge(999999999);
 
         try {
             int result = manage.save(p);

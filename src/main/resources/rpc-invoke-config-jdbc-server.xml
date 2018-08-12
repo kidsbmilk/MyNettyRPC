@@ -32,7 +32,7 @@
 
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/mynettytest?characterEncoding=utf-8"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/mynettytest?characterEncoding=utf-8&amp;useSSL=false"/>
         <property name="username" value="root"/>
         <property name="password" value="qwert321"/>
 
@@ -66,6 +66,10 @@
         <constructor-arg name="dataSource" ref="dataSource"/>
     </bean>
 
+    <!--
+        Spring3.1.0实现原理分析(二十二).Dao事务分析之事务管理器DataSourceTransactionManager
+        https://blog.csdn.net/roberts939299/article/details/77587425
+    -->
     <bean id="sqlTxManager"
           class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>

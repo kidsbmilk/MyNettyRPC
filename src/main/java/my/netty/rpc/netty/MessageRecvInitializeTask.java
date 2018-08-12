@@ -79,6 +79,10 @@ public class MessageRecvInitializeTask implements Callable<Boolean> {
         return obj;
     }
 
+    // StringWriter/PrintWriter在Java异常中的作用
+    // https://blog.csdn.net/ititii/article/details/80502220
+    // 异常类的toString()、getMessage()和printStackTrace()方法
+    // https://blog.csdn.net/qq_15087157/article/details/78051400
     public String getStackTrace(Throwable e) {
         StringWriter buf = new StringWriter();
         e.printStackTrace(new PrintWriter(buf));

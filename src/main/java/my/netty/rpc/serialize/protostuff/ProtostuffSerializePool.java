@@ -32,6 +32,7 @@ public class ProtostuffSerializePool {
 
         GenericObjectPoolConfig config = new GenericObjectPoolConfig();
 
+        // 见HessianSerializePool中的说明。
         config.setMaxTotal(maxTotal);
         config.setMinIdle(minIdle);
         config.setMaxWaitMillis(maxWaitMillis);
