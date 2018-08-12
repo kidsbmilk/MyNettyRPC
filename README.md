@@ -170,6 +170,13 @@ executor（见AsyncInvoker.executor，用于客户端向服务器端提交异步
 
 对于客户端，在发起连接后，threadPoolExecutor就会闲置，不如将executor也替换为threadPoolExecutor，这样可以减小客户端的线程数，节约资源。
 
+8、
+MessageRecvExecutor.handlerMap一般是作为单例对象的成员变量使用的，全局只保留一份就可以了，但是目前的实现是在多个类中都保存这个了，
+算是资源的浪费，可以优化一下。
+
+9、NettyRpcService.onApplicationEvent在程序初始化过程中调用了几十次，为什么呢？感觉可以优化一下。
+比如小的优化时，先判断MessageRecvExecutor.handlerMap是否已存在，如果不存在才加入其中。
+深层次的优化是，有多少服务要注册，就调用多少次此方法。
 
 
 
