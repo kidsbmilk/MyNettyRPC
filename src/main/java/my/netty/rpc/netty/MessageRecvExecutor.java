@@ -10,6 +10,7 @@ import my.netty.rpc.core.AbilityDetailProvider;
 import my.netty.rpc.core.RpcSystemConfig;
 import my.netty.rpc.filter.ServiceFilterBinder;
 import my.netty.rpc.filter.support.SimpleFilter;
+import my.netty.rpc.jmx.ModuleMetricsHandler;
 import my.netty.rpc.netty.resolver.ApiEchoResolver;
 import my.netty.rpc.parallel.NamedThreadFactory;
 import my.netty.rpc.parallel.RpcThreadPool;
@@ -113,8 +114,8 @@ public class MessageRecvExecutor {
             String[] ipAddr = serverAddress.split(MessageRecvExecutor.DELIMITER);
 
             if(ipAddr.length == 2) {
-                String host = ipAddr[0];
-                int port = Integer.parseInt(ipAddr[1]);
+                final String host = ipAddr[0];
+                final int port = Integer.parseInt(ipAddr[1]);
                 final ExecutorService executor = Executors.newFixedThreadPool(numberOfEchoThreadPool);
                 // Java四种线程池newCachedThreadPool,newFixedThreadPool,newScheduledThreadPool,newSingleThreadExecutor
                 // https://www.cnblogs.com/baizhanshi/p/5469948.html
@@ -150,7 +151,7 @@ public class MessageRecvExecutor {
                     public void operationComplete(final ChannelFuture channelFuture) throws Exception {
 //                        System.out.println("run future Listener thread : " + Thread.currentThread()); // 在boss的nioEventLoopGroup中执行。
                         if (channelFuture.isSuccess()) {
-                            System.out.printf("Netty RPC Server start success!\nip:%s\nport:%d\nprotocol:%s\n\n", host, port, serializeProtocol);
+                            System.out.printf("Netty RPC Server start success!\nip:%s\nport:%d\nprotocol:%s\nstart-time:%s\njmx-invoke-metrics:%s\n\n", host, port, serializeProtocol, ModuleMetricsHandler.getStartTime(), (RpcSystemConfig.SYSTEM_PROPERTY_JMX_INVOKE_METRICS != 0 ? "open" : "close"));
                             ExecutorCompletionService<Boolean> completionService = new ExecutorCompletionService<Boolean>(executor);
                             completionService.submit(new ApiEchoResolver(host, echoApiPort));
                         }

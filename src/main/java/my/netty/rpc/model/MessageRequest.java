@@ -11,6 +11,7 @@ public class MessageRequest implements Serializable {
     private String methodName;
     private Class<?>[] typeParameters;
     private Object[] parametersVal;
+    private boolean invokeMetrics = true;
 
     public String getMessageId() {
         return messageId;
@@ -50,6 +51,14 @@ public class MessageRequest implements Serializable {
 
     public void setParametersVal(Object[] parametersVal) {
         this.parametersVal = parametersVal;
+    }
+
+    public boolean isInvokeMetrics() {
+        return invokeMetrics;
+    }
+
+    public void setInvokeMetrics(boolean invokeMetrics) {
+        this.invokeMetrics = invokeMetrics;
     }
 
     public String toString() {

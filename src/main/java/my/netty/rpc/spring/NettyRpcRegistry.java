@@ -1,6 +1,7 @@
 package my.netty.rpc.spring;
 
 import my.netty.rpc.core.RpcSystemConfig;
+import my.netty.rpc.jmx.ModuleMetricsHandler;
 import my.netty.rpc.jmx.ThreadPoolMonitorProvider;
 import my.netty.rpc.netty.MessageRecvExecutor;
 import my.netty.rpc.serialize.RpcSerializeProtocol;
@@ -17,6 +18,10 @@ public class NettyRpcRegistry implements InitializingBean, DisposableBean {
 
     public void destroy() throws Exception {
         MessageRecvExecutor.getInstance().stop();
+
+        if(RpcSystemConfig.SYSTEM_PROPERTY_JMX_INVOKE_METRICS != 0) {
+            ModuleMetricsHandler.getInstance().stop();
+        }
     }
 
     /**
@@ -35,6 +40,10 @@ public class NettyRpcRegistry implements InitializingBean, DisposableBean {
         }
 
         ref.start();
+
+        if(RpcSystemConfig.SYSTEM_PROPERTY_JMX_INVOKE_METRICS != 0) {
+            ModuleMetricsHandler.getInstance().start();
+        }
     }
 
     public String getIpAddr() {

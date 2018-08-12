@@ -3,6 +3,8 @@ package my.netty.rpc.services.impl;
 import my.netty.rpc.services.PersonManage;
 import my.netty.rpc.services.pojo.Person;
 
+import java.util.concurrent.TimeUnit;
+
 public class PersonManageImpl implements PersonManage {
 
     public int save(Person p) {
@@ -16,7 +18,12 @@ public class PersonManageImpl implements PersonManage {
 
     public void query(Person p) {
         // your business logic code here!
-        System.out.println("person data[" + p + "] has query!");
+        try {
+            TimeUnit.SECONDS.sleep(3);
+            System.out.println("person data[" + p + "] has query!");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

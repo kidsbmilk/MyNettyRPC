@@ -224,7 +224,7 @@ public class ReflectionUtils {
                 .append(html ? ";<br>" : ";\n");
     }
 
-    private void listMethod(Executable member, boolean html) {
+    public void listMethod(Executable member, boolean html) {
         provider.append(html ? "<br>&nbsp&nbsp&nbsp&nbsp" : "\n    ")
                 .append(modifiers(member.getModifiers()));
         if(member instanceof Method) {
@@ -267,5 +267,31 @@ public class ReflectionUtils {
             }
             provider.append(html ? "<br>}<p>" : "\n}\n\n");
         }
+    }
+
+    public static Method getDeclaredMethod(final Class<?> cls, final String methodName, final Class<?>... parameterTypes) {
+        try {
+            return cls.getDeclaredMethod(methodName, parameterTypes);
+        } catch (NoSuchMethodException ignored) {
+        }
+        for(Method m : cls.getDeclaredMethods()) {
+            if(m.getName().equals(methodName)) {
+                boolean find = true;
+                Class[] paramType = m.getParameterTypes();
+                if(paramType.length != parameterTypes.length) {
+                    continue;
+                }
+                for(int i = 0; i < parameterTypes.length; i ++) {
+                    if(!paramType[i].isAssignableFrom(parameterTypes[i])) {
+                        find = false;
+                        break;
+                    }
+                }
+                if(find) {
+                    return m;
+                }
+            }
+        }
+        return null;
     }
 }
