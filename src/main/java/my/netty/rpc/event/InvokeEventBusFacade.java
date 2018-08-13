@@ -5,7 +5,7 @@ import my.netty.rpc.jmx.ModuleMetricsHandler;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class InvokeEventBusFacade {
+public class InvokeEventBusFacade { // facade：外表; 建筑物的正面; 虚伪，假象;
 
     private static Map<AbstractInvokeEventBus.ModuleEvent, AbstractInvokeEventBus> enumMap =
             new EnumMap<>(AbstractInvokeEventBus.ModuleEvent.class);

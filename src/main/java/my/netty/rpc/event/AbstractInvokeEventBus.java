@@ -30,9 +30,10 @@ public abstract class AbstractInvokeEventBus {
 
     public abstract Notification buildNotification(Object oldValue, Object newValue);
 
+    // 见InvokeEvent.buildNotification处的注释。
     public void notify(Object oldValue, Object newValue) {
-        Notification notification = buildNotification(oldValue, newValue);
-        handler.sendNotification(notification);
+        Notification notification = buildNotification(oldValue, newValue); // 见javax.management.Notification类说明。
+        handler.sendNotification(notification); // javax.management.NotificationBroadcasterSupport接口里的方法。
     }
 
     public String getModuleName() {

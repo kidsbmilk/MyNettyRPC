@@ -15,6 +15,10 @@ import java.util.Iterator;
 
 import static my.netty.rpc.core.RpcSystemConfig.DELIMITER;
 
+/**
+ * 此类对象是一个MBean，在此类的继承体系上，有一个类javax.management.NotificationBroadcasterSupport，其类注释上有这样一句话：
+ * This can be used as the super class of an MBean that sends notifications.
+ */
 public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
 
     private static final ModuleMetricsHandler INSTANCE = new ModuleMetricsHandler();

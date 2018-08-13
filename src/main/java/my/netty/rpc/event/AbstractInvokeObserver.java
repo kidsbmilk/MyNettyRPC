@@ -4,7 +4,7 @@ import my.netty.rpc.jmx.ModuleMetricsVisitor;
 
 import java.util.Observer;
 
-public abstract class AbstractInvokeObserver implements Observer {
+public abstract class AbstractInvokeObserver implements Observer { // 这个Observer接口将被移除了。见Observable接口里的说明，使用java.beans改写这里的代码。TODO-THIS.
 
     private InvokeEventBusFacade facade;
     private ModuleMetricsVisitor visitor;
