@@ -19,14 +19,14 @@ import java.util.concurrent.locks.LockSupport;
 
 public abstract class AbstractModuleMetricsHandler extends NotificationBroadcasterSupport implements ModuleMetricsVisitorMXBean {
 
-    public final static String MBEAN_NAME = "my.netty.rpc:type=ModuleMetricsHandler";
+    public final static String MBEAN_NAME = "my.netty.rpc:type=ModuleMetricsHandler"; // 在JMX的MBean树里可以找到这个对象
     public final static int MODULE_METRICS_JMX_PORT = 1098;
     protected String moduleMetricsJmxUrl = "";
     protected Semaphore semaphore = new Semaphore(0);
     protected SemaphoreWrapper semaphoreWrapper = new SemaphoreWrapper(semaphore);
     protected List<ModuleMetricsVisitor> visitorList = new CopyOnWriteArrayList<ModuleMetricsVisitor>();
     protected static String startTime;
-    protected ModuleMetricsListener listener = new ModuleMetricsListener();
+    protected ModuleMetricsListener listener = new ModuleMetricsListener(); // 这个用于更新ModuleMetricsVisitor里的数据
     private final AtomicBoolean locked = new AtomicBoolean(false);
     private final Queue<Thread> waiters = new ConcurrentLinkedQueue<>();
 
@@ -49,6 +49,8 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
         visitorList.add(visitor);
     }
 
+    // 对于不同种类的Notification，应该会其每种都定义一个对应的MBeanNotificationInfo，用于描述其名称、描述等字段。
+    // 见javax.management.MBeanNotificationInfo类注释。
     @Override
     public MBeanNotificationInfo[] getNotificationInfo() {
         String[] types = new String[] {AttributeChangeNotification.ATTRIBUTE_CHANGE};
@@ -66,6 +68,9 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
         return startTime;
     }
 
+    //  这个enter()与exit()的实现与java.util.concurrent.locks.LockSupport类注释中的例子一样，参考那里的说明。
+    // first-in-first-out non-reentrant lock，这个的实现很有趣，可以实现一些有趣的效果：比如多个线程按序加锁等待并按加锁顺序或者逆加锁顺序依次唤醒每个线程继续执行。
+    // 通过改变线程在队列中的顺序，可以实现某些线程等待其他的线程先唤醒后自己才唤醒。这样的缺点也非常明显，多个线程阻塞，会导致系统中有大量的线程，浪费资源。
     protected void enter() {
         Thread current = Thread.currentThread();
         waiters.add(current);

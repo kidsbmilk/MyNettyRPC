@@ -2,7 +2,7 @@ package my.netty.rpc.parallel;
 
 public class SemaphoreWrapperFactory extends SemaphoreWrapper {
 
-    private static final SemaphoreWrapperFactory INSTANCE = new SemaphoreWrapperFactory();
+    private static final SemaphoreWrapperFactory INSTANCE = new SemaphoreWrapperFactory(); // 单例模式
 
     public static SemaphoreWrapperFactory getInstance() {
         return INSTANCE;
@@ -14,7 +14,7 @@ public class SemaphoreWrapperFactory extends SemaphoreWrapper {
 
     @Override
     public void acquire() {
-        if(this.semaphore != null) {
+        if(semaphore != null) {
             try {
                 while(true) {
                     boolean result = released.get();

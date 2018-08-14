@@ -14,10 +14,12 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
+// 这个类主要是对数据的封装，相当于提供一个访问数据的视图。
 public class ModuleMetricsVisitor {
 
     private String moduleName;
     private String methodName;
+    // 以下四个变量通过java.util.concurrent.atomic.AtomicLongFieldUpdater的方式被使用了。
     private volatile long invokeCount = 0L;
     private volatile long invokeSuccCount = 0L;
     private volatile long invokeFailCount = 0L;
@@ -33,14 +35,30 @@ public class ModuleMetricsVisitor {
     private Histogram histogram = new Histogram(TimeUnit.MILLISECONDS,
             new long[]{1, 10, 100, 1000, 10 * 1000, 100 * 1000, 1000 * 1000});
 
+    /**
+     * java.util.concurrent.atomic.AtomicLongFieldUpdater类注释翻译如下：
+     * 基于反射的实用程序，可以对指定类的指定{@code volatile long}字段进行原子更新。 此类设计用于原子数据结构，其中同一节点的多个字段独立地受原子更新的影响。
+     * 请注意，此类中{@code compareAndSet}方法的保证比其他原子类弱。 由于此类无法确保该字段的所有使用都适用于原子访问的目的，
+     * 因此只能在同一更新程序上对{@code compareAndSet}和{@code set}的其他调用保证原子性。
+     */
     private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeCount");
     private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeSuccCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeSuccCount");
     private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeFailCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeFailCount");
     private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeFilterCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeFilterCount");
 
+    // 以下三个用于创建下面的javax.management.openmbean.CompositeType类变量。
     private static final String[] THROWABLE_NAMES = {"message", "class", "stackTrace"};
     private static final String[] THROWABLE_DESCRIPTIONS = {"message", "class", "stackTrace"};
     private static final OpenType<?>[] THROWABLE_TYPES = new OpenType<?>[]{SimpleType.STRING, SimpleType.STRING, SimpleType.STRING};
+    /**
+     * javax.management.openmbean.SimpleType类的说明翻译如下：
+     * <code> SimpleType </ code>类是<i> open type </ i>类，其实例描述所有<i> open data </ i>值，这些值既不是数组，也不是{@link CompositeData CompositeData}值，
+     * 也不是{@link TabularData TabularData}值。 它将所有可能的实例预定义为静态字段，并且没有公共构造函数。 给定描述其Java类名称为<i> className </ i>的值的<code> SimpleType </ code>实例，
+     * 还会设置与此<code> SimpleType </ code>实例的名称和描述相对应的内部字段 到<i> className </ i>。 换句话说，它的方法<code> getClassName </ code>，
+     * <code> getTypeName </ code>和<code> getDescription </ code>都返回相同的字符串值<i> className </ i>。
+     *
+     * 见SimpleType构造函数的实现。
+     */
     private static CompositeType THROWABLE_COMPOSITE_TYPE = null;
 
     @ConstructorProperties({"moduleName", "methodName"})
@@ -123,7 +141,7 @@ public class ModuleMetricsVisitor {
         map.put("message", error.getMessage());
         map.put("stackTrace", getStackTrace(error));
 
-        return new CompositeDataSupport(getThrowableCompositeType(), map);
+        return new CompositeDataSupport(getThrowableCompositeType(), map); // 这个往CompositeType填充数据创建CompositeData
     }
 
     public String getModuleName() {

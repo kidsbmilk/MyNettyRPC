@@ -271,10 +271,10 @@ public class ReflectionUtils {
 
     public static Method getDeclaredMethod(final Class<?> cls, final String methodName, final Class<?>... parameterTypes) {
         try {
-            return cls.getDeclaredMethod(methodName, parameterTypes);
+            return cls.getDeclaredMethod(methodName, parameterTypes); // 见jvm中方法的说明。
         } catch (NoSuchMethodException ignored) {
         }
-        for(Method m : cls.getDeclaredMethods()) {
+        for(Method m : cls.getDeclaredMethods()) { // 见jvm中方法的说明。
             if(m.getName().equals(methodName)) {
                 boolean find = true;
                 Class[] paramType = m.getParameterTypes();

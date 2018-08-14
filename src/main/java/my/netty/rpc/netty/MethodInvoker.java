@@ -7,7 +7,7 @@ import org.apache.commons.lang3.time.StopWatch;
 public class MethodInvoker {
 
     private Object serviceBean;
-    private StopWatch sw = new StopWatch();
+    private StopWatch sw = new StopWatch(); // 见org.apache.commons.lang3.time.StopWatch类注释
 
     public Object getServiceBean() {
         return serviceBean;

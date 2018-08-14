@@ -106,7 +106,7 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
 
     public MBeanServerConnection connect() {
         try {
-            if(!semaphoreWrapper.isRelease()) {
+            if(!semaphoreWrapper.isReleased()) {
                 semaphoreWrapper.acquire();
             }
 

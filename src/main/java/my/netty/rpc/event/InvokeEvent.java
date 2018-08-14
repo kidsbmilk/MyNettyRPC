@@ -24,5 +24,7 @@ public class InvokeEvent extends AbstractInvokeEventBus {
         // 则需要创建AttributeChangeNotification并发射此对象。
         // 这里是创建此对象，属性为super.methodName，类型为ModuleEvent.INVOKE_EVENT.toString()，
         // 发射此对象的代码是在AbstractInvokeEventBus.notify里，ModuleMetricsHandler是一个MBean对象，见ModuleMetricsHandler类的说明。
+
+        // 见AbstractInvokeObserver的类的注释。
     }
 }

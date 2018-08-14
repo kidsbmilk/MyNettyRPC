@@ -46,7 +46,7 @@ public class SemaphoreWrapper {
         return semaphore;
     }
 
-    public boolean isRelease() {
+    public boolean isReleased() {
         return released.get();
     }
 }

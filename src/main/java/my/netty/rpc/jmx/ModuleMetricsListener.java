@@ -7,6 +7,7 @@ import javax.management.JMException;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 
+// 见AbstractInvokeObserver类中的说明。
 public class ModuleMetricsListener implements NotificationListener {
 
     @Override
