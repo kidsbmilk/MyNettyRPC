@@ -20,7 +20,7 @@ public class RpcSystemConfig {
     public static final int SERIALIZE_POOL_MIN_EVICTABLE_IDLE_TIME_MILLIS = 600000;
     public static final int SYSTEM_PROPERTY_JMX_INVOKE_METRICS = Integer.getInteger("nettyrpc-jmx-invoke-metrics", 1); // 见jvm中方法的说明。
 
-    private static boolean monitorServerSupport = false;
+    private static boolean monitorServerSupport = true;
 
     public static boolean isMonitorServerSupport() {
         return monitorServerSupport;

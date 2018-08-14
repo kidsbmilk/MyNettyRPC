@@ -32,7 +32,7 @@ public class ThreadPoolMonitorProvider {
     }
 
     @Bean
-    public MBeanServerFactoryBean mbeanServer() {
+    public MBeanServerFactoryBean mbeanServer() { // 以前对这个的理解不够，现在重新分析  ?zz?
         return new MBeanServerFactoryBean();
     }
 
