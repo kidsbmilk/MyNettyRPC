@@ -3,7 +3,7 @@ package my.netty.rpc.jmx;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-@ManagedResource
+@ManagedResource // 将MBeanController导出为MBean
 public class ThreadPoolStatus {
 
     private int poolSize;

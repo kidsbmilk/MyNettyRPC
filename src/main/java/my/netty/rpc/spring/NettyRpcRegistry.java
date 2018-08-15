@@ -35,8 +35,8 @@ public class NettyRpcRegistry implements InitializingBean, DisposableBean {
         ref.setSerializeProtocol(Enum.valueOf(RpcSerializeProtocol.class, protocol));
 
         if(RpcSystemConfig.isMonitorServerSupport()) {
-            context.register(ThreadPoolMonitorProvider.class);
-            context.refresh();
+            context.register(ThreadPoolMonitorProvider.class); // 注册一个或者多个注解过的类，用于后续处理这些注解类。见类方法说明。
+            context.refresh(); // 开始处理上面设置的注解类。见类方法说明。
         }
 
         ref.start();

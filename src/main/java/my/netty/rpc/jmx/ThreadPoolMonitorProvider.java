@@ -11,8 +11,20 @@ import org.springframework.remoting.rmi.RmiRegistryFactoryBean;
 import javax.management.*;
 import java.io.IOException;
 
+/**
+ * 一些文档：
+ * spring4 集成JMX监控：https://blog.csdn.net/love13135816/article/details/71172050
+ * JMX (三)--------spring整合JMX：http://90haofang-163-com.iteye.com/blog/1904451
+ * Spring JMX之一：使用JMX管理Spring Bean：https://www.cnblogs.com/duanxz/p/3968308.html
+ * JMX之将Spring Bean 输出为JMX并为远程服务暴露Mbean：http://wujiu.iteye.com/blog/2179210
+ * spring与jmx：http://macrochen.iteye.com/blog/246178
+ * Spring 框架参考文档(六)-Integration之JMX：https://blog.csdn.net/xiangjai/article/details/53991505
+ *
+ *
+ */
+
 @Configuration
-@EnableMBeanExport
+@EnableMBeanExport // 这个相当于添加MBeanServer
 @ComponentScan("my.netty.rpc.jmx")
 public class ThreadPoolMonitorProvider {
 
@@ -28,22 +40,26 @@ public class ThreadPoolMonitorProvider {
 
     @Bean
     public ThreadPoolStatus threadPoolStatus() {
-        return new ThreadPoolStatus();
+        return new ThreadPoolStatus(); // ThreadPoolStatus已有ManagedResource注解。
     }
 
     @Bean
-    public MBeanServerFactoryBean mbeanServer() { // 以前对这个的理解不够，现在重新分析  ?zz?
-        return new MBeanServerFactoryBean();
+    public MBeanServerFactoryBean mbeanServer() { // MBeanServerFactoryBean用于得到一个本地的MBeanServer。
+        MBeanServerFactoryBean mBeanServerFactoryBean = new MBeanServerFactoryBean();
+        mBeanServerFactoryBean.setLocateExistingServerIfPossible(true); // 见org.springframework.jmx.support.MBeanServerFactoryBean类里的注释。
+        return mBeanServerFactoryBean;
     }
 
     @Bean
-    public RmiRegistryFactoryBean registry() {
+    public RmiRegistryFactoryBean registry() { // 这个用于得到一个本地RMI记录
         return new RmiRegistryFactoryBean();
     }
 
     @Bean
-    @DependsOn("registry")
-    public ConnectorServerFactoryBean connectorServer() throws MalformedObjectNameException {
+    @DependsOn("registry") // 注意这里，是先要处理上面的register()，才能处理下面的connectorServer()。见spring中类注释。
+    public ConnectorServerFactoryBean connectorServer() throws MalformedObjectNameException { // 用于得到一个供远程客户端连接MBeanServer的连接器。
+        // monitor方法通过连接这个连接器，来将状态发布到本地的MBeanServer上，而外部的jconsole可以通过这个连接器来获取状态信息，
+        // 也可以通过这个连接器来更改状态信息（跟monitor里的做法类似）。
         MessageRecvExecutor ref = MessageRecvExecutor.getInstance();
         String ipAddr = StringUtils.isNotEmpty(ref.getServerAddress()) ? StringUtils.substringBeforeLast(ref.getServerAddress(), DELIMITER) : "localhost";
         url = "service:jmx:rmi://" + ipAddr + "/jndi/rmi://" + ipAddr + ":1099/nettyrpcstatus";
@@ -54,6 +70,9 @@ public class ThreadPoolMonitorProvider {
         return connectorServerFactoryBean;
     }
 
+    // 此方法在RpcThreadPool.getExecutorWithJmx里周期性的被调用来向本地的MBeanServer报告系统的状态。
+    // 用来创建一个访问MBeanServer的客户端连接器, 比如MBeanServer bean暴露了一个服务器端连接器, 那么客户端就可以通过这个连接器来访问MBeanServer中的MBean.
+    // 可以理解为ConnectorServerFactoryBean的对应物, server与client之间就是这两种连接器建立通讯连接
     public static void monitor(ThreadPoolStatus status) throws IOException, MalformedObjectNameException, ReflectionException, MBeanException, InstanceNotFoundException {
         MBeanServerConnectionFactoryBean mBeanServerConnectionFactoryBean = new MBeanServerConnectionFactoryBean();
         mBeanServerConnectionFactoryBean.setServiceUrl(url);

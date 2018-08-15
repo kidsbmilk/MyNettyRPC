@@ -78,7 +78,7 @@ public class RpcThreadPool {
                 status.setCompletedTaskCount(executor.getCompletedTaskCount());
 
                 try {
-                    ThreadPoolMonitorProvider.monitor(status);
+                    ThreadPoolMonitorProvider.monitor(status); // 周期性向本地的MBeanServer报告系统的状态。见monitor里的注释。
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (MalformedObjectNameException e) {
