@@ -1,8 +1,9 @@
-package my.netty.rpc.event;
+package my.netty.rpc.event.system.event;
 
 import com.google.common.eventbus.Subscribe;
 import my.netty.rpc.netty.MessageSendExecutor;
 
+// 见ClientStopEvent里的类注释。
 public class ClientStopEventListener {
 
     public int lastMessage = 0;

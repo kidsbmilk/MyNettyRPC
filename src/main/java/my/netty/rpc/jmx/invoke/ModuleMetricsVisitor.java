@@ -1,4 +1,4 @@
-package my.netty.rpc.jmx;
+package my.netty.rpc.jmx.invoke;
 
 import com.alibaba.druid.util.Histogram;
 

@@ -1,8 +1,8 @@
 package my.netty.rpc.spring;
 
 import com.google.common.eventbus.EventBus;
-import my.netty.rpc.event.ClientStopEvent;
-import my.netty.rpc.event.ClientStopEventListener;
+import my.netty.rpc.event.system.event.ClientStopEvent;
+import my.netty.rpc.event.system.event.ClientStopEventListener;
 import my.netty.rpc.netty.MessageSendExecutor;
 import my.netty.rpc.serialize.RpcSerializeProtocol;
 import org.springframework.beans.factory.DisposableBean;

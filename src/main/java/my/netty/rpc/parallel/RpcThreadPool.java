@@ -1,8 +1,8 @@
 package my.netty.rpc.parallel;
 
 import my.netty.rpc.core.RpcSystemConfig;
-import my.netty.rpc.jmx.ThreadPoolMonitorProvider;
-import my.netty.rpc.jmx.ThreadPoolStatus;
+import my.netty.rpc.jmx.system.ThreadPoolMonitorProvider;
+import my.netty.rpc.jmx.system.ThreadPoolStatus;
 import my.netty.rpc.parallel.policy.*;
 
 import javax.management.InstanceNotFoundException;

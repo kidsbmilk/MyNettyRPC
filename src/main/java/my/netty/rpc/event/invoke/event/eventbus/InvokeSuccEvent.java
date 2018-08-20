@@ -1,4 +1,4 @@
-package my.netty.rpc.event;
+package my.netty.rpc.event.invoke.event.eventbus;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.Notification;

@@ -1,4 +1,4 @@
-package my.netty.rpc.jmx;
+package my.netty.rpc.jmx.system;
 
 import my.netty.rpc.netty.MessageRecvExecutor;
 import org.apache.commons.lang3.StringUtils;

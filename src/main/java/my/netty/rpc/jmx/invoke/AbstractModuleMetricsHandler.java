@@ -1,5 +1,6 @@
-package my.netty.rpc.jmx;
+package my.netty.rpc.jmx.invoke;
 
+import my.netty.rpc.event.invoke.event.listener.EventNotificationListener;
 import my.netty.rpc.parallel.SemaphoreWrapper;
 
 import javax.management.AttributeChangeNotification;
@@ -14,7 +15,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 
 public abstract class AbstractModuleMetricsHandler extends NotificationBroadcasterSupport implements ModuleMetricsVisitorMXBean {
@@ -26,7 +26,7 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
     protected SemaphoreWrapper semaphoreWrapper = new SemaphoreWrapper(semaphore);
     protected List<ModuleMetricsVisitor> visitorList = new CopyOnWriteArrayList<ModuleMetricsVisitor>();
     protected static String startTime;
-    protected ModuleMetricsListener listener = new ModuleMetricsListener(); // 这个用于更新ModuleMetricsVisitor里的数据
+    protected EventNotificationListener listener = new EventNotificationListener(); // 这个用于更新ModuleMetricsVisitor里的数据
     private final AtomicBoolean locked = new AtomicBoolean(false);
     private final Queue<Thread> waiters = new ConcurrentLinkedQueue<>();
 
@@ -37,16 +37,6 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
         } finally {
             exit();
         }
-    }
-
-    @Override
-    public List<ModuleMetricsVisitor> getModuleMetricsVisitor() {
-        return visitorList;
-    }
-
-    @Override
-    public void addModuleMetricsVisitor(ModuleMetricsVisitor visitor) {
-        visitorList.add(visitor);
     }
 
     // 对于不同种类的Notification，应该会其每种都定义一个对应的MBeanNotificationInfo，用于描述其名称、描述等字段。
@@ -88,4 +78,14 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
     }
 
     protected abstract ModuleMetricsVisitor visitCriticalSection(String moduleName, String methodName);
+
+    @Override
+    public List<ModuleMetricsVisitor> getModuleMetricsVisitor() {
+        return visitorList;
+    }
+
+    @Override
+    public void addModuleMetricsVisitor(ModuleMetricsVisitor visitor) {
+        visitorList.add(visitor);
+    }
 }

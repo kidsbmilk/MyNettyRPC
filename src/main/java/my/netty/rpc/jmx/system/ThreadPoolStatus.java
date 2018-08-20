@@ -1,4 +1,4 @@
-package my.netty.rpc.jmx;
+package my.netty.rpc.jmx.system;
 
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;

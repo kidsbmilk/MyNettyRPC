@@ -1,6 +1,7 @@
-package my.netty.rpc.event;
+package my.netty.rpc.event.invoke.event.observer;
 
-import my.netty.rpc.jmx.ModuleMetricsVisitor;
+import my.netty.rpc.event.invoke.event.eventbus.InvokeEventBusFacade;
+import my.netty.rpc.jmx.invoke.ModuleMetricsVisitor;
 
 import java.util.Observer;
 
@@ -8,7 +9,7 @@ import java.util.Observer;
  * Observer与Observable是一对，要配套使用，在这里InvokeEventWatcher继承了Observable，在MessageRecvInitializeTask里用到了Observable，将Observer与Observable关联。
  *
  * Notification用于JMX监控中的消息通知，与上面是不一样的，ModuleMetricsHandler.start中有添加Notification的listener的操作：addNotificationListener。
- * ModuleMetricsListener实现了NotificationListener接口。
+ * EventNotificationListener实现了NotificationListener接口。
  * 在NotificationBroadcasterSupport的类说明里，可以看到一些关键信息：
  1、当一个线程调用sendNotification时，每个监听者的NotificationListener.handleNotification操作将在此线程中执行，这样的操作是同步的。可以通过扩展子类，重写这个函数，通过传递一个thread变量来做到异步执行NotificationListener.handleNotification的目的。
  2、有关于filter或者listener抛出Exception与Error时，类的默认处理情况

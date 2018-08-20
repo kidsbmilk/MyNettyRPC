@@ -1,6 +1,8 @@
-package my.netty.rpc.jmx;
+package my.netty.rpc.event.invoke.event.listener;
 
-import my.netty.rpc.event.AbstractInvokeEventBus;
+import my.netty.rpc.event.invoke.event.eventbus.AbstractInvokeEventBus;
+import my.netty.rpc.jmx.invoke.ModuleMetricsHandler;
+import my.netty.rpc.jmx.invoke.ModuleMetricsVisitor;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.JMException;
@@ -8,7 +10,7 @@ import javax.management.Notification;
 import javax.management.NotificationListener;
 
 // 见AbstractInvokeObserver类中的说明。
-public class ModuleMetricsListener implements NotificationListener {
+public class EventNotificationListener implements NotificationListener {
 
     @Override
     public void handleNotification(Notification notification, Object handback) {

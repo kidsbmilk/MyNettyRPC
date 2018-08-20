@@ -1,4 +1,4 @@
-package my.netty.rpc.jmx;
+package my.netty.rpc.jmx.invoke;
 
 import my.netty.rpc.netty.MessageRecvExecutor;
 import my.netty.rpc.parallel.AbstractDaemonThread;
@@ -59,7 +59,7 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
         }
     }
 
-    public void start() {
+    public void start() { // 在NettyRpcRegister.afterPropertiesSet中被调用了。
         new AbstractDaemonThread() {
             @Override
             public String getDaemonThreadName() {

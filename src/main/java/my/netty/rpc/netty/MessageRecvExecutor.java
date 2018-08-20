@@ -10,7 +10,7 @@ import my.netty.rpc.core.AbilityDetailProvider;
 import my.netty.rpc.core.RpcSystemConfig;
 import my.netty.rpc.filter.ServiceFilterBinder;
 import my.netty.rpc.filter.support.SimpleFilter;
-import my.netty.rpc.jmx.ModuleMetricsHandler;
+import my.netty.rpc.jmx.invoke.ModuleMetricsHandler;
 import my.netty.rpc.netty.resolver.ApiEchoResolver;
 import my.netty.rpc.parallel.NamedThreadFactory;
 import my.netty.rpc.parallel.RpcThreadPool;
