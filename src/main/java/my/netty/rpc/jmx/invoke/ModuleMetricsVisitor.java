@@ -144,6 +144,8 @@ public class ModuleMetricsVisitor {
         map.put("stackTrace", getStackTrace(error));
 
         return new CompositeDataSupport(getThrowableCompositeType(), map); // 这个往CompositeType填充数据创建CompositeData
+        // 这个链接里提到CompositeDataSupport了，作者在这里使用的原因见：ModuleMetricsHandler.connect里的分析。
+        // MBean与MXBean的区别：https://blog.csdn.net/expleeve/article/details/37502501
     }
 
     public String getModuleName() {
