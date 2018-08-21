@@ -80,6 +80,7 @@ public class ThreadPoolMonitorProvider {
         MBeanServerConnection connection = mBeanServerConnectionFactoryBean.getObject();
         ObjectName objectName = new ObjectName("my.netty.rpc.jmx.system:name=threadPoolStatus,type=ThreadPoolStatus");
 
+        // 见ModuleMetricsHandler.connect()里的分析。
         connection.invoke(objectName, JMX_POOL_SIZE_METHOD, new Object[]{status.getPoolSize()}, new String[]{int.class.getName()});
         connection.invoke(objectName, JMX_ACTIVE_COUNT_METHOD, new Object[]{status.getActiveCount()}, new String[]{int.class.getName()});
         connection.invoke(objectName, JMX_CORE_POOL_SIZE_METHOD, new Object[]{status.getCorePoolSize()}, new String[]{int.class.getName()});

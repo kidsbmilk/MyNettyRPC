@@ -14,7 +14,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
-// 这个类主要是对数据的封装，相当于提供一个访问数据的视图。
+// 注意：在JMX中，最核心的地方在于MBean，因为这是存数据的地方，MBeanServer以及Agent只是管理和操作数据的桥梁。
+// 不管JMX应用多么复杂，最终的查数据以及改变数据，都是调用MBean里的方法。
+// 从这里的实现可以发现：ModuleMetricsVisitor是ModuleMetricsVisitorMXBean的存储数据的核心部分。
 public class ModuleMetricsVisitor {
 
     private String moduleName;
@@ -47,9 +49,9 @@ public class ModuleMetricsVisitor {
     private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeFilterCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeFilterCount");
 
     // 以下三个用于创建下面的javax.management.openmbean.CompositeType类变量。
-    private static final String[] THROWABLE_NAMES = {"message", "class", "stackTrace"};
-    private static final String[] THROWABLE_DESCRIPTIONS = {"message", "class", "stackTrace"};
-    private static final OpenType<?>[] THROWABLE_TYPES = new OpenType<?>[]{SimpleType.STRING, SimpleType.STRING, SimpleType.STRING};
+    private static final String[] THROWABLE_ITEMNAMES = {"message", "class", "stackTrace"};
+    private static final String[] THROWABLE_ITEMDESCRIPTIONS = {"message", "class", "stackTrace"};
+    private static final OpenType<?>[] THROWABLE_ITEMTYPES = new OpenType<?>[]{SimpleType.STRING, SimpleType.STRING, SimpleType.STRING};
     /**
      * javax.management.openmbean.SimpleType类的说明翻译如下：
      * <code> SimpleType </ code>类是<i> open type </ i>类，其实例描述所有<i> open data </ i>值，这些值既不是数组，也不是{@link CompositeData CompositeData}值，
@@ -122,9 +124,9 @@ public class ModuleMetricsVisitor {
         if(THROWABLE_COMPOSITE_TYPE == null) {
             THROWABLE_COMPOSITE_TYPE = new CompositeType("Throwable",
                     "Throwable",
-                    THROWABLE_NAMES,
-                    THROWABLE_DESCRIPTIONS,
-                    THROWABLE_TYPES);
+                    THROWABLE_ITEMNAMES,
+                    THROWABLE_ITEMDESCRIPTIONS,
+                    THROWABLE_ITEMTYPES);
         }
 
         return THROWABLE_COMPOSITE_TYPE;

@@ -10,6 +10,9 @@ import javax.management.Notification;
 import javax.management.NotificationListener;
 
 // 见AbstractInvokeObserver类中的说明。
+// 从零开始玩转JMX(二)——Condition：https://blog.csdn.net/u013256816/article/details/52808328
+
+// 见ModuleMetricsVisitor类注释。
 public class EventNotificationListener implements NotificationListener {
 
     @Override
@@ -20,7 +23,7 @@ public class EventNotificationListener implements NotificationListener {
 
         AttributeChangeNotification acn = (AttributeChangeNotification) notification;
         AbstractInvokeEventBus.ModuleEvent event = Enum.valueOf(AbstractInvokeEventBus.ModuleEvent.class, acn.getAttributeType());
-        ModuleMetricsVisitor visitor = ModuleMetricsHandler.getInstance().visit(acn.getMessage(), acn.getAttributeName());
+        ModuleMetricsVisitor visitor = ModuleMetricsHandler.getInstance().getVisitor(acn.getMessage(), acn.getAttributeName());
 
         switch (event) {
             case INVOKE_EVENT:

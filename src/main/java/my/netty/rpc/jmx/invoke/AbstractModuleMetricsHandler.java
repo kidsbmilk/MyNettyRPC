@@ -37,10 +37,10 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
     private final AtomicBoolean locked = new AtomicBoolean(false);
     private final Queue<Thread> waiters = new ConcurrentLinkedQueue<>();
 
-    public ModuleMetricsVisitor visit(String moduleName, String methodName) {
+    public ModuleMetricsVisitor getVisitor(String moduleName, String methodName) {
         try {
             enter();
-            return visitCriticalSection(moduleName, methodName);
+            return getVisitorInCriticalSection(moduleName, methodName);
         } finally {
             exit();
         }
@@ -84,7 +84,7 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
         LockSupport.unpark(waiters.peek());
     }
 
-    protected abstract ModuleMetricsVisitor visitCriticalSection(String moduleName, String methodName);
+    protected abstract ModuleMetricsVisitor getVisitorInCriticalSection(String moduleName, String methodName);
 
     @Override
     public List<ModuleMetricsVisitor> getModuleMetricsVisitor() {

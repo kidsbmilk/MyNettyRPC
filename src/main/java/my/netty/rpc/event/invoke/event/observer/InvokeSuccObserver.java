@@ -26,10 +26,10 @@ public class InvokeSuccObserver extends AbstractInvokeObserver {
     @Override
     public void update(Observable o, Object arg) {
         if((AbstractInvokeEventBus.ModuleEvent) arg == AbstractInvokeEventBus.ModuleEvent.INVOKE_SUCC_EVENT) {
-            super.getFacade().fetchEvent(AbstractInvokeEventBus.ModuleEvent.INVOKE_SUCC_EVENT).notify(super.getVisitor().getInvokeSuccCount(), super.getVisitor().incrementInvokeSuccCount());
-            super.getFacade().fetchEvent(AbstractInvokeEventBus.ModuleEvent.INVOKE_TIMESPAM_EVENT).notify(super.getVisitor().getInvokeTimespan(), invokerTimespan);
-            super.getFacade().fetchEvent(AbstractInvokeEventBus.ModuleEvent.INVOKE_MAX_TIMESPAM_EVENT).notify(super.getVisitor().getInvokeMaxTimespan(), invokerTimespan);
-            super.getFacade().fetchEvent(AbstractInvokeEventBus.ModuleEvent.INVOKE_MIN_TIMESPAM_EVENT).notify(super.getVisitor().getInvokeMinTimespan(), invokerTimespan);
+            super.getFacade().fetchEvent(AbstractInvokeEventBus.ModuleEvent.INVOKE_SUCC_EVENT).notifyNotificationListener(super.getVisitor().getInvokeSuccCount(), super.getVisitor().incrementInvokeSuccCount());
+            super.getFacade().fetchEvent(AbstractInvokeEventBus.ModuleEvent.INVOKE_TIMESPAM_EVENT).notifyNotificationListener(super.getVisitor().getInvokeTimespan(), invokerTimespan);
+            super.getFacade().fetchEvent(AbstractInvokeEventBus.ModuleEvent.INVOKE_MAX_TIMESPAM_EVENT).notifyNotificationListener(super.getVisitor().getInvokeMaxTimespan(), invokerTimespan);
+            super.getFacade().fetchEvent(AbstractInvokeEventBus.ModuleEvent.INVOKE_MIN_TIMESPAM_EVENT).notifyNotificationListener(super.getVisitor().getInvokeMinTimespan(), invokerTimespan);
         }
     }
 }

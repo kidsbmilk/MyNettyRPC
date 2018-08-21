@@ -16,6 +16,12 @@ import java.util.Observer;
  3、远程的监听者在得到消息通知时的调用并不是同步的，当一个消息发出时，并不能保证远程的监听者一定能收到此消息。
  上述这些可以做为可改进的地方。TODO-THIS.
  */
+
+// 这个抽象类继承于Observer，其实现类实现了update方法，见Observer.update的方法注释：
+//  This method is called whenever the observed object is changed. An
+//  application calls an {@code Observable} object's
+//  {@code notifyObservers} method to have all the object's
+//  observers notified of the change.
 public abstract class AbstractInvokeObserver implements Observer { // 这个Observer接口将被移除了。见Observable接口里的说明，使用java.beans改写这里的代码。TODO-THIS.
 
     private InvokeEventBusFacade facade;

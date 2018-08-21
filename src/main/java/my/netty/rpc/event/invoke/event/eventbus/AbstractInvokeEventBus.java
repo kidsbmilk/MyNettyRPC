@@ -32,7 +32,9 @@ public abstract class AbstractInvokeEventBus {
 
     // 见InvokeEvent.buildNotification处的注释。
     // 见AbstractInvokeObserver的类的注释。
-    public void notify(Object oldValue, Object newValue) {
+    // 这个handler.sendNotification之后，就会调用EventNotificationListener的handleNotification方法。
+    // 从零开始玩转JMX(二)——Condition：https://blog.csdn.net/u013256816/article/details/52808328
+    public void notifyNotificationListener(Object oldValue, Object newValue) {
         Notification notification = buildNotification(oldValue, newValue); // 见javax.management.Notification类说明。
         handler.sendNotification(notification); // javax.management.NotificationBroadcasterSupport接口里的方法。
     }

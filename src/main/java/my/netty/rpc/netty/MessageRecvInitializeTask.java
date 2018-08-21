@@ -42,10 +42,15 @@ public class MessageRecvInitializeTask extends AbstractMessageRecvInitializeTask
             Method method = ReflectionUtils.getDeclaredMethod(cls, request.getMethodName(), request.getTypeParameters());
             utils.listMethod(method, false);
             String signatureMethod = utils.getProvider().toString();
-            visitor.set(ModuleMetricsHandler.getInstance().visit(request.getClassName(), signatureMethod));
+            visitor.set(ModuleMetricsHandler.getInstance().getVisitor(request.getClassName(), signatureMethod));
+            // 上面的visitor相当于创建了与ModuleName、MethodName相对应的存储结构，用于存储调用统计信息。
+            // 下面的facade是创建了一系列不同类型的与上面的visitor相关的事件。
             facade.set(new InvokeEventBusFacade(ModuleMetricsHandler.getInstance(), visitor.get().getModuleName(), visitor.get().getMethodName()));
-            watcher.get().addObserver(new InvokeObserver(facade.get(), visitor.get()));
-            watcher.get().changedAndNotify(AbstractInvokeEventBus.ModuleEvent.INVOKE_EVENT);
+            // 下面关联facade与visitor
+            watcher.get().addObserver(new InvokeObserver(facade.get(), visitor.get())); // get()是AtomicReference的方法。
+            // 下面开始触发统计流程：Observable.notifyObservers --> Observer.update --> NotificationBroadcasterSupport.sendNotification
+            // --> NotificationListener.handleNotification --> 存储在visitor中。
+            watcher.get().changedAndNotifyObserver(AbstractInvokeEventBus.ModuleEvent.INVOKE_EVENT);
         } finally {
             utils.clearProvider();
         }
@@ -58,19 +63,19 @@ public class MessageRecvInitializeTask extends AbstractMessageRecvInitializeTask
     @Override
     protected void injectSuccInvoke(long invokeTimespan) {
         watcher.get().addObserver(new InvokeSuccObserver(facade.get(), visitor.get(), invokeTimespan));
-        watcher.get().changedAndNotify(AbstractInvokeEventBus.ModuleEvent.INVOKE_SUCC_EVENT);
+        watcher.get().changedAndNotifyObserver(AbstractInvokeEventBus.ModuleEvent.INVOKE_SUCC_EVENT);
     }
 
     @Override
     protected void injectFailInvoke(Throwable error) {
         watcher.get().addObserver(new InvokeFailObserver(facade.get(), visitor.get(), error));
-        watcher.get().changedAndNotify(AbstractInvokeEventBus.ModuleEvent.INVOKE_FAIL_EVENT);
+        watcher.get().changedAndNotifyObserver(AbstractInvokeEventBus.ModuleEvent.INVOKE_FAIL_EVENT);
     }
 
     @Override
     protected void injectFilterInvoke() {
         watcher.get().addObserver(new InvokeFilterObserver(facade.get(), visitor.get()));
-        watcher.get().changedAndNotify(AbstractInvokeEventBus.ModuleEvent.INVOKE_FILTER_EVENT);
+        watcher.get().changedAndNotifyObserver(AbstractInvokeEventBus.ModuleEvent.INVOKE_FILTER_EVENT);
     }
 
     @Override

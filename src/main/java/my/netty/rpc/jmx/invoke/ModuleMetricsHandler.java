@@ -31,11 +31,12 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
     private ModuleMetricsHandler() {
     }
 
-    protected ModuleMetricsVisitor visitCriticalSection(String moduleName, String methodName) {
+    protected ModuleMetricsVisitor getVisitorInCriticalSection(String moduleName, String methodName) {
         final String method = methodName.trim();
         final String module = moduleName.trim();
 
         // FIXME: JMX度量临界区要注意线程间的并发竞争，否则会统计数据失真
+        // 见FilterIterator类的注释，这个类将封装一个iterator，只有满足predicate.evaluate条件时才返回一个对象。
         Iterator iterator = new FilterIterator(visitorList.iterator(), new Predicate() {
             public boolean evaluate(Object object) {
                 String startModuleName = ((ModuleMetricsVisitor) object).getModuleName();
@@ -107,12 +108,22 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
     public MBeanServerConnection connect() {
         try {
             if(!semaphoreWrapper.isReleased()) {
-                semaphoreWrapper.acquire();
+                semaphoreWrapper.acquire(); // 等待，直到JMXConnectorServer启动，也只有它启动后，下面的才有意义。
             }
 
             JMXServiceURL url = new JMXServiceURL(moduleMetricsJmxUrl);
             JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
-            connection = jmxc.getMBeanServerConnection();
+            connection = jmxc.getMBeanServerConnection(); // 这个connection是给其他应用程序使用的，用法见ThreadPoolMonitorProvider.monitor中的用法。
+            // 在更新ModuleMetricsVisitor时，可以使用这个connection，也可以直接调用ModuleMetricsVisitor里的方法，
+            // 作者在ThreadPoolMonitorProvider.monitor里用了前者，在EventNotificationListener里用了后者。作者可能是故意这样写，来学习两者的。
+            // 类似的例子，在此项目中非常多，例如：
+            // 1、对于多线程同步，主线程等待子线程完成后继续处理剩余的事情，作者用了CountDown，以及MoreExecutors.listeningDecorator异步的方式。
+            // 2、对于进程间通信，作者用了applicationContext.publishEvent/onApplicationEvent、com.google.common.eventbus.EventBus、Observable/Observer以及Notification/NotificationListener。
+            // 3、对于MXBean中使用自定义类型的属性，这些属性会自动转为CompositeDataSupport类型，但是作者还是自己写了一个CompositeDataSupport类型的属性，
+            //      见ModuleMetricsVisitor.buildErrorCompositeDate方法，其实跟ModuleMetricsVisitor.setLastStackTrace途径差不多的，
+            //      但是作者在EventNotificationListener里用两种方法去写了。
+            // 4、等等。
+            // 刻意练习。
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

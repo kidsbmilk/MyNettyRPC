@@ -28,7 +28,7 @@ public class InvokeObserver extends AbstractInvokeObserver {
     public void update(Observable o, Object arg) {
         if((AbstractInvokeEventBus.ModuleEvent) arg == AbstractInvokeEventBus.ModuleEvent.INVOKE_EVENT) {
             super.getFacade().fetchEvent(AbstractInvokeEventBus.ModuleEvent.INVOKE_EVENT)
-                    .notify(super.getVisitor().getInvokeCount(), super.getVisitor().incrementInvokeCount());
+                    .notifyNotificationListener(super.getVisitor().getInvokeCount(), super.getVisitor().incrementInvokeCount());
         }
     }
 }
