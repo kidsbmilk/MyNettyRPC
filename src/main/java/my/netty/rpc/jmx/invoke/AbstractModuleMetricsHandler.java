@@ -17,6 +17,13 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 
+// 注意：这个抽象类继承自NotificationBroadcasterSupport，主要使用其两个方法，一是重写了getNotificationInfo，二是在AbstractInvokeEventBus中，
+// 有一个AbstractModuleMetricsHandler的实现类ModuleMetricsHandler类型的成员变量，用到这个成员变量的sendNotification方法，这个方法就是NotificationBroadcasterSupport里的。
+// JMX之Notification：https://blog.csdn.net/drykilllogic/article/details/38382797
+// 从零开始玩转JMX(一)——简介和Standard MBean：https://blog.csdn.net/u013256816/article/details/52800742
+// 从零开始玩转JMX(二)——Condition：https://blog.csdn.net/u013256816/article/details/52808328
+// 从零开始玩转JMX(三)——Model MBean：https://blog.csdn.net/u013256816/article/details/52817247
+//从零开始玩转JMX(四)——Apache Commons Modeler & Dynamic MBean：https://blog.csdn.net/u013256816/article/details/52840067
 public abstract class AbstractModuleMetricsHandler extends NotificationBroadcasterSupport implements ModuleMetricsVisitorMXBean {
 
     public final static String MBEAN_NAME = "my.netty.rpc:type=ModuleMetricsHandler"; // 在JMX的MBean树里可以找到这个对象
@@ -42,7 +49,7 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
     // 对于不同种类的Notification，应该会其每种都定义一个对应的MBeanNotificationInfo，用于描述其名称、描述等字段。
     // 见javax.management.MBeanNotificationInfo类注释。
     @Override
-    public MBeanNotificationInfo[] getNotificationInfo() {
+    public MBeanNotificationInfo[] getNotificationInfo() { // 这个是重写了NotificationBroadcasterSupport里的方法。
         String[] types = new String[] {AttributeChangeNotification.ATTRIBUTE_CHANGE};
         String name = AttributeChangeNotification.class.getName();
         String description = "the event send from NettyRPC server!";
