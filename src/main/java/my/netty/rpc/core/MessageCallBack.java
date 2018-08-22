@@ -1,6 +1,7 @@
 package my.netty.rpc.core;
 
 import my.netty.rpc.exception.InvokeModuleException;
+import my.netty.rpc.exception.InvokeTimeoutException;
 import my.netty.rpc.exception.RejectResponseException;
 import my.netty.rpc.model.MessageRequest;
 import my.netty.rpc.model.MessageResponse;
@@ -24,10 +25,10 @@ public class MessageCallBack {
         this.request = request;
     }
 
-    public Object start() throws InterruptedException, RejectResponseException {
+    public Object start() {
         try {
             lock.lock();
-            finish.await(RpcSystemConfig.SYSTEM_PROPERTY_ASYNC_MESSAGE_CALLBACK_TIMEOUT, TimeUnit.MILLISECONDS); // 原来问题在这里！AsyncRpcCallTest里的例子也用到这里了。
+            await();
             if(this.response != null) {
                 if (getInvokeResult()) {
                     if(this.response.getError().isEmpty()) {
@@ -61,5 +62,17 @@ public class MessageCallBack {
         return !this.response.getError().equals(RpcSystemConfig.FILTER_RESPONSE_MSG)
                 && (!this.response.isReturnNotNull() ||
                 (this.response.isReturnNotNull() && this.response.getResult() != null));
+    }
+
+    private void await() {
+        boolean timeout = false;
+        try {
+            timeout = finish.await(RpcSystemConfig.SYSTEM_PROPERTY_ASYNC_MESSAGE_CALLBACK_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if(!timeout) {
+            throw new InvokeTimeoutException(RpcSystemConfig.TIMEOUT_RESPONSE_MSG);
+        }
     }
 }

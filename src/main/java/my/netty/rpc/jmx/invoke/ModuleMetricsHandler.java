@@ -21,6 +21,9 @@ import static my.netty.rpc.core.RpcSystemConfig.DELIMITER;
  */
 public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
 
+    public final static String MBEAN_NAME = "nettyrpc:type=ModuleMetricsHandler";
+
+
     private static final ModuleMetricsHandler INSTANCE = new ModuleMetricsHandler(); // 单例模式
     private MBeanServerConnection connection;
 

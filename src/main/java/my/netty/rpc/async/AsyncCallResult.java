@@ -1,7 +1,9 @@
 package my.netty.rpc.async;
 
 import my.netty.rpc.core.ReflectionUtils;
+import my.netty.rpc.core.RpcSystemConfig;
 import my.netty.rpc.exception.AsyncCallException;
+import my.netty.rpc.exception.InvokeTimeoutException;
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 
@@ -34,7 +36,15 @@ public class AsyncCallResult {
         } catch (InterruptedException e) {
             throw new AsyncCallException(e);
         } catch (Exception e) {
+            translateTimeoutException(e);
             throw new AsyncCallException(e);
+        }
+    }
+
+    private void translateTimeoutException(Throwable t) {
+        int index = t.getMessage().indexOf(RpcSystemConfig.TIMEOUT_RESPONSE_MSG);
+        if(index != -1) {
+            throw new InvokeTimeoutException(t);
         }
     }
 
