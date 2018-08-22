@@ -15,7 +15,7 @@ public class MessageSendExecutor {  // 这是一个单例对象。是工具类�
 
     private RpcServerLoader loader = RpcServerLoader.getInstance();  // 这是一个单例对象。是工具类，所以设置为单例对象。
 
-    public MessageSendExecutor() {
+    private MessageSendExecutor() {
     }
 
     public MessageSendExecutor(String serverAddress, RpcSerializeProtocol serializeProtocol) {

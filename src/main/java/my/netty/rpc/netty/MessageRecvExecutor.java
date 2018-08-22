@@ -43,7 +43,7 @@ public class MessageRecvExecutor {
     EventLoopGroup boss = new NioEventLoopGroup();
     EventLoopGroup worker = new NioEventLoopGroup(PARALLEL, threadFactory, SelectorProvider.provider());
 
-    public MessageRecvExecutor() {
+    private MessageRecvExecutor() {
         handlerMap.clear();
         register();
     }
