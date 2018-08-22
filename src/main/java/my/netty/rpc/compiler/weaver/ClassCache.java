@@ -19,7 +19,7 @@ public class ClassCache {
     private Map<Set<Class<?>>, WeakReference<Class<?>>> getClassCache(ClassLoader classLoader) {
         Map<Set<Class<?>>, WeakReference<Class<?>>> cache = loader.get(classLoader);
         if(cache == null) {
-            cache = new HashMap<>();
+            cache = new HashMap<>(512);
             loader.put(classLoader, cache);
         }
 

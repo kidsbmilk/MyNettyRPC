@@ -137,7 +137,7 @@ public class ModuleMetricsVisitor {
             return null;
         }
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(512);
 
         map.put("class", error.getClass().getName());
         map.put("message", error.getMessage());

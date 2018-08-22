@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class HessianRecvHandler implements NettyRpcRecvHandler {
 
+    @Override
     public void handle(Map<String, Object> handlerMap, ChannelPipeline pipeline) {
         HessianCodecUtil util = new HessianCodecUtil();
         pipeline.addLast(new HessianEncoder(util));

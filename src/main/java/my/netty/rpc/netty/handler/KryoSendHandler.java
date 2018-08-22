@@ -9,6 +9,7 @@ import my.netty.rpc.serialize.kryo.KryoPoolFactory;
 
 public class KryoSendHandler implements NettyRpcSendHandler {
 
+    @Override
     public void handle(ChannelPipeline pipeline) {
         KryoCodecUtil util = new KryoCodecUtil(KryoPoolFactory.getKryoPoolInstance());
         pipeline.addLast(new KryoEncoder(util));

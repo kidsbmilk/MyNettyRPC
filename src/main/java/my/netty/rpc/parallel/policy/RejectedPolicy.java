@@ -21,6 +21,7 @@ public class RejectedPolicy implements RejectedExecutionHandler {
         this.threadName = threadName;
     }
 
+    @Override
     public void rejectedExecution(Runnable runnable, ThreadPoolExecutor executor) {
         if(threadName != null) {
             LOG.error("RPC Thread pool [{}] is exhaused, executor = {}", threadName, executor.toString());

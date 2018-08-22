@@ -15,6 +15,7 @@ public class AsyncCallObjectInterceptor implements MethodInterceptor {
         this.future = future;
     }
 
+    @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) {
         if(NETTYRPCSTATUS.equals(method.getName())) {
             return getStatus();

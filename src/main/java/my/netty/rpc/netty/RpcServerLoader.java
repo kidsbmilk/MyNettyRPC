@@ -21,8 +21,8 @@ public class RpcServerLoader {
     private static final String DELIMITER = RpcSystemConfig.DELIMITER;
     private RpcSerializeProtocol serializeProtocol = RpcSerializeProtocol.JDKSERIALIZE;
 
-    private static final int parallel = RpcSystemConfig.PARALLEL * 2;
-    private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(parallel);
+    private static final int PARALLEL = RpcSystemConfig.SYSTEM_PROPERTY_PARALLEL * 2;
+    private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(PARALLEL);
     private static int threadNums = RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_THREAD_NUMS;
     private static int queueNums = RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_QUEUE_NUMS;
     private static ListeningExecutorService threadPoolExecutor = MoreExecutors.listeningDecorator((ThreadPoolExecutor) RpcThreadPool.getExecutor(threadNums, queueNums));
@@ -51,7 +51,7 @@ public class RpcServerLoader {
 
     public void load(String serverAddress, RpcSerializeProtocol serializeProtocol) {
         String[] ipAddr = serverAddress.split(RpcServerLoader.DELIMITER);
-        if(ipAddr.length == 2) {
+        if(ipAddr.length == RpcSystemConfig.IPADDR_OPRT_ARRAY_LENGTH) {
             String host = ipAddr[0];
             int port = Integer.parseInt(ipAddr[1]);
             final InetSocketAddress remoteAddr = new InetSocketAddress(host, port);
@@ -66,6 +66,7 @@ public class RpcServerLoader {
 
             // 在MessageSendInitializeTask中会设置messageSendHandler
             Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
+                @Override
                 public void onSuccess(Boolean result) {
                     try {
                         lock.lock();
@@ -74,7 +75,7 @@ public class RpcServerLoader {
                             handlerStatus.await(); // 这个跟setMessageSendHandler里的handlerStatus.signal()对应。
                         }
 
-                        if(result == Boolean.TRUE && messageSendHandler != null) {
+                        if(result.equals(Boolean.TRUE) && messageSendHandler != null) {
                             connectStatus.signalAll(); // 这个跟getMessageSendHandler里的connectStatus.await()相对应。
                         }
                     } catch (InterruptedException ex) {
@@ -84,6 +85,7 @@ public class RpcServerLoader {
                     }
                 }
 
+                @Override
                 public void onFailure(Throwable t) {
                     t.printStackTrace();
                 }

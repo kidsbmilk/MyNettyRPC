@@ -67,8 +67,9 @@ public class ReflectionUtils {
         final Constructor<?>[] declaredConstructors = superclass.getDeclaredConstructors(); // jdk里的方法
         for(int i = 0; i < declaredConstructors.length; i ++) {
             Constructor<?> constructor = declaredConstructors[i];
-            if(constructor.getParameterTypes().length == 0
-                    && (Modifier.isPublic(constructor.getModifiers()) || Modifier.isProtected(constructor.getModifiers()))) {
+            boolean isExist = (constructor.getParameterTypes().length == 0
+                    && (Modifier.isPublic(constructor.getModifiers()) || Modifier.isProtected(constructor.getModifiers())));
+            if(isExist) {
                 return true;
             }
         }

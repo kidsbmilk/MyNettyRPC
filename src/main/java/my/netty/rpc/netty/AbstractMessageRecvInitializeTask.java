@@ -33,7 +33,7 @@ public abstract class AbstractMessageRecvInitializeTask implements Callable<Bool
             response.setMessageId(request.getMessageId());
             injectInvoke();
             Object result = reflect(request); // 在这里服务器端处理客户端发来的调用请求。
-            if((returnNotNull && result != null) || !returnNotNull) {
+            if(!returnNotNull || result != null) {
                 response.setResult(result);
                 response.setError("");
                 response.setReturnNotNull(returnNotNull);

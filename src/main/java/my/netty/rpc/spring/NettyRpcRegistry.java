@@ -16,6 +16,7 @@ public class NettyRpcRegistry implements InitializingBean, DisposableBean {
     private String echoApiPort;
     private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
+    @Override
     public void destroy() throws Exception {
         MessageRecvExecutor.getInstance().stop();
 
@@ -28,6 +29,7 @@ public class NettyRpcRegistry implements InitializingBean, DisposableBean {
      * 最先执行的是postProcessBeforeInitialization，然后是afterPropertiesSet，然后是init-method，然后是postProcessAfterInitialization。
      * https://blog.csdn.net/u013013553/article/details/79038702
      */
+    @Override
     public void afterPropertiesSet() throws Exception {
         MessageRecvExecutor ref = MessageRecvExecutor.getInstance();
         ref.setServerAddress(ipAddr);

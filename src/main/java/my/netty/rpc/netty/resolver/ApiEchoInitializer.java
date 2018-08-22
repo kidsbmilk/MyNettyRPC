@@ -10,7 +10,7 @@ public class ApiEchoInitializer extends ChannelInitializer<SocketChannel> {
 
     private final SslContext sslCtx;
 
-    public ApiEchoInitializer(SslContext sslCtx) {
+    ApiEchoInitializer(SslContext sslCtx) {
         this.sslCtx = sslCtx;
     }
 

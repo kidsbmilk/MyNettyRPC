@@ -8,6 +8,7 @@ import my.netty.rpc.serialize.protostuff.ProtostuffEncoder;
 
 public class ProtostuffSendHandler implements NettyRpcSendHandler {
 
+    @Override
     public void handle(ChannelPipeline pipeline) {
         ProtostuffCodecUtil util = new ProtostuffCodecUtil();
         util.setRpcDirect(false);

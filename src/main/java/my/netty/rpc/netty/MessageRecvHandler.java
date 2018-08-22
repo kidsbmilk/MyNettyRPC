@@ -17,6 +17,7 @@ public class MessageRecvHandler extends ChannelInboundHandlerAdapter {
         this.handlerMap = handlerMap;
     }
 
+    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         MessageRequest request = (MessageRequest) msg;
         MessageResponse response = new MessageResponse();
@@ -29,6 +30,7 @@ public class MessageRecvHandler extends ChannelInboundHandlerAdapter {
 //        System.out.println(ctx.channel().remoteAddress());
     }
 
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
         ctx.close();

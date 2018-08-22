@@ -34,7 +34,9 @@ public class MethodProxyAdvisor implements MethodInterceptor { // MethodIntercep
     public Object invoke(MethodInvocation invocation) throws Throwable { // MethodInterceptor.invoke是aop框架里的接口方法。
         // MethodInvocation也是aop框架里的接口
         Object[] params = invocation.getArguments();
-        if(params.length <= 0) return null;
+        if(params.length <= 0) {
+            return null;
+        }
 
         MessageRequest request = (MessageRequest) params[0];
 

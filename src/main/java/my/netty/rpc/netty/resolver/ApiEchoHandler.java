@@ -17,7 +17,7 @@ public class ApiEchoHandler extends ChannelInboundHandlerAdapter {
     private static final String CONNECTION = "Connection";
     private static final String KEEP_ALIVE = "keep-alive";
 
-    public ApiEchoHandler() {
+    ApiEchoHandler() {
     }
 
     @Override

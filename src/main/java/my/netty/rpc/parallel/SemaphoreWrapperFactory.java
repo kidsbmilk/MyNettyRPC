@@ -31,7 +31,7 @@ public class SemaphoreWrapperFactory extends SemaphoreWrapper {
 
     @Override
     public void release() {
-        if(getSemaphore() != null) {
+        if(semaphore != null) {
             while(true) {
                 boolean result = released.get();
                 if(released.compareAndSet(result, false)) {

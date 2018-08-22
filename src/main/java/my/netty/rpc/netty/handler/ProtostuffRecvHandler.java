@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class ProtostuffRecvHandler implements NettyRpcRecvHandler {
 
+    @Override
     public void handle(Map<String, Object> handlerMap, ChannelPipeline pipeline) {
         ProtostuffCodecUtil util = new ProtostuffCodecUtil();
         util.setRpcDirect(true);

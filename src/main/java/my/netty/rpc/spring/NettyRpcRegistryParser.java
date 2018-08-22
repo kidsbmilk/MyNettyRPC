@@ -8,6 +8,7 @@ import org.w3c.dom.Element;
 
 public class NettyRpcRegistryParser implements BeanDefinitionParser {
 
+    @Override
     public BeanDefinition parse(Element element, ParserContext parserContext) {
         String id = element.getAttribute("id");
         String ipAddr = element.getAttribute("ipAddr");

@@ -11,7 +11,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ByteCodeClassTransformer extends ClassTransformer implements Opcodes {
+public class ByteCodeAbstractClassTransformer extends AbstractClassTransformer implements Opcodes {
 
     private static final AtomicLong CLASS_NUMBER = new AtomicLong(0);
     private static final String CLASSNAME_PREFIX = "ASMPROXY_";

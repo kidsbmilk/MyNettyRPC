@@ -29,6 +29,7 @@ public class NettyRpcService implements ApplicationContextAware, ApplicationList
         this.ref = ref;
     }
 
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         ServiceFilterBinder binder = new ServiceFilterBinder();
 
@@ -57,6 +58,7 @@ public class NettyRpcService implements ApplicationContextAware, ApplicationList
      * 最先执行的是postProcessBeforeInitialization，然后是afterPropertiesSet，然后是init-method，然后是postProcessAfterInitialization。
      * https://blog.csdn.net/u013013553/article/details/79038702
      */
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
         // 当NettyRpcServiceParser解析完一个服务后，会发通知，然后onApplicationEvent方法将此服务加入到handlerMap中。

@@ -4,7 +4,7 @@ import my.netty.rpc.compiler.invoke.ObjectInvoker;
 
 public class ProxyFactory extends AbstractProxyFactory {
 
-    private static final ClassCache PROXY_CLASS_CACHE = new ClassCache(new ByteCodeClassTransformer()); // 注意这行代码，把ByteCodeClassTransformer关联起来了
+    private static final ClassCache PROXY_CLASS_CACHE = new ClassCache(new ByteCodeAbstractClassTransformer()); // 注意这行代码，把ByteCodeClassTransformer关联起来了
 
     @Override
     <T> T createProxyImpl(ClassLoader classLoader, ObjectInvoker invoker, final Class<?>... proxyClasses) {

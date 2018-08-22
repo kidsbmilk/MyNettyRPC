@@ -8,6 +8,7 @@ import my.netty.rpc.serialize.hessian.HessianEncoder;
 
 public class HessianSendHandler implements NettyRpcSendHandler {
 
+    @Override
     public void handle(ChannelPipeline pipeline) {
         HessianCodecUtil util = new HessianCodecUtil();
         pipeline.addLast(new HessianEncoder(util));

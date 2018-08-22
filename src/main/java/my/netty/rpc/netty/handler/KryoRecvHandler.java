@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class KryoRecvHandler implements NettyRpcRecvHandler {
 
+    @Override
     public void handle(Map<String, Object> handlerMap, ChannelPipeline pipeline) {
         KryoCodecUtil util = new KryoCodecUtil(KryoPoolFactory.getKryoPoolInstance());
         pipeline.addLast(new KryoEncoder(util));

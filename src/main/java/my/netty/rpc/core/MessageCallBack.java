@@ -29,9 +29,7 @@ public class MessageCallBack {
             lock.lock();
             finish.await(RpcSystemConfig.SYSTEM_PROPERTY_ASYNC_MESSAGE_CALLBACK_TIMEOUT, TimeUnit.MILLISECONDS); // 原来问题在这里！AsyncRpcCallTest里的例子也用到这里了。
             if(this.response != null) {
-                if (!this.response.getError().equals(RpcSystemConfig.FILTER_RESPONSE_MSG)
-                        && (!this.response.isReturnNotNull() ||
-                        (this.response.isReturnNotNull() && this.response.getResult() != null))) {
+                if (getInvokeResult()) {
                     if(this.response.getError().isEmpty()) {
                         return this.response.getResult();
                     } else {
@@ -57,5 +55,11 @@ public class MessageCallBack {
         } finally {
             lock.unlock();
         }
+    }
+
+    private boolean getInvokeResult() {
+        return !this.response.getError().equals(RpcSystemConfig.FILTER_RESPONSE_MSG)
+                && (!this.response.isReturnNotNull() ||
+                (this.response.isReturnNotNull() && this.response.getResult() != null));
     }
 }

@@ -19,6 +19,7 @@ public class KryoCodecUtil implements MessageCodecUtil {
         this.pool = pool;
     }
 
+    @Override
     public void encode(final ByteBuf out, final Object message) throws IOException {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -34,6 +35,7 @@ public class KryoCodecUtil implements MessageCodecUtil {
         }
     }
 
+    @Override
     public Object decode(byte[] body) throws IOException {
         try {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body);

@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-public abstract class ClassTransformer implements Transformer {
+public abstract class AbstractClassTransformer implements Transformer {
 
     @Override
     public Class<?> transform(ClassLoader classLoader, Class<?>... proxyClasses) {
@@ -12,7 +12,7 @@ public abstract class ClassTransformer implements Transformer {
     }
 
     protected Method[] findImplementationMethods(Class<?>[] proxyClasses) {
-        Map<MethodDescriptor, Method> descriptorMethodMap = new HashMap<>();
+        Map<MethodDescriptor, Method> descriptorMethodMap = new HashMap<>(1024);
         Set<MethodDescriptor> finalSet = new HashSet<>();
 
         for(int i = 0; i < proxyClasses.length; i ++) {

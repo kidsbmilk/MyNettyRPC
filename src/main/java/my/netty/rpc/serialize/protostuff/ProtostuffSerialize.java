@@ -36,6 +36,7 @@ public class ProtostuffSerialize implements RpcSerialize {
         return (Schema<T>) cachedSchema.get(cls);
     }
 
+    @Override
     public Object deserialize(InputStream input) {
         try {
             Class cls = isRpcDirect() ? MessageRequest.class : MessageResponse.class;
@@ -48,6 +49,7 @@ public class ProtostuffSerialize implements RpcSerialize {
         }
     }
 
+    @Override
     public void serialize(OutputStream output, Object object) {
         Class cls = (Class) object.getClass();
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);

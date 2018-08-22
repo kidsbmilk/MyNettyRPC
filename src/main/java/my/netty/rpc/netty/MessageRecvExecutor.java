@@ -32,7 +32,7 @@ public class MessageRecvExecutor {
     private RpcSerializeProtocol serializeProtocol = RpcSerializeProtocol.JDKSERIALIZE;
 
     private static final String DELIMITER = RpcSystemConfig.DELIMITER;
-    private int parallel = RpcSystemConfig.PARALLEL * 2;
+    private static final int PARALLEL = RpcSystemConfig.SYSTEM_PROPERTY_PARALLEL * 2;
     private static int threadNums = RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_THREAD_NUMS;
     private static int queueNums = RpcSystemConfig.SYSTEM_PROPERTY_THREADPOOL_QUEUE_NUMS;
     private static volatile ListeningExecutorService threadPoolExecutor;
@@ -41,7 +41,7 @@ public class MessageRecvExecutor {
 
     ThreadFactory threadFactory = new NamedThreadFactory("NettyRPC ThreadFactory");
     EventLoopGroup boss = new NioEventLoopGroup();
-    EventLoopGroup worker = new NioEventLoopGroup(parallel, threadFactory, SelectorProvider.provider());
+    EventLoopGroup worker = new NioEventLoopGroup(PARALLEL, threadFactory, SelectorProvider.provider());
 
     public MessageRecvExecutor() {
         handlerMap.clear();
@@ -58,11 +58,11 @@ public class MessageRecvExecutor {
     }
 
     private static class MessageRecvExecutorHolder {
-        static final MessageRecvExecutor instance = new MessageRecvExecutor();
+        static final MessageRecvExecutor INSTANCE = new MessageRecvExecutor();
     }
 
     public static MessageRecvExecutor getInstance() {
-        return MessageRecvExecutorHolder.instance;
+        return MessageRecvExecutorHolder.INSTANCE;
     }
 
     public static void submit(Callable<Boolean> task, final ChannelHandlerContext ctx, final MessageRequest request, final MessageResponse response) {
@@ -79,8 +79,10 @@ public class MessageRecvExecutor {
         // https://www.cnblogs.com/hupengcool/p/3991310.html
         ListenableFuture<Boolean> listenableFuture = threadPoolExecutor.submit(task);
         Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
+            @Override
             public void onSuccess(Boolean result) {
                 ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
+                    @Override
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
                         System.out.println("RPC Server Send message-id response:" + request.getMessageId());
 //                        output(request, response);
@@ -88,6 +90,7 @@ public class MessageRecvExecutor {
                 });
             }
 
+            @Override
             public void onFailure(Throwable t) {
                 t.printStackTrace();
             }

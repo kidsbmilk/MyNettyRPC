@@ -14,6 +14,7 @@ public class KryoPoolFactory {
     // http://www.importnew.com/12196.html
 
     private KryoFactory factory = new KryoFactory() {
+        @Override
         public Kryo create() {
             Kryo kryo = new Kryo();
             kryo.setReferences(false);

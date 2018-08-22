@@ -22,6 +22,7 @@ public class MessageSendInitializeTask implements Callable<Boolean> {
         this.protocol = protocol;
     }
 
+    @Override
     public Boolean call() {
         Bootstrap b = new Bootstrap();
         b.group(eventLoopGroup)
@@ -35,6 +36,7 @@ public class MessageSendInitializeTask implements Callable<Boolean> {
 
         ChannelFuture channelFuture = b.connect();
         channelFuture.addListener(new ChannelFutureListener() {
+            @Override
             public void operationComplete(final ChannelFuture channelFuture) throws Exception {
                 if(channelFuture.isSuccess()) {
                     MessageSendHandler handler = channelFuture.channel().pipeline().get(MessageSendHandler.class);

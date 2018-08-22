@@ -23,6 +23,7 @@ public class CostTime implements Serializable {
         this.detail = detail;
     }
 
+    @Override
     public String toString() {
 //        System.out.println(System.currentTimeMillis());
         return "CostTime [elapse=" + elapse + ", detail=" + detail + "]";

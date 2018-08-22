@@ -7,15 +7,18 @@ import java.util.concurrent.TimeUnit;
 
 public class PersonManageImpl implements PersonManage {
 
+    @Override
     public int save(Person p) {
         System.out.println("person data[" + p + "] has save!");
         return 0;
     }
 
+    @Override
     public Person getPerson(Person p) {
         return p;
     }
 
+    @Override
     public void query(Person p) {
         // your business logic code here!
         try {

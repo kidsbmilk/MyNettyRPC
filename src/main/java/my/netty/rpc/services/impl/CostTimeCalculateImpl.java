@@ -5,6 +5,7 @@ import my.netty.rpc.services.pojo.CostTime;
 
 public class CostTimeCalculateImpl implements CostTimeCalculate {
 
+    @Override
     public CostTime calculate() {
         CostTime elapse = new CostTime();
         try {

@@ -31,6 +31,7 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
     private ModuleMetricsHandler() {
     }
 
+    @Override
     protected ModuleMetricsVisitor getVisitorInCriticalSection(String moduleName, String methodName) {
         final String method = methodName.trim();
         final String module = moduleName.trim();
@@ -41,6 +42,7 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
 
         // 见FilterIterator类的注释，这个类将封装一个iterator，只有满足predicate.evaluate条件时才返回一个对象。
         Iterator iterator = new FilterIterator(visitorList.iterator(), new Predicate() {
+            @Override
             public boolean evaluate(Object object) {
                 String startModuleName = ((ModuleMetricsVisitor) object).getModuleName();
                 String startMethodName = ((ModuleMetricsVisitor) object).getMethodName();
@@ -129,9 +131,8 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
             // 刻意练习。
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            return connection;
         }
+        return connection;
     }
 
     public MBeanServerConnection getConnection() {
