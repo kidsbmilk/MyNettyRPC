@@ -36,6 +36,9 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
         final String module = moduleName.trim();
 
         // FIXME: JMX度量临界区要注意线程间的并发竞争，否则会统计数据失真
+        // 上面这个FIXME是指，如果存在线程间的竞争，会使统计数据失真，作者这里为了避免统计数据失真，在临界区里来避免竞争了，
+        // 但是也导致MessageRecvInitializeTask.injectInvoke里的异步调用并行改串行的问题，见那里的注释。
+
         // 见FilterIterator类的注释，这个类将封装一个iterator，只有满足predicate.evaluate条件时才返回一个对象。
         Iterator iterator = new FilterIterator(visitorList.iterator(), new Predicate() {
             public boolean evaluate(Object object) {

@@ -42,7 +42,7 @@ public class MessageRecvInitializeTask extends AbstractMessageRecvInitializeTask
             Method method = ReflectionUtils.getDeclaredMethod(cls, request.getMethodName(), request.getTypeParameters());
             utils.listMethod(method, false);
             String signatureMethod = utils.getProvider().toString();
-            visitor.set(ModuleMetricsHandler.getInstance().getVisitor(request.getClassName(), signatureMethod));
+            visitor.set(ModuleMetricsHandler.getInstance().getVisitor(request.getClassName(), signatureMethod)); // 这里是串行的，将会使并发请求的异步调用变为串行的，在NettyRPC 2.5的README.md里提到了。
             // 上面的visitor相当于创建了与ModuleName、MethodName相对应的存储结构，用于存储调用统计信息。
             // 下面的facade是创建了一系列不同类型的与上面的visitor相关的事件。
             facade.set(new InvokeEventBusFacade(ModuleMetricsHandler.getInstance(), visitor.get().getModuleName(), visitor.get().getMethodName()));
