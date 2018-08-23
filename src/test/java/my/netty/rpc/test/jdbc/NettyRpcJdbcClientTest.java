@@ -21,7 +21,7 @@ public class NettyRpcJdbcClientTest {
 //            p.setId(1);
             p.setName("world222");
             p.setAge(6);
-            p.setBirthday(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2018-08-11 13:03:00"));
+            p.setBirthday(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2018-08-12 12:12:12"));
             int result = manage.save(p);
             manage.query(p); // 这个查找要指定准确的id以及其他三个参数才会成功的。
             System.out.println("call pojo rpc result: " + result);

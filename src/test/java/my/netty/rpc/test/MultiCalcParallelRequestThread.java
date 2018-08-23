@@ -1,5 +1,6 @@
 package my.netty.rpc.test;
 
+import my.netty.rpc.exception.InvokeTimeoutException;
 import my.netty.rpc.services.MultiCalculate;
 
 import java.util.concurrent.CountDownLatch;
@@ -23,13 +24,14 @@ public class MultiCalcParallelRequestThread implements Runnable {
     public void run() {
         try {
             signal.await();
-
             int multi = calc.multi(taskNumber, taskNumber);
             System.out.println("calc multi result:[" + multi + "]");
-
-            finish.countDown();
         } catch (InterruptedException e) {
             Logger.getLogger(MultiCalcParallelRequestThread.class.getName()).log(Level.SEVERE, null, e);
+        } catch (InvokeTimeoutException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            finish.countDown();
         }
     }
 }

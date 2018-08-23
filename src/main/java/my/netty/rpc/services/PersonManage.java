@@ -8,6 +8,8 @@ public interface PersonManage {
 
     void query(Person p);
 
+    void query(long timeout);
+
     void check();
 
     boolean checkAge(Person p);

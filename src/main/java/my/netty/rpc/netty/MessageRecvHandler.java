@@ -22,10 +22,8 @@ public class MessageRecvHandler extends ChannelInboundHandlerAdapter {
         MessageRequest request = (MessageRequest) msg;
         MessageResponse response = new MessageResponse();
 //        MessageRecvInitializeTask recvTask = new MessageRecvInitializeTask(request, response, handlerMap);
-        boolean isMetrics = (RpcSystemConfig.SYSTEM_PROPERTY_JMX_INVOKE_METRICS != 0);
-        Callable<Boolean> recvTask = isMetrics ?
-                new MessageRecvInitializeTask(request, response, handlerMap) :
-                new MessageRecvInitializeTaskAdapter(request, response, handlerMap); // 几个父类中的抽象方法的实现为空。
+        RecvInitializeTaskFacade facade = new RecvInitializeTaskFacade(request, response, handlerMap);
+        Callable<Boolean> recvTask = facade.getTask();
         MessageRecvExecutor.submit(recvTask, ctx, request, response);
 //        System.out.println(ctx.channel().remoteAddress());
     }

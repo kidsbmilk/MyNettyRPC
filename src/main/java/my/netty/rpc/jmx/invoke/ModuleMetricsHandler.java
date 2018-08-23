@@ -1,10 +1,13 @@
 package my.netty.rpc.jmx.invoke;
 
+import my.netty.rpc.event.invoke.event.listener.EventNotificationListener;
 import my.netty.rpc.netty.MessageRecvExecutor;
 import my.netty.rpc.parallel.AbstractDaemonThread;
+import my.netty.rpc.parallel.SemaphoreWrapper;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
 import org.apache.commons.lang3.StringUtils;
+import org.omg.CORBA.PRIVATE_MEMBER;
 
 import javax.management.*;
 import javax.management.remote.*;
@@ -12,6 +15,9 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.rmi.registry.LocateRegistry;
 import java.util.Iterator;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Semaphore;
 
 import static my.netty.rpc.core.RpcSystemConfig.DELIMITER;
 
@@ -22,10 +28,14 @@ import static my.netty.rpc.core.RpcSystemConfig.DELIMITER;
 public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
 
     public final static String MBEAN_NAME = "nettyrpc:type=ModuleMetricsHandler";
-
-
+    public final static int MODULE_METRICS_JMX_PORT = 1098;
+    private String moduleMetricsJmxUrl = "";
+    private Semaphore semaphore = new Semaphore(0);
+    private SemaphoreWrapper semaphoreWrapper = new SemaphoreWrapper(semaphore);
     private static final ModuleMetricsHandler INSTANCE = new ModuleMetricsHandler(); // 单例模式
     private MBeanServerConnection connection;
+    private CountDownLatch latch = new CountDownLatch(1);
+    private EventNotificationListener listener = new EventNotificationListener();
 
     public static ModuleMetricsHandler getInstance() {
         return INSTANCE;
@@ -79,6 +89,7 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
             public void run() {
                 MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
                 try {
+                    latch.await();
                     LocateRegistry.createRegistry(MODULE_METRICS_JMX_PORT);
                     MessageRecvExecutor ref = MessageRecvExecutor.getInstance();
                     String ipAddr = StringUtils.isNotEmpty(ref.getServerAddress()) ? StringUtils.substringBeforeLast(ref.getServerAddress(), DELIMITER) : "localhost";
@@ -96,7 +107,7 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
 
                     System.out.printf("NettyRPC JMX server is start success!\njmx-url:[ %s ]\n\n", moduleMetricsJmxUrl);
                 } catch (IOException | MBeanRegistrationException | InstanceAlreadyExistsException | NotCompliantMBeanException |
-                        MalformedObjectNameException | InstanceNotFoundException e) {
+                        MalformedObjectNameException | InstanceNotFoundException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -108,6 +119,11 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
         try {
             ObjectName name = new ObjectName(MBEAN_NAME);
             mbs.unregisterMBean(name);
+            ExecutorService executorService = getExecutor();
+            executorService.shutdown();
+            while(!executorService.isTerminated()) { // TODO-THIS:这个是循环检测，不需要改一下吗？
+                ;
+            }
         } catch (MalformedObjectNameException | InstanceNotFoundException | MBeanRegistrationException e) {
             e.printStackTrace();
         }
@@ -140,5 +156,13 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
 
     public MBeanServerConnection getConnection() {
         return connection;
+    }
+
+    public CountDownLatch getLatch() {
+        return latch;
+    }
+
+    public void setLatch(CountDownLatch latch) {
+        this.latch = latch;
     }
 }

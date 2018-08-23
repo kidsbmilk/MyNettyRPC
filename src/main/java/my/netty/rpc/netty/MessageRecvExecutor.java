@@ -154,7 +154,7 @@ public class MessageRecvExecutor {
                     public void operationComplete(final ChannelFuture channelFuture) throws Exception {
 //                        System.out.println("run future Listener thread : " + Thread.currentThread()); // 在boss的nioEventLoopGroup中执行。
                         if (channelFuture.isSuccess()) {
-                            System.out.printf("Netty RPC Server start success!\nip:%s\nport:%d\nprotocol:%s\nstart-time:%s\njmx-invoke-metrics:%s\n\n", host, port, serializeProtocol, ModuleMetricsHandler.getStartTime(), (RpcSystemConfig.SYSTEM_PROPERTY_JMX_INVOKE_METRICS != 0 ? "open" : "close"));
+                            System.out.printf("Netty RPC Server start success!\nip:%s\nport:%d\nprotocol:%s\nstart-time:%s\njmx-invoke-metrics:%s\n\n", host, port, serializeProtocol, ModuleMetricsHandler.getStartTime(), (RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_SUPPORT ? "open" : "close"));
                             ExecutorCompletionService<Boolean> completionService = new ExecutorCompletionService<Boolean>(executor);
                             completionService.submit(new ApiEchoResolver(host, echoApiPort));
                         }

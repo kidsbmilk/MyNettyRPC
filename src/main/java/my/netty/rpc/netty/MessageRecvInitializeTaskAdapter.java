@@ -8,7 +8,7 @@ import java.util.Map;
 // 几个父类中的抽象方法的实现为空
 public class MessageRecvInitializeTaskAdapter extends AbstractMessageRecvInitializeTask {
 
-    MessageRecvInitializeTaskAdapter(MessageRequest request, MessageResponse response, Map<String, Object> handlerMap) {
+    public MessageRecvInitializeTaskAdapter(MessageRequest request, MessageResponse response, Map<String, Object> handlerMap) {
         super(request, response, handlerMap);
     }
 

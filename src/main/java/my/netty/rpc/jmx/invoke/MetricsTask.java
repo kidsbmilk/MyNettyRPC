@@ -44,7 +44,7 @@ public class MetricsTask implements Runnable {
             long[] invokeHistogram = new long[length];
             Arrays.fill(invokeHistogram, 0L);
             String lastStackTraceDetail = "";
-            long lastErrorTime = list.get(0).getErrorLastTime();
+            long lastErrorTime = list.get(0).getErrorLastTimeLongVal();
 
             ModuleMetrics metrics = new ModuleMetrics();
             metrics.setInvokeCount(invokeCount);

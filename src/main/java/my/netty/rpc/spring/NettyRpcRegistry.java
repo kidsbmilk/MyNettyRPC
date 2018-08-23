@@ -1,6 +1,7 @@
 package my.netty.rpc.spring;
 
 import my.netty.rpc.core.RpcSystemConfig;
+import my.netty.rpc.jmx.invoke.HashModuleMetricsVisitor;
 import my.netty.rpc.jmx.invoke.ModuleMetricsHandler;
 import my.netty.rpc.jmx.system.ThreadPoolMonitorProvider;
 import my.netty.rpc.netty.MessageRecvExecutor;
@@ -20,7 +21,7 @@ public class NettyRpcRegistry implements InitializingBean, DisposableBean {
     public void destroy() throws Exception {
         MessageRecvExecutor.getInstance().stop();
 
-        if(RpcSystemConfig.SYSTEM_PROPERTY_JMX_INVOKE_METRICS != 0) {
+        if(RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_SUPPORT) {
             ModuleMetricsHandler.getInstance().stop();
         }
     }
@@ -43,7 +44,8 @@ public class NettyRpcRegistry implements InitializingBean, DisposableBean {
 
         ref.start();
 
-        if(RpcSystemConfig.SYSTEM_PROPERTY_JMX_INVOKE_METRICS != 0) {
+        if(RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_SUPPORT) {
+            HashModuleMetricsVisitor.getInstance().signal();
             ModuleMetricsHandler.getInstance(). start();
         }
     }

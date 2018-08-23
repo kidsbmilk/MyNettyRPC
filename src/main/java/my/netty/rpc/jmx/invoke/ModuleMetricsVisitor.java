@@ -1,6 +1,7 @@
 package my.netty.rpc.jmx.invoke;
 
 import com.alibaba.druid.util.Histogram;
+import my.netty.rpc.core.RpcSystemConfig;
 
 import javax.management.JMException;
 import javax.management.openmbean.*;
@@ -19,35 +20,7 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 // 从这里的实现可以发现：ModuleMetricsVisitor是ModuleMetricsVisitorMXBean的存储数据的核心部分。
 public class ModuleMetricsVisitor {
 
-    private String moduleName;
-    private String methodName;
-    // 以下四个变量通过java.util.concurrent.atomic.AtomicLongFieldUpdater的方式被使用了。
-    private volatile long invokeCount = 0L;
-    private volatile long invokeSuccCount = 0L;
-    private volatile long invokeFailCount = 0L;
-    private volatile long invokeFilterCount = 0L;
-    private long invokeTimespan = 0L;
-    private long invokeMinTimespan = 3600 * 1000L;
-    private long invokeMaxTimespan = 0L;
-    private long invokeHistogram[];
-    private Exception lastStackTrace;
-    private String lastStackTraceDetail;
-    private long lastErrorTime;
-
-    private Histogram histogram = new Histogram(TimeUnit.MILLISECONDS,
-            new long[]{1, 10, 100, 1000, 10 * 1000, 100 * 1000, 1000 * 1000});
-
-    /**
-     * java.util.concurrent.atomic.AtomicLongFieldUpdater类注释翻译如下：
-     * 基于反射的实用程序，可以对指定类的指定{@code volatile long}字段进行原子更新。 此类设计用于原子数据结构，其中同一节点的多个字段独立地受原子更新的影响。
-     * 请注意，此类中{@code compareAndSet}方法的保证比其他原子类弱。 由于此类无法确保该字段的所有使用都适用于原子访问的目的，
-     * 因此只能在同一更新程序上对{@code compareAndSet}和{@code set}的其他调用保证原子性。
-     */
-    private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeCount");
-    private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeSuccCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeSuccCount");
-    private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeFailCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeFailCount");
-    private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeFilterCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeFilterCount");
-
+    private static final long DEFAULT_INVOKE_MIN_TIMESPAN = 3600 * 1000L;
     // 以下三个用于创建下面的javax.management.openmbean.CompositeType类变量。
     private static final String[] THROWABLE_ITEMNAMES = {"message", "class", "stackTrace"};
     private static final String[] THROWABLE_ITEMDESCRIPTIONS = {"message", "class", "stackTrace"};
@@ -63,18 +36,47 @@ public class ModuleMetricsVisitor {
      */
     private static CompositeType THROWABLE_COMPOSITE_TYPE = null;
 
+    private String moduleName;
+    private String methodName;
+    // 以下四个变量通过java.util.concurrent.atomic.AtomicLongFieldUpdater的方式被使用了。
+    private volatile long invokeCount = 0L;
+    private volatile long invokeSuccCount = 0L;
+    private volatile long invokeFailCount = 0L;
+    private volatile long invokeFilterCount = 0L;
+    private long invokeTimespan = 0L;
+    private long invokeMinTimespan = DEFAULT_INVOKE_MIN_TIMESPAN;
+    private long invokeMaxTimespan = 0L;
+    private long[] invokeHistogram;
+    private Exception lastStackTrace;
+    private String lastStackTraceDetail;
+    private long lastErrorTime;
+    private int hashKey = 0;
+
+    private Histogram histogram = new Histogram(TimeUnit.MILLISECONDS,
+            new long[]{1, 10, 100, 1000, 10 * 1000, 100 * 1000, 1000 * 1000});
+
+    /**
+     * java.util.concurrent.atomic.AtomicLongFieldUpdater类注释翻译如下：
+     * 基于反射的实用程序，可以对指定类的指定{@code volatile long}字段进行原子更新。 此类设计用于原子数据结构，其中同一节点的多个字段独立地受原子更新的影响。
+     * 请注意，此类中{@code compareAndSet}方法的保证比其他原子类弱。 由于此类无法确保该字段的所有使用都适用于原子访问的目的，
+     * 因此只能在同一更新程序上对{@code compareAndSet}和{@code set}的其他调用保证原子性。
+     */
+    private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeCount");
+    private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeSuccCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeSuccCount");
+    private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeFailCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeFailCount");
+    private final AtomicLongFieldUpdater<ModuleMetricsVisitor> invokeFilterCountUpdater = AtomicLongFieldUpdater.newUpdater(ModuleMetricsVisitor.class, "invokeFilterCount");
+
     @ConstructorProperties({"moduleName", "methodName"})
     public ModuleMetricsVisitor(String moduleName, String methodName) {
         this.moduleName = moduleName;
         this.methodName = methodName;
+        clear();
     }
 
-    public void reset() {
-        moduleName = "";
-        methodName = "";
+    public void clear() {
         lastStackTraceDetail = "";
         invokeTimespan = 0L;
-        invokeMinTimespan = 0L;
+        invokeMinTimespan = DEFAULT_INVOKE_MIN_TIMESPAN;
         invokeMaxTimespan = 0L;
         lastErrorTime = 0L;
         lastStackTrace = null;
@@ -83,6 +85,20 @@ public class ModuleMetricsVisitor {
         invokeFailCountUpdater.set(this, 0);
         invokeFilterCountUpdater.set(this, 0);
         histogram.reset();
+    }
+
+    public void reset() {
+        moduleName = "";
+        methodName = "";
+        clear();
+    }
+
+    public void setErrorLastTimeLongVal(long lastErrorTime) {
+        this.lastErrorTime = lastErrorTime;
+    }
+
+    public long getErrorLastTimeLongVal() {
+        return lastErrorTime;
     }
 
     public String getErrorLastTime() {
@@ -114,6 +130,10 @@ public class ModuleMetricsVisitor {
         this.lastStackTrace = lastStackTrace;
         this.lastStackTraceDetail = getLastStackTrace();
         this.lastErrorTime = System.currentTimeMillis();
+    }
+
+    public void setLastStackTraceDetail(String lastStackTraceDetail) {
+        this.lastStackTraceDetail = lastStackTraceDetail;
     }
 
     public String getLastStackTraceDetail() {
@@ -212,12 +232,20 @@ public class ModuleMetricsVisitor {
         return this.invokeFilterCountUpdater.incrementAndGet(this);
     }
 
+    public void setHistogram(Histogram histogram) {
+        this.histogram = histogram;
+    }
+
     public Histogram getHistogram() {
         return histogram;
     }
 
     public long[] getInvokeHistogram() {
-        return histogram.toArray();
+        return RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_HASH_SUPPORT ? invokeHistogram : histogram.toArray();
+    }
+
+    public void setInvokeHistogram(long[] invokeHistogram) {
+        this.invokeHistogram = invokeHistogram;
     }
 
     public long getInvokeTimespan() {
@@ -242,5 +270,33 @@ public class ModuleMetricsVisitor {
 
     public void setInvokeMaxTimespan(long invokeMaxTimespan) {
         this.invokeMaxTimespan = invokeMaxTimespan;
+    }
+
+    public int getHashKey() {
+        return hashKey;
+    }
+
+    public void setHashKey(int hashKey) {
+        this.hashKey = hashKey;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((moduleName == null) ? 0 : moduleName.hashCode());
+        result = prime * result + ((methodName == null) ? 0 : methodName.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return moduleName.equals(((ModuleMetricsVisitor) obj).moduleName) && methodName.equals(((ModuleMetricsVisitor) obj).methodName);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("<<[moduleName:%s]-[methodName:%s]>> [invokeCount:%d][invokeSuccCount:%d][invokeFilterCount:%d][invokeTimespan:%d][invokeMinTimespan:%d][invokeMaxTimespan:%d][invokeFailCount:%d][lastErrorTime:%d][lastStackTraceDetail:%s]\n",
+                moduleName, methodName, invokeCount, invokeSuccCount, invokeFilterCount, invokeTimespan, invokeMinTimespan, invokeMaxTimespan, invokeFailCount, lastErrorTime, lastStackTraceDetail);
     }
 }
