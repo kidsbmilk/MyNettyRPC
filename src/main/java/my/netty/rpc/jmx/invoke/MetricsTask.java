@@ -31,7 +31,7 @@ public class MetricsTask implements Runnable {
         }
     }
 
-    private void count(List<ModuleMetricsVisitor> list) {
+    private void count(List<ModuleMetricsVisitor> list) { // 见accumulate里的说明，理论上：result.size() <= list.size().
         for(int i = 0; i < result.size(); i ++) {
             long invokeCount = 0L;
             long invokeSuccCount = 0L;
@@ -88,7 +88,7 @@ public class MetricsTask implements Runnable {
         String lastStackTraceDetail = metrics.getLastStackTraceDetail();
         long lastErrorTime = metrics.getLastErrorTime();
 
-        for(int i = 0; i < list.size(); i ++) {
+        for(int i = 0; i < list.size(); i ++) { // 过滤list里的元素，比较每个元素是否与resut.get(index)相同。
             boolean find = equals(result.get(index).getModuleName(), list.get(i).getMethodName(), result.get(index).getMethodName(), list.get(i).getMethodName());
             if(find) {
                 invokeCount += list.get(i).getInvokeCount();
@@ -140,7 +140,7 @@ public class MetricsTask implements Runnable {
         Iterator iterator = new UniqueFilterIterator(list.iterator());
         while(iterator.hasNext()) {
             ModuleMetricsVisitor visitor = (ModuleMetricsVisitor) iterator.next();
-            result.add(new ModuleMetricsVisitor(visitor.getModuleName(), visitor.getMethodName()));
+            result.add(new ModuleMetricsVisitor(visitor.getModuleName(), visitor.getMethodName())); // result里的对象没有重复的，理论上：result.size() <= list.size()
         }
 
         count(list);
