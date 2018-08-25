@@ -79,8 +79,8 @@ public class AsyncInvoker {
         }); // 通过这个future可以查询异步调用的结果。这里又进一步封装成了AsyncCallResult，AsyncCallResult.loadFuture代理了future.get操作。
         // 这里之所以将future封装成AsyncCallResult，是为了创建二次代理。
         AsyncCallResult result = new AsyncCallResult(returnClass, future, RpcSystemConfig.SYSTEM_PROPERTY_ASYNC_MESSAGE_CALLBACK_TIMEOUT);
-        R asyncProxy = (R) result.getResult();
+        R asyncProxyObject = (R) result.getResultProxyObject();
 
-        return asyncProxy;
+        return asyncProxyObject;
     }
 }

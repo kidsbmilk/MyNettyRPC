@@ -48,7 +48,7 @@ public class AsyncCallResult {
         }
     }
 
-    public Object getResult() {
+    public Object getResultProxyObject() {
         Class proxyClass = AsyncProxyCache.get(returnClass.getName());
         if(proxyClass == null) {
             /**
