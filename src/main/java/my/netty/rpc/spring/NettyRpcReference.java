@@ -69,7 +69,7 @@ public class NettyRpcReference implements FactoryBean, InitializingBean, Disposa
     // https://blog.csdn.net/liuxiao723846/article/details/73794128
     @Override
     public Object getObject() throws Exception {
-        return MessageSendExecutor.getInstance().execute(getObjectType()); // 注意：仅仅是返回一个对象（代理对象），并没有其他的动作。
+        return MessageSendExecutor.getInstance().getProxyObject(getObjectType()); // 注意：仅仅是返回一个对象（代理对象），并没有其他的动作。
     }
 
     @Override
