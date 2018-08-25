@@ -47,6 +47,18 @@ public class MessageCallBack {
         }
     }
 
+    private void await() {
+        boolean timeout = false;
+        try {
+            timeout = finish.await(RpcSystemConfig.SYSTEM_PROPERTY_ASYNC_MESSAGE_CALLBACK_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if(!timeout) {
+            throw new InvokeTimeoutException(RpcSystemConfig.TIMEOUT_RESPONSE_MSG);
+        }
+    }
+
     public void over(MessageResponse response) { // over有结束的意思，在这里的意思是：远程过程调用有结果返回了，在这里开始设置调用成功后的结果，
         // 远程调用结束了，本地得到结果后的处理还没结束。
         // MessageSendHandler.channelRead在得到服务器端的返回结果后，会调用这个over方法，来通知rpc调用已经结束了。
@@ -63,17 +75,5 @@ public class MessageCallBack {
         return !this.response.getError().equals(RpcSystemConfig.FILTER_RESPONSE_MSG)
                 && (!this.response.isReturnNotNull() ||
                 (this.response.isReturnNotNull() && this.response.getResult() != null));
-    }
-
-    private void await() {
-        boolean timeout = false;
-        try {
-            timeout = finish.await(RpcSystemConfig.SYSTEM_PROPERTY_ASYNC_MESSAGE_CALLBACK_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if(!timeout) {
-            throw new InvokeTimeoutException(RpcSystemConfig.TIMEOUT_RESPONSE_MSG);
-        }
     }
 }
