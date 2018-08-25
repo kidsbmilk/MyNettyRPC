@@ -186,6 +186,8 @@ MessageRecvExecutor.handlerMap一般是作为单例对象的成员变量使用�
 比如小的优化时，先判断MessageRecvExecutor.handlerMap是否已存在，如果不存在才加入其中。
 深层次的优化是，有多少服务要注册，就调用多少次此方法。
 
+10、测试客户端AsyncRpcTimeoutCallTest启动时为什么会显示两次：ThreadPool Core[threads:16, queues:-1]?
+MessageSendExecutor会引发一次创建线程池的调用，用于客户端执行代码，如果是异步调用，在AsyncInvoker中，还会有一个executor用于后端发起调用请求，所以会有两次创建线程池的地方。如果是非异步的调用，客户端只会有一次创建线程池的地方。
 
 
 

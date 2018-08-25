@@ -36,7 +36,7 @@ public class AsyncCallResult {
         } catch (InterruptedException e) {
             throw new AsyncCallException(e);
         } catch (Exception e) {
-            translateTimeoutException(e);
+            translateTimeoutException(e); // 这里处理的不是很漂亮，我感觉应该放在AsyncFuture里处理，重写继承的get方法，令其抛出自定义的异常。TODO-THIS.
             throw new AsyncCallException(e);
         }
     }
