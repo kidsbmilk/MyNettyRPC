@@ -200,7 +200,7 @@ public class ReflectionUtils {
         return m != 0 ? Modifier.toString(m) + " " : "";
     }
 
-    private String getType(Class<?> t) {
+    private String getClassType(Class<?> t) {
         StringBuilder brackets = new StringBuilder();
         while(t.isArray()) {
             brackets.append("[]");
@@ -209,19 +209,19 @@ public class ReflectionUtils {
         return t.getName() + brackets;
     }
 
-    private void listTypes(Class<?>[] types) {
+    private void listClassArrayTypes(Class<?>[] types) {
         for(int i = 0; i < types.length; i ++) {
             if(i > 0) {
                 provider.append(", ");
             }
-            provider.append(getType(types[i]));
+            provider.append(getClassType(types[i]));
         }
     }
 
     private void listField(Field f, boolean html) {
         provider.append(html ? "&nbsp&nbsp&nbsp&nbsp" : "    ")
                 .append(getModifiersString(f.getModifiers()))
-                .append(getType(f.getType()))
+                .append(getClassType(f.getType()))
                 .append(" ")
                 .append(f.getName())
                 .append(html ? ";<br>" : ";\n");
@@ -231,18 +231,18 @@ public class ReflectionUtils {
         provider.append(html ? "<br>&nbsp&nbsp&nbsp&nbsp" : "\n    ")
                 .append(getModifiersString(member.getModifiers()));
         if(member instanceof Method) {
-            provider.append(getType(((Method) member).getReturnType()))
+            provider.append(getClassType(((Method) member).getReturnType()))
                     .append(" ");
         }
         provider.append(member.getName())
                 .append("(");
-        listTypes(member.getParameterTypes());
+        listClassArrayTypes(member.getParameterTypes());
         provider.append(")");
         Class<?>[] exceptions = member.getExceptionTypes();
         if(exceptions.length > 0) {
             provider.append(" throws ");
         }
-        listTypes(exceptions);
+        listClassArrayTypes(exceptions);
         provider.append(";");
     }
 
@@ -304,7 +304,7 @@ public class ReflectionUtils {
             if(i > 0) {
                 type.append(", ");
             }
-            type.append(getType(types[i]));
+            type.append(getClassType(types[i]));
         }
         return type.toString();
     }
@@ -322,7 +322,7 @@ public class ReflectionUtils {
                     signatureMethod.append(modifiers);
                 }
 
-                signatureMethod.append(getType(((Method) member).getReturnType())).append(" ");
+                signatureMethod.append(getClassType(((Method) member).getReturnType())).append(" ");
 
                 signatureMethod.append(member.getName()).append("(");
                 signatureMethod.append(getClassType(member.getParameterTypes()));
@@ -331,7 +331,7 @@ public class ReflectionUtils {
                 if(exceptions.length > 0) {
                     signatureMethod.append(" throws ");
                 }
-                listTypes(exceptions);
+                listClassArrayTypes(exceptions);
                 signatureMethod.append(";");
                 list.add(signatureMethod.toString());
                 signatureMethod.delete(0, signatureMethod.length());
