@@ -196,7 +196,7 @@ public class ReflectionUtils {
         }
     }
 
-    private String modifiers(int m) {
+    private String getModifierString(int m) {
         return m != 0 ? Modifier.toString(m) + " " : "";
     }
 
@@ -220,7 +220,7 @@ public class ReflectionUtils {
 
     private void listField(Field f, boolean html) {
         provider.append(html ? "&nbsp&nbsp&nbsp&nbsp" : "    ")
-                .append(modifiers(f.getModifiers()))
+                .append(getModifierString(f.getModifiers()))
                 .append(getType(f.getType()))
                 .append(" ")
                 .append(f.getName())
@@ -229,7 +229,7 @@ public class ReflectionUtils {
 
     public void listMethod(Executable member, boolean html) {
         provider.append(html ? "<br>&nbsp&nbsp&nbsp&nbsp" : "\n    ")
-                .append(modifiers(member.getModifiers()));
+                .append(getModifierString(member.getModifiers()));
         if(member instanceof Method) {
             provider.append(getType(((Method) member).getReturnType()))
                     .append(" ");
@@ -248,7 +248,7 @@ public class ReflectionUtils {
 
     public void listRpcProviderDetail(Class<?> c, boolean html) {
         if(c.isInterface()) {
-            provider.append(modifiers(c.getModifiers())) // 得到接口的修饰符，在这个导出服务里，只有接口，是面向接口编程。
+            provider.append(getModifierString(c.getModifiers())) // 得到接口的修饰符，在这个导出服务里，只有接口，是面向接口编程。
                     .append(" ")
                     .append(c.getName()); // 接口名
             provider.append(html ? "&nbsp{<br>" : " {\n");
@@ -317,7 +317,7 @@ public class ReflectionUtils {
             for(Method member : methods) {
                 int modifiers = member.getModifiers();
                 if(Modifier.isAbstract(modifiers) && Modifier.isPublic(modifiers)) {
-                    signatureMethod.append(modifiers(Modifier.PUBLIC));
+                    signatureMethod.append(getModifierString(Modifier.PUBLIC));
                 } else {
                     signatureMethod.append(modifiers);
                 }
