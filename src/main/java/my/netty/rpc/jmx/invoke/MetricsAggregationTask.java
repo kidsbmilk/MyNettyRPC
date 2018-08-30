@@ -23,7 +23,7 @@ public class MetricsAggregationTask implements Runnable {
             try {
                 for(MetricsTask task : tasks) {
                     // System.out.println(task.getResult().get(0));
-                    visitors.add(task.getResult().get(0));
+                    visitors.add(task.getResultList().get(0));
                 }
             } finally {
                 latch.countDown();

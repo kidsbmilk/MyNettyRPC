@@ -35,7 +35,8 @@ public class HashModuleMetricsVisitor {
             try {
                 List<String> list = utils.getClassAllMethodSignature(Class.forName(key));
                 for(String signature : list) {
-                    List<ModuleMetricsVisitor> visitorList = new ArrayList<>();
+                    List<ModuleMetricsVisitor> visitorList = new ArrayList<>(); // 这里的visitor的moduleName以及methodName都一样，只是hashKey不一样，
+                    // 个数由RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_HASH_NUMS控制。
                     for(int i = 0; i < RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_HASH_NUMS; i ++) {
                         ModuleMetricsVisitor visitor = new ModuleMetricsVisitor(key, signature);
                         visitor.setHashKey(i);
