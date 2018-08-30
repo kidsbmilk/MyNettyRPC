@@ -33,7 +33,7 @@ public class HashModuleMetricsVisitor {
         while(iterator.hasNext()) {
             key = iterator.next();
             try {
-                List<String> list = utils.getClassMethodSignature(Class.forName(key));
+                List<String> list = utils.getClassAllMethodSignature(Class.forName(key));
                 for(String signature : list) {
                     List<ModuleMetricsVisitor> visitorList = new ArrayList<>();
                     for(int i = 0; i < RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_HASH_NUMS; i ++) {

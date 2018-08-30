@@ -310,7 +310,7 @@ public class ReflectionUtils {
         return type.toString();
     }
 
-    public List<String> getClassMethodSignature(Class<?> cls) { // 使用javap -s 类名可以显示类的方法签名
+    public List<String> getClassAllMethodSignature(Class<?> cls) { // 使用javap -s 类名可以显示类的方法签名
         List<String> list = new ArrayList<>();
         if(cls.isInterface()) {
             Method[] methods = cls.getDeclaredMethods();
