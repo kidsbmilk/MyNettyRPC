@@ -298,7 +298,8 @@ public class ReflectionUtils {
         return null;
     }
 
-    private String getClassType(Class<?>[] types) {
+    // 区别get*与list*方法，list*方法用到了内部的一个变量provider，而get*方法是直接返回String。
+    private String getClassArrayType(Class<?>[] types) {
         StringBuilder type = new StringBuilder();
         for(int i = 0; i < types.length; i ++) {
             if(i > 0) {
@@ -325,16 +326,13 @@ public class ReflectionUtils {
                 signatureMethod.append(getClassType(((Method) member).getReturnType())).append(" ");
 
                 signatureMethod.append(member.getName()).append("(");
-                signatureMethod.append(getClassType(member.getParameterTypes()));
+                signatureMethod.append(getClassArrayType(member.getParameterTypes()));
                 signatureMethod.append(")");
                 Class<?>[] exceptions = member.getExceptionTypes();
                 if(exceptions.length > 0) {
                     signatureMethod.append(" throws ");
                 }
-                clearProvider();
-                listClassArrayTypes(exceptions); // 这里用到provider了，所以上一步先清空一下。
-                signatureMethod.append(getProvider().toString());
-                clearProvider();
+                signatureMethod.append(getClassArrayType(exceptions));
                 signatureMethod.append(";");
                 list.add(signatureMethod.toString());
                 signatureMethod.delete(0, signatureMethod.length());
