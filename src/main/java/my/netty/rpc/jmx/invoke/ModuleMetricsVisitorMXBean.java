@@ -6,7 +6,7 @@ import java.util.List;
 // MBean与MXBean的区别：https://blog.csdn.net/expleeve/article/details/37502501
 public interface ModuleMetricsVisitorMXBean {
 
-    List<ModuleMetricsVisitor> getModuleMetricsVisitor();
+    List<ModuleMetricsVisitor> getModuleMetricsVisitorList();
 
     void addModuleMetricsVisitor(ModuleMetricsVisitor visitor);
 }

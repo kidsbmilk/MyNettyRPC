@@ -84,7 +84,7 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
     protected abstract ModuleMetricsVisitor getVisitorInCriticalSection(String moduleName, String methodName);
 
     @Override
-    public List<ModuleMetricsVisitor> getModuleMetricsVisitor() {
+    public List<ModuleMetricsVisitor> getModuleMetricsVisitorList() {
         if(RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_HASH_SUPPORT) {
             CountDownLatch latch = new CountDownLatch(1);
             MetricsAggregationTask aggregationTask = new MetricsAggregationTask(aggregationTaskFlag, tasks, visitorList, latch);
