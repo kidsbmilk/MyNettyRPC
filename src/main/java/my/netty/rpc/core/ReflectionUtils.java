@@ -309,7 +309,7 @@ public class ReflectionUtils {
         return type.toString();
     }
 
-    public List<String> getClassMethodSignature(Class<?> cls) {
+    public List<String> getClassMethodSignature(Class<?> cls) { // 使用javap -s 类名可以显示类的方法签名
         List<String> list = new ArrayList<>();
         if(cls.isInterface()) {
             Method[] methods = cls.getDeclaredMethods();
@@ -331,7 +331,10 @@ public class ReflectionUtils {
                 if(exceptions.length > 0) {
                     signatureMethod.append(" throws ");
                 }
-                listClassArrayTypes(exceptions);
+                clearProvider();
+                listClassArrayTypes(exceptions); // 这里用到provider了，所以上一步先清空一下。
+                signatureMethod.append(getProvider().toString());
+                clearProvider();
                 signatureMethod.append(";");
                 list.add(signatureMethod.toString());
                 signatureMethod.delete(0, signatureMethod.length());
