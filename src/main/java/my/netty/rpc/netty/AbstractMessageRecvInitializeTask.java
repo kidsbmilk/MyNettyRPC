@@ -30,6 +30,27 @@ public abstract class AbstractMessageRecvInitializeTask implements Callable<Bool
     public Boolean call() {
         try {
             acquire();
+            /**
+             * ModuleMetricsVisitor是最终存统计数据的地方，见ModuleMetricsVisitor类注释，
+             *
+             * AbstractModuleMetricsHandler.getVisitor方法之所以使用并发措施（ConcurrentLinkedQueue），是因为可能有不同方法的不同统计任务在修改AbstractModuleMetricsHandler.visitorList。
+             * （之前对这个ConcurrentLinkedQueue理解的不够：
+             * 并发队列-无界非阻塞队列 ConcurrentLinkedQueue 原理探究：http://www.importnew.com/25668.html
+             * 聊聊并发（六）ConcurrentLinkedQueue的实现原理分析：http://ifeve.com/concurrentlinkedqueue/
+             *
+             * 作者的用法好奇怪，得分析一下。TODO-THIS.
+             * ）
+             *
+             * AbstractMessageRecvInitializeTask.call()方法之所以使用acquire以及release()（其实是全局锁），是因为防止相同方法的不同统计任务会把同一个visitor改乱了（不同方法的不同统计任务
+             * 修改的是不同的visitor，所以不会乱掉）。
+             *
+             * 作者能考虑到上面两种并发，真是太厉害了。
+             *
+             * 之前的分析有点偏差。
+             *
+             * 而后面的HashMessageRecvInitializeTask的分块临界区，也是为了解决上面问题。
+             * （真是道理都是相通的，要弄明白问题出在哪里，带着问题去学习，有问题才能知道自己究竟会不会、会什么。）
+             */
             response.setMessageId(request.getMessageId());
             injectInvoke();
             Object result = reflect(request); // 在这里服务器端处理客户端发来的调用请求。

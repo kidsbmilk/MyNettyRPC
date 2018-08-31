@@ -84,7 +84,7 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
     protected abstract ModuleMetricsVisitor getVisitorInCriticalSection(String moduleName, String methodName);
 
     @Override
-    public List<ModuleMetricsVisitor> getModuleMetricsVisitorList() {
+    public List<ModuleMetricsVisitor> getModuleMetricsVisitorList() { // 这个方法是MXBean接口里的，是供jconsole远程使用的，在目前的代码中没有调用的地方。
         if(RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_HASH_SUPPORT) {
             CountDownLatch latch = new CountDownLatch(1);
             visitorList.clear(); // 这里先把visitorList清空，MetricsAggregationTask.run里又会收集MetricsTask里的ModuleMetricsVisitor到visitorList。
