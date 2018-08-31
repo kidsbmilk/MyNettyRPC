@@ -28,6 +28,9 @@ public class HashMessageRecvInitializeTask extends AbstractMessageRecvInitialize
         hashKey = HashCriticalSection.hash(request.getMessageId());
     }
 
+    // 作者又是刻意在学习、练习，在MessageRecvInitializeTask中，作者使用了watcher那一套通信机制来实现数据交换，
+    // 到这一版，已经抛弃那一套了。
+    // 可以对比一下这里的父类抽象方法的实现与MessageRecvInitializeTask中父类抽象方法的实现。
     @Override
     protected void injectInvoke() {
         Class cls = handlerMap.get(request.getClassName()).getClass();
