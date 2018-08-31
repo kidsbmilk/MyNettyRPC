@@ -8,7 +8,7 @@ import java.util.*;
 
 public class HashModuleMetricsVisitor {
 
-    private List<List<ModuleMetricsVisitor>> hashVisitorList = new ArrayList<>();
+    private List<List<ModuleMetricsVisitor>> hashVisitorLists = new ArrayList<>();
 
     private static final HashModuleMetricsVisitor INSTANCE = new HashModuleMetricsVisitor();
 
@@ -21,7 +21,7 @@ public class HashModuleMetricsVisitor {
     }
 
     public int getHashModuleMetricsVisitorListsSize() {
-        return hashVisitorList.size();
+        return hashVisitorLists.size();
     }
 
     private void init() {
@@ -42,7 +42,7 @@ public class HashModuleMetricsVisitor {
                         visitor.setHashKey(i);
                         visitorList.add(visitor);
                     }
-                    hashVisitorList.add(visitorList);
+                    hashVisitorLists.add(visitorList);
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -55,10 +55,10 @@ public class HashModuleMetricsVisitor {
     }
 
     public List<List<ModuleMetricsVisitor>> getHashVisitorLists() {
-        return hashVisitorList;
+        return hashVisitorLists;
     }
 
-    public void setHashVisitorList(List<List<ModuleMetricsVisitor>> hashVisitorList) {
-        this.hashVisitorList = hashVisitorList;
+    public void setHashVisitorLists(List<List<ModuleMetricsVisitor>> hashVisitorLists) {
+        this.hashVisitorLists = hashVisitorLists;
     }
 }

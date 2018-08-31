@@ -3,7 +3,7 @@ package my.netty.rpc.jmx.invoke;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-public class MetricsAggregationTask implements Runnable {
+public class MetricsAggregationTask implements Runnable { // 这个类的目的是用于CyclicBarrier，等所有指定的线程都就绪后执行这里的run方法。
 
     private boolean flag = false;
     private MetricsTask[] tasks;
@@ -19,11 +19,11 @@ public class MetricsAggregationTask implements Runnable {
 
     @Override
     public void run() {
-        if(flag) {
+        if(flag) { // 见AbstractModuleMetricsHandler.getModuleMetricsVisitorList里的注释
             try {
                 for(MetricsTask task : tasks) {
                     // System.out.println(task.getResult().get(0));
-                    visitorList.add(task.getResultList().get(0));
+                    visitorList.add(task.getResultList().get(0)); // 为什么只取第一个？ TODO-THIS.
                 }
             } finally {
                 latch.countDown();

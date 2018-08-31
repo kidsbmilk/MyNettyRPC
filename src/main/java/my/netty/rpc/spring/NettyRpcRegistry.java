@@ -45,8 +45,8 @@ public class NettyRpcRegistry implements InitializingBean, DisposableBean {
         ref.start();
 
         if(RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_SUPPORT) {
-            HashModuleMetricsVisitor.getInstance().signal();
-            ModuleMetricsHandler.getInstance(). start();
+            HashModuleMetricsVisitor.getInstance().signal(); // HashModuleMetricsVisitor.init()会初始化一些东西，然后初始化完后，才会通知ModuleMetricsHandler去启动JMX服务。
+            ModuleMetricsHandler.getInstance(). start(); // 这里会等待上面的HashModuleMetricsVisitor完成初始化。
         }
     }
 

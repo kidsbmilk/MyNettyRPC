@@ -89,7 +89,7 @@ public class ModuleMetricsHandler extends AbstractModuleMetricsHandler {
             public void run() {
                 MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
                 try {
-                    latch.await();
+                    latch.await(); // 见NettyRpcRegistry.afterPropertiesSet里的注释
                     LocateRegistry.createRegistry(MODULE_METRICS_JMX_PORT);
                     MessageRecvExecutor ref = MessageRecvExecutor.getInstance();
                     String ipAddr = StringUtils.isNotEmpty(ref.getServerAddress()) ? StringUtils.substringBeforeLast(ref.getServerAddress(), DELIMITER) : "localhost";
