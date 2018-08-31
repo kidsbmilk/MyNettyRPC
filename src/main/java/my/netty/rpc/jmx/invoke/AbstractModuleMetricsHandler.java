@@ -87,16 +87,20 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
     public List<ModuleMetricsVisitor> getModuleMetricsVisitorList() {
         if(RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_HASH_SUPPORT) {
             CountDownLatch latch = new CountDownLatch(1);
+            visitorList.clear(); // 这里先把visitorList清空，MetricsAggregationTask.run里又会收集MetricsTask里的ModuleMetricsVisitor到visitorList。
+            // 具体收集过程是这样的：一开始MetricsAggregationTask里的flag是false，然后在MetricsTask.run()里的第一次barrier.await()时，把flag设置为true，在MetricsTask.run()里的第二次barrier.await()时，
+            // 再执行MetricsAggregationTask.run就可以完成收集了。
+            // 其实这里的线程与tasks里的线程是并行的，需要把clear()的操作放在前面，避免出现收集后又清空的情况出现。
             MetricsAggregationTask aggregationTask = new MetricsAggregationTask(aggregationTaskFlag, tasks, visitorList, latch);
             CyclicBarrier barrier = new CyclicBarrier(METRICS_VISITOR_LIST_SIZE, aggregationTask);
             // 当所指定的一批线程都到达barrier.await后，开始执行aggregationTask.run()
-            for(int i = 0; i < METRICS_VISITOR_LIST_SIZE; i ++) {
+            for(int i = 0; i < METRICS_VISITOR_LIST_SIZE; i ++) { // 这个METRICS_VISITOR_LIST_SIZE是：比如有5个接口类，每个接口有3个方法，那么这个METRICS_VISITOR_LIST_SIZE值为5 * 3，
+                // 而这15个元素都是List<ModuleMetricsVisitor>类型的。具体见HashModuleMetricsVisitor里的代码。
                 tasks[i] = new MetricsTask(barrier, HashModuleMetricsVisitor.getInstance().getHashVisitorLists().get(i));
                 executor.execute(tasks[i]);
             }
 
             try {
-                visitorList.clear();
                 latch.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();

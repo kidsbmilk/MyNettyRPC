@@ -24,8 +24,8 @@ public class MetricsTask implements Runnable {
     public void run() {
         try {
             barrier.await();
-            accumulate();
-            barrier.await();
+            accumulate(); // 收集数据，注意，这里是并行收集的，每个线程的visitorList并不一样，见AbstractModuleMetricsHandler.getModuleMetricsVisitorList里的设置。
+            barrier.await(); // 见AbstractModuleMetricsHandler.getModuleMetricsVisitorList里的注释。
         } catch (InterruptedException | BrokenBarrierException e) {
             e.printStackTrace();
         }
@@ -154,8 +154,8 @@ public class MetricsTask implements Runnable {
         return resultList;
     }
 
-    public void setResultList(List<ModuleMetricsVisitor> result) {
-        this.resultList = result;
+    public void setResultList(List<ModuleMetricsVisitor> resultList) {
+        this.resultList = resultList;
     }
 
     private class ModuleMetrics {
