@@ -332,6 +332,8 @@ public class ReflectionUtils {
 
                 // 可以看出，这里是先判断了一样是否为接口，然后才输出所有方法的，也体现了面向接口编程，rpc服务对外提供的只有接口。
 
+                // 突然发现，小细节之处，藏着大道理。
+
                 // 可以增加log4j2日志，看看详细过程。TODO-THIS。
 
                 signatureMethod.append(getClassType(((Method) member).getReturnType())).append(" ");
