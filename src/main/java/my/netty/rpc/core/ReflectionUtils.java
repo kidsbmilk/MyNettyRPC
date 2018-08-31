@@ -310,6 +310,8 @@ public class ReflectionUtils {
         return type.toString();
     }
 
+    // HashMessageRecvInitializeTask里有调用listMethod，以及getHashVisitorListIndex，所以这里要把两者的实现做到一致。
+    // 感觉应该是一致的，但是，我改成一致后，又出问题了，FIXME.
     public List<String> getClassAllMethodSignature(Class<?> cls) { // 使用javap -s 类名可以显示类的方法签名
         List<String> list = new ArrayList<>();
         if(cls.isInterface()) {
