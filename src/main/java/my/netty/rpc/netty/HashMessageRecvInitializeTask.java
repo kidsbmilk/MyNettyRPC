@@ -44,7 +44,7 @@ public class HashMessageRecvInitializeTask extends AbstractMessageRecvInitialize
             String signatureMethod = utils.getProvider().toString().trim();
 
             int index = getHashVisitorListIndex(signatureMethod);
-            List<ModuleMetricsVisitor> metricsVisitors = HashModuleMetricsVisitor.getInstance().getHashVisitorList().get(index);
+            List<ModuleMetricsVisitor> metricsVisitors = HashModuleMetricsVisitor.getInstance().getHashVisitorLists().get(index);
             visitor.set(metricsVisitors.get(hashKey));
             incrementInvoke(visitor.get());
         } finally {
@@ -82,7 +82,7 @@ public class HashMessageRecvInitializeTask extends AbstractMessageRecvInitialize
         int size = HashModuleMetricsVisitor.getInstance().getHashModuleMetricsVisitorListSize();
         breakFor:
         for(index = 0; index < size; index ++) {
-            Iterator iterator = new FilterIterator(HashModuleMetricsVisitor.getInstance().getHashVisitorList().get(index).iterator(), new Predicate() {
+            Iterator iterator = new FilterIterator(HashModuleMetricsVisitor.getInstance().getHashVisitorLists().get(index).iterator(), new Predicate() {
                 @Override
                 public boolean evaluate(Object object) {
                     String statModuleName = ((ModuleMetricsVisitor) object).getModuleName();
