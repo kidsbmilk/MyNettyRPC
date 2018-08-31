@@ -80,7 +80,6 @@ public class HashMessageRecvInitializeTask extends AbstractMessageRecvInitialize
     private int getHashVisitorListIndex(String signatureMethod) {
         int index = 0;
         int size = HashModuleMetricsVisitor.getInstance().getHashModuleMetricsVisitorListsSize();
-        breakFor:
         for(index = 0; index < size; index ++) {
             Iterator iterator = new FilterIterator(HashModuleMetricsVisitor.getInstance().getHashVisitorLists().get(index).iterator(), new Predicate() {
                 @Override
@@ -91,8 +90,8 @@ public class HashMessageRecvInitializeTask extends AbstractMessageRecvInitialize
                 }
             });
 
-            while(iterator.hasNext()) { // FIXME：这里写的是不是有问题？
-                break breakFor;
+            if(iterator.hasNext()) {
+                break; // break标记是用来标记跳出哪个循环的，并不是说跳到哪里去执行，之前的理解想当然了。
             }
         }
         return index;
