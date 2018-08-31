@@ -20,7 +20,7 @@ public class HashModuleMetricsVisitor {
         return INSTANCE;
     }
 
-    public int getHashModuleMetricsVisitorListSize() {
+    public int getHashModuleMetricsVisitorListsSize() {
         return hashVisitorList.size();
     }
 

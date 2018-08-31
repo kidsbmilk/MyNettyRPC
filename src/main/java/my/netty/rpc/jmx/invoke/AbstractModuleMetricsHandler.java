@@ -29,7 +29,7 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
     protected static String startTime;
     private final AtomicBoolean locked = new AtomicBoolean(false);
     private final Queue<Thread> waiters = new ConcurrentLinkedQueue<>();
-    private static final int METRICS_VISITOR_LIST_SIZE = HashModuleMetricsVisitor.getInstance().getHashModuleMetricsVisitorListSize();
+    private static final int METRICS_VISITOR_LIST_SIZE = HashModuleMetricsVisitor.getInstance().getHashModuleMetricsVisitorListsSize();
     private MetricsTask[] tasks = new MetricsTask[METRICS_VISITOR_LIST_SIZE];
     private boolean aggregationTaskFlag = false;
     private ExecutorService executor = Executors.newFixedThreadPool(METRICS_VISITOR_LIST_SIZE);

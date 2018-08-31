@@ -41,7 +41,7 @@ public class HashMessageRecvInitializeTask extends AbstractMessageRecvInitialize
         try {
             Method method = ReflectionUtils.getDeclaredMethod(cls, request.getMethodName(), request.getTypeParameters());
             utils.listMethod(method, false);
-            String signatureMethod = utils.getProvider().toString().trim();
+            String signatureMethod = utils.getProvider().toString().trim(); // 注意这个trim()，以及其他说明见ReflectionUtils.getClassAllMethodSignature里的注释。
 
             int index = getHashVisitorListIndex(signatureMethod);
             List<ModuleMetricsVisitor> metricsVisitors = HashModuleMetricsVisitor.getInstance().getHashVisitorLists().get(index);
@@ -79,7 +79,7 @@ public class HashMessageRecvInitializeTask extends AbstractMessageRecvInitialize
 
     private int getHashVisitorListIndex(String signatureMethod) {
         int index = 0;
-        int size = HashModuleMetricsVisitor.getInstance().getHashModuleMetricsVisitorListSize();
+        int size = HashModuleMetricsVisitor.getInstance().getHashModuleMetricsVisitorListsSize();
         breakFor:
         for(index = 0; index < size; index ++) {
             Iterator iterator = new FilterIterator(HashModuleMetricsVisitor.getInstance().getHashVisitorLists().get(index).iterator(), new Predicate() {
