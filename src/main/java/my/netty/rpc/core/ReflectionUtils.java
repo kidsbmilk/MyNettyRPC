@@ -310,8 +310,6 @@ public class ReflectionUtils {
         return type.toString();
     }
 
-    // HashMessageRecvInitializeTask里有调用listMethod，以及getHashVisitorListIndex，所以这里要把两者的实现做到一致。
-    // 感觉应该是一致的，但是，我改成一致后，又出问题了，FIXME.
     public List<String> getClassAllMethodSignature(Class<?> cls) { // 使用javap -s 类名可以显示类的方法签名
         List<String> list = new ArrayList<>();
         if(cls.isInterface()) {
@@ -322,8 +320,19 @@ public class ReflectionUtils {
                 if(Modifier.isAbstract(modifiers) && Modifier.isPublic(modifiers)) {
                     signatureMethod.append(getModifiersString(Modifier.PUBLIC));
                 } else {
-                    signatureMethod.append(modifiers);
+                    signatureMethod.append(getModifiersString(modifiers)); // 这里算是修复了作者写的一个bug。
                 }
+
+                // HashMessageRecvInitializeTask里有调用listMethod，以及getHashVisitorListIndex，所以这里要把两者的实现做到一致。
+                // 感觉应该是一致的，但是，我改成一致后，又出问题了，
+                //  signatureMethod.append(getModifiersString(member.getModifiers())); // 为什么把上面的替换为这一句后AsyncRpcCallTest就会出错呢？
+                // 我知道为什么了：因为HashMessageRecvInitializeTask里有调用listMethod时，是接口的方法的具体子类的实现，是没有abstract的，所以这里判断了一下，
+                // 把public abstract的直接输出为public，这样就和HashMessageRecvInitializeTask里调用listMethod时的对上了，
+                // 而如果和改成listMethod一样的话，恰恰因为多了个abstract，就对不上了。
+
+                // 可以看出，这里是先判断了一样是否为接口，然后才输出所有方法的，也体现了面向接口编程，rpc服务对外提供的只有接口。
+
+                // 可以增加log4j2日志，看看详细过程。TODO-THIS。
 
                 signatureMethod.append(getClassType(((Method) member).getReturnType())).append(" ");
 
