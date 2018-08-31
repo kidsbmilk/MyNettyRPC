@@ -54,7 +54,7 @@ public class HashModuleMetricsVisitor {
         ModuleMetricsHandler.getInstance().getLatch().countDown();
     }
 
-    public List<List<ModuleMetricsVisitor>> getHashVisitorList() {
+    public List<List<ModuleMetricsVisitor>> getHashVisitorLists() {
         return hashVisitorList;
     }
 

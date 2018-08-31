@@ -91,7 +91,7 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
             CyclicBarrier barrier = new CyclicBarrier(METRICS_VISITOR_LIST_SIZE, aggregationTask);
             // 当所指定的一批线程都到达barrier.await后，开始执行aggregationTask.run()
             for(int i = 0; i < METRICS_VISITOR_LIST_SIZE; i ++) {
-                tasks[i] = new MetricsTask(barrier, HashModuleMetricsVisitor.getInstance().getHashVisitorList().get(i));
+                tasks[i] = new MetricsTask(barrier, HashModuleMetricsVisitor.getInstance().getHashVisitorLists().get(i));
                 executor.execute(tasks[i]);
             }
 
