@@ -71,6 +71,8 @@ public class ThreadPoolMonitorProvider {
     }
 
     // 此方法在RpcThreadPool.getExecutorWithJmx里周期性的被调用来向本地的MBeanServer报告系统的状态。
+    // RpcThreadPool.getExecutorWithJmx中单独开了个定时任务来周期性的汇总并上报线程池的统计信息。
+
     // 用来创建一个访问MBeanServer的客户端连接器, 比如MBeanServer bean暴露了一个服务器端连接器, 那么客户端就可以通过这个连接器来访问MBeanServer中的MBean.
     // 可以理解为ConnectorServerFactoryBean的对应物, server与client之间就是这两种连接器建立通讯连接
     public static void monitor(ThreadPoolStatus status) throws IOException, MalformedObjectNameException, ReflectionException, MBeanException, InstanceNotFoundException {

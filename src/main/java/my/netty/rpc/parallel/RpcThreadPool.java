@@ -69,6 +69,8 @@ public class RpcThreadPool {
         TIMER.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                // 注意：ThreadPoolStatus是统计线程池的状态，并不是rpc服务器端处理任务的统计信息，这里的统计也是简单粗暴，
+                // 直接使用了线程池的状态信息，不过确实也有效，但是不精确。精确的数据是由ModuleMetricsVisitor统计的。
                 ThreadPoolStatus status = new ThreadPoolStatus();
                 status.setPoolSize(executor.getPoolSize());
                 status.setActiveCount(executor.getActiveCount());
