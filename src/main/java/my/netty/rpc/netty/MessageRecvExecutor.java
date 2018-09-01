@@ -177,6 +177,13 @@ public class MessageRecvExecutor {
                     }
                 });
 
+//                ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+//                service.scheduleAtFixedRate(new GetVisitorScheduledTask(), 10, 1, TimeUnit.SECONDS); // 这个执行后，主线程并不会阻塞，
+                // 对比上面的sync()调用是要阻塞主线程的。
+                // 注意：不要把主线程非阻塞存活、线程阻塞还有线程结束搞混了，主线程在程序运行期间不是会主动退出的，要不然整个程序就终止了，
+                // 所以正常的多线程的程序在运行期间，主线程最好的状态就是非阻塞存活了。
+                // 上面这个定时任务单线程启动后，主线程就是非阻塞存活的。
+                // 这个开启定时获取visitor任务的操作，也可以放在ModuleMetricsHandler.start里去，可能逻辑上更清晰一些。TODO-THIS.
 
             } else {
                 System.out.println("Netty RPC Server start fail!");
