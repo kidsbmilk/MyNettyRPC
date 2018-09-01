@@ -48,7 +48,27 @@ public class HashMessageRecvInitializeTask extends AbstractMessageRecvInitialize
 
             int index = getHashVisitorListIndex(signatureMethod);
             List<ModuleMetricsVisitor> metricsVisitors = HashModuleMetricsVisitor.getInstance().getHashVisitorLists().get(index);
+            /**
+             * AbstractModuleMetricsHandler.getVisitor要通过并发手段来实现动态安全增加（见AbstractMessageRecvInitializeTask.call里的注释），
+             * 而这里Hash版本通过事先创建所有visitor，之后只会涉及到多线程并发的读，消除了并发修改的问题。
+             */
             visitor.set(metricsVisitors.get(hashKey));
+            /**
+             * 对于metricsVisitor，是同一个类同一种方法的RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_HASH_NUMS个visitor，
+             * 只是metricsVisitor.hashCode不同，这个metricsVisitor.hashCode并没有使用到，在排查线程问题时可以用到。
+             *
+             * 而这个visitor是从那么多个同类的visitor里选一个，根据request.getMessageId()的hash值来选。
+             *
+             * request.getMessageId()的hash值也决定了加锁修改visitor值时
+             * （为什么还要加锁：因为不可能每个操作都创建一个新的visitor来统计信息，所以在大量请求的情况下，
+             * 必然存在两种同样操作的任务使用相同的visitor的可能，所以就需要使用并发手段来做到安全修改信息。）
+             * 选择的是哪个Semaphore（见HashCriticalSection.enter的实现）。
+             *
+             * 这个解决了AbstractMessageRecvInitializeTask.call的注释里的第二个并发问题。
+             *
+             * 注意一点：如果同一种操作的两个请求，映射到同一相visitor上了，那么两个请求需也映射到同一把锁上，这一点非常重要，作者也是这样实现的。
+             * 那么，这里的实现也有一个小问题，不同的操作可能映射到同一把锁上，还可以再改一下，更加提高效率，比如：每个visitor对应一把锁。TODO-THIS.
+             */
             incrementInvoke(visitor.get());
         } finally {
             utils.clearProvider();
