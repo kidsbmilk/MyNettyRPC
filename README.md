@@ -63,6 +63,13 @@ NettyRPC客户端支持重连功能：这点主要是针对RPC服务器宕机的
 * 经过哈希分片加锁算法优化之后，特别是对异步并行调用（AsyncInvoker）的侵蚀大幅度降低，对整个NettyRPC系统而言，统计性能也有质的提升。一方面不影响原有系统的调用吞吐量，另外一方面也不会降低JMX的统计精度。
 * 默认加锁采用非公平锁，你可以通过设置环境变量nettyrpc.jmx.metrics.lock.fair为1，改成公平锁。在高并发调用的场景，建议采用非公平锁。
 
+## NettyRPC 2.7
+**在NettyRPC 2.6的基础上，新增内嵌HTTP服务器，用于展示NettyRPC模块调用监控指标。**
+* 利用JMX接口，从NettyRPC服务端获取模块调用的监控数据。
+* 在环境变量nettyrpc.jmx.invoke.metrics为1的前提下，在浏览器输入URL：http://ip地址:18886/NettyRPC.html/metrics。即可查看NettyRPC系统模块间的调用统计情况。
+* 可以按F5刷新统计界面，查看最新的统计指标。
+
+
 **基于Netty打造RPC服务器设计经验谈**
 http://www.cnblogs.com/jietang/p/5983038.html
 
