@@ -89,7 +89,7 @@ public class MetricsTask implements Runnable {
         long lastErrorTime = metrics.getLastErrorTime();
 
         for(int i = 0; i < list.size(); i ++) { // 过滤list里的元素，比较每个元素是否与resut.get(index)相同。
-            boolean find = equals(resultList.get(index).getModuleName(), list.get(i).getMethodName(), resultList.get(index).getMethodName(), list.get(i).getMethodName());
+            boolean find = equals(resultList.get(index).getModuleName(), list.get(i).getModuleName(), resultList.get(index).getMethodName(), list.get(i).getMethodName());
             if(find) {
                 invokeCount += list.get(i).getInvokeCount();
                 invokeSuccCount += list.get(i).getInvokeSuccCount();

@@ -189,7 +189,7 @@ public class ModuleMetricsVisitor {
     }
 
     public void setInvokeCount(long invokeCount) {
-        this.invokeFilterCountUpdater.set(this, invokeCount);
+        this.invokeCountUpdater.set(this, invokeCount);
     }
 
     public long incrementInvokeCount() {
@@ -213,11 +213,11 @@ public class ModuleMetricsVisitor {
     }
 
     public void setInvokeFailCount(long invokeFailCount) {
-        this.invokeFilterCountUpdater.set(this, invokeFailCount);
+        this.invokeFailCountUpdater.set(this, invokeFailCount);
     }
 
     public long incrementInvokeFailCount() {
-        return this.invokeFilterCountUpdater.incrementAndGet(this);
+        return this.invokeFailCountUpdater.incrementAndGet(this);
     }
 
     public long getInvokeFilterCount() {
