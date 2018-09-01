@@ -272,7 +272,20 @@ public class ReflectionUtils {
         }
     }
 
-    public static Method getDeclaredMethod(final Class<?> cls, final String methodName, final Class<?>... parameterTypes) {
+    public static Method getDeclaredMethod(Class<?> cls, String methodName, Class<?>... parameterTypes) {
+        Method method = null;
+        Class<?> searchType = cls;
+        while(searchType != null) {
+            method = findDeclaredMethod(searchType, methodName, parameterTypes);
+            if(method != null) {
+                return method;
+            }
+            searchType = searchType.getSuperclass();
+        }
+        return method;
+    }
+
+    public static Method findDeclaredMethod(final Class<?> cls, final String methodName, final Class<?>... parameterTypes) {
         try {
             return cls.getDeclaredMethod(methodName, parameterTypes); // 见jvm中方法的说明。
         } catch (NoSuchMethodException ignored) {
