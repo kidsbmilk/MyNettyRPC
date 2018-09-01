@@ -135,7 +135,7 @@ public class MetricsTask implements Runnable {
     private void accumulate() {
         List<ModuleMetricsVisitor> list = visitorList;
 
-        Iterator iterator = new UniqueFilterIterator(list.iterator());
+        Iterator iterator = new UniqueFilterIterator(list.iterator()); // 这里唯一性，用到了对象的hashCode重载方法，只与moduleName、methodName有关。
         if(iterator.hasNext()) {
             ModuleMetricsVisitor visitor = (ModuleMetricsVisitor) iterator.next();
             result = new ModuleMetricsVisitor(visitor.getModuleName(), visitor.getMethodName()); // result里的对象没有重复的，理论上：result.size() <= list.size()

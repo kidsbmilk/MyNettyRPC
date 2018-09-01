@@ -281,7 +281,7 @@ public class ModuleMetricsVisitor {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() { // 这个重载在MetricsTask.accumulate()里用到了，见那里的注释。
         final int prime = 31;
         int result = 1;
         result = prime * result + ((moduleName == null) ? 0 : moduleName.hashCode());
