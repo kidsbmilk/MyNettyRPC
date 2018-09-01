@@ -99,7 +99,7 @@ public abstract class AbstractMessageRecvInitializeTask implements Callable<Bool
         // ProxyFactory是aop框架里的接口。
         NameMatchMethodPointcutAdvisor advisor = new NameMatchMethodPointcutAdvisor();
         advisor.setMappedName(METHOD_MAPPED_NAME);
-        advisor.setAdvice(new MethodProxyAdvisor(handlerMap));
+        advisor.setAdvice(new MethodProxyAdvisor(handlerMap)); // 见MethodProxyAdvisor以及MethodInvoker里的注释。
         weaver.addAdvisor(advisor);
         MethodInvoker mi = (MethodInvoker) weaver.getProxy();
         Object obj = mi.invoke(request); // AccessAdaptive服务是在MessageRecvExecutor.register手动注册的，这里将AccessAdaptiveProvider与原有框架结合起来，

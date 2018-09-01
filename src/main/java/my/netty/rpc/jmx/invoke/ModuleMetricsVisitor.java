@@ -46,7 +46,7 @@ public class ModuleMetricsVisitor {
     private long invokeTimespan = 0L;
     private long invokeMinTimespan = DEFAULT_INVOKE_MIN_TIMESPAN;
     private long invokeMaxTimespan = 0L;
-    private long[] invokeHistogram; // 这个用于存放druid的统计数据，见jconsole里显示的信息。
+    private long[] invokeHistogram; // 见jconsole里显示的信息，不知道跟druid有什么关系。
     private Exception lastStackTrace;
     private String lastStackTraceDetail;
     private long lastErrorTime;

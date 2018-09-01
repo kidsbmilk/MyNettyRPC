@@ -49,6 +49,8 @@ public class MethodProxyAdvisor implements MethodInterceptor { // MethodIntercep
         ((MethodInvoker) invocation.getThis()).setServiceBean(existFilter ? ((ServiceFilterBinder) serviceBean).getObject() : serviceBean);
         // AccessAdaptive服务是在MessageRecvExecutor.register手动注册的，这里将AccessAdaptiveProvider与原有框架结合起来。
 
+        // 从这里可见，AbstractMessageRecvInitializeTask.reflect里通过aop的切面拦截调用主要实现的功能就是给调用添加filter。
+
         if(existFilter) {
             ServiceFilterBinder procesors = (ServiceFilterBinder) serviceBean;
             if(procesors.getFilter() != null) {

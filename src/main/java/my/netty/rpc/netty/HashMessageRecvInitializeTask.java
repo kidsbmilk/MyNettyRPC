@@ -127,7 +127,7 @@ public class HashMessageRecvInitializeTask extends AbstractMessageRecvInitialize
 
     private void incrementInvokeSucc(ModuleMetricsVisitor visitor, long invokeTimespan) {
         visitor.incrementInvokeSuccCount();
-        visitor.getHistogram().record(invokeTimespan);
+        visitor.getHistogram().record(invokeTimespan); // 这个invokeTimespan的由来，见MethodInvoker.invoke里的注释。
         visitor.setInvokeTimespan(invokeTimespan);
 
         if(invokeTimespan < visitor.getInvokeMinTimespan()) {
