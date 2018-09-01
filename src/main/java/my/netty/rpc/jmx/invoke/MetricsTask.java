@@ -13,7 +13,7 @@ public class MetricsTask implements Runnable {
 
     private final CyclicBarrier barrier;
     private List<ModuleMetricsVisitor> visitorList;
-    private List<ModuleMetricsVisitor> resultList = new ArrayList<>();
+    private ModuleMetricsVisitor result;
 
     public MetricsTask(CyclicBarrier barrier, List<ModuleMetricsVisitor> visitorList) {
         this.barrier = barrier;
@@ -32,51 +32,49 @@ public class MetricsTask implements Runnable {
     }
 
     private void count(List<ModuleMetricsVisitor> list) { // 见accumulate里的说明，理论上：result.size() <= list.size().
-        for(int i = 0; i < resultList.size(); i ++) {
-            long invokeCount = 0L;
-            long invokeSuccCount = 0L;
-            long invokeFailCount = 0L;
-            long invokeFilterCount = 0L;
-            long invokeTimespan = 0L;
-            long invokeMinTimespan = list.get(0).getInvokeMinTimespan();
-            long invokeMaxTimespan = list.get(0).getInvokeMaxTimespan();
-            int length = resultList.get(i).getHistogram().getRanges().length + 1;
-            long[] invokeHistogram = new long[length];
-            Arrays.fill(invokeHistogram, 0L);
-            String lastStackTraceDetail = "";
-            long lastErrorTime = list.get(0).getErrorLastTimeLongVal();
+        long invokeCount = 0L;
+        long invokeSuccCount = 0L;
+        long invokeFailCount = 0L;
+        long invokeFilterCount = 0L;
+        long invokeTimespan = 0L;
+        long invokeMinTimespan = list.get(0).getInvokeMinTimespan();
+        long invokeMaxTimespan = list.get(0).getInvokeMaxTimespan();
+        int length = result.getHistogram().getRanges().length + 1;
+        long[] invokeHistogram = new long[length];
+        Arrays.fill(invokeHistogram, 0L);
+        String lastStackTraceDetail = "";
+        long lastErrorTime = list.get(0).getErrorLastTimeLongVal();
 
-            ModuleMetrics metrics = new ModuleMetrics();
-            metrics.setInvokeCount(invokeCount);
-            metrics.setInvokeSuccCount(invokeSuccCount);
-            metrics.setInvokeFailCount(invokeFailCount);
-            metrics.setInvokeFilterCount(invokeFilterCount);
-            metrics.setInvokeTimespan(invokeTimespan);
-            metrics.setInvokeMinTimespan(invokeMinTimespan);
-            metrics.setInvokeMaxTimespan(invokeMaxTimespan);
-            metrics.setInvokeHistogram(invokeHistogram);
-            metrics.setLastStackTraceDetail(lastStackTraceDetail);
-            metrics.setLastErrorTime(lastErrorTime);
+        ModuleMetrics metrics = new ModuleMetrics();
+        metrics.setInvokeCount(invokeCount);
+        metrics.setInvokeSuccCount(invokeSuccCount);
+        metrics.setInvokeFailCount(invokeFailCount);
+        metrics.setInvokeFilterCount(invokeFilterCount);
+        metrics.setInvokeTimespan(invokeTimespan);
+        metrics.setInvokeMinTimespan(invokeMinTimespan);
+        metrics.setInvokeMaxTimespan(invokeMaxTimespan);
+        metrics.setInvokeHistogram(invokeHistogram);
+        metrics.setLastStackTraceDetail(lastStackTraceDetail);
+        metrics.setLastErrorTime(lastErrorTime);
 
-            merge(i, list, metrics);
+        merge(list, metrics);
 
-            resultList.get(i).setInvokeCount(metrics.getInvokeCount());
-            resultList.get(i).setInvokeSuccCount(metrics.getInvokeSuccCount());
-            resultList.get(i).setInvokeFailCount(metrics.getInvokeFailCount());
-            resultList.get(i).setInvokeFilterCount(metrics.getInvokeFilterCount());
-            resultList.get(i).setInvokeTimespan(metrics.getInvokeTimespan());
-            resultList.get(i).setInvokeMaxTimespan(metrics.getInvokeMaxTimespan());
-            resultList.get(i).setInvokeMinTimespan(metrics.getInvokeMinTimespan());
-            resultList.get(i).setInvokeHistogram(metrics.getInvokeHistogram());
+        result.setInvokeCount(metrics.getInvokeCount());
+        result.setInvokeSuccCount(metrics.getInvokeSuccCount());
+        result.setInvokeFailCount(metrics.getInvokeFailCount());
+        result.setInvokeFilterCount(metrics.getInvokeFilterCount());
+        result.setInvokeTimespan(metrics.getInvokeTimespan());
+        result.setInvokeMaxTimespan(metrics.getInvokeMaxTimespan());
+        result.setInvokeMinTimespan(metrics.getInvokeMinTimespan());
+        result.setInvokeHistogram(metrics.getInvokeHistogram());
 
-            if(metrics.getLastErrorTime() > 0) {
-                resultList.get(i).setErrorLastTimeLongVal(metrics.getLastErrorTime());
-                resultList.get(i).setLastStackTraceDetail(metrics.getLastStackTraceDetail());
-            }
+        if(metrics.getLastErrorTime() > 0) {
+            result.setErrorLastTimeLongVal(metrics.getLastErrorTime());
+            result.setLastStackTraceDetail(metrics.getLastStackTraceDetail());
         }
     }
 
-    private void merge(int index, List<ModuleMetricsVisitor> list, ModuleMetrics metrics) {
+    private void merge(List<ModuleMetricsVisitor> list, ModuleMetrics metrics) {
         long invokeCount = metrics.getInvokeCount();
         long invokeSuccCount = metrics.getInvokeSuccCount();
         long invokeFailCount = metrics.getInvokeFailCount();
@@ -89,7 +87,7 @@ public class MetricsTask implements Runnable {
         long lastErrorTime = metrics.getLastErrorTime();
 
         for(int i = 0; i < list.size(); i ++) { // 过滤list里的元素，比较每个元素是否与resut.get(index)相同。
-            boolean find = equals(resultList.get(index).getModuleName(), list.get(i).getModuleName(), resultList.get(index).getMethodName(), list.get(i).getMethodName());
+            boolean find = equals(result.getModuleName(), list.get(i).getModuleName(), result.getMethodName(), list.get(i).getMethodName());
             if(find) {
                 invokeCount += list.get(i).getInvokeCount();
                 invokeSuccCount += list.get(i).getInvokeSuccCount();
@@ -138,10 +136,10 @@ public class MetricsTask implements Runnable {
         List<ModuleMetricsVisitor> list = visitorList;
 
         Iterator iterator = new UniqueFilterIterator(list.iterator());
-        while(iterator.hasNext()) {
+        if(iterator.hasNext()) {
             ModuleMetricsVisitor visitor = (ModuleMetricsVisitor) iterator.next();
-            resultList.add(new ModuleMetricsVisitor(visitor.getModuleName(), visitor.getMethodName())); // result里的对象没有重复的，理论上：result.size() <= list.size()
-        }
+            result = new ModuleMetricsVisitor(visitor.getModuleName(), visitor.getMethodName()); // result里的对象没有重复的，理论上：result.size() <= list.size()
+        } // 这里暂时不用考虑空的情况，因为不会为空。TODO-THIS.
 
         count(list);
     }
@@ -150,12 +148,12 @@ public class MetricsTask implements Runnable {
         return srcModuleName.equals(destModuleName) && srcMethodName.equals(destMethodName);
     }
 
-    public List<ModuleMetricsVisitor> getResultList() {
-        return resultList;
+    public ModuleMetricsVisitor getResult() {
+        return result;
     }
 
-    public void setResultList(List<ModuleMetricsVisitor> resultList) {
-        this.resultList = resultList;
+    public void setResult(ModuleMetricsVisitor result) {
+        this.result = result;
     }
 
     private class ModuleMetrics {

@@ -23,7 +23,7 @@ public class MetricsAggregationTask implements Runnable { // 这个类的目的�
             try {
                 for(MetricsTask task : tasks) {
                     // System.out.println(task.getResult().get(0));
-                    visitorList.add(task.getResultList().get(0)); // 为什么只取第一个？ TODO-THIS.
+                    visitorList.add(task.getResult()); // 为什么只取第一个？ TODO-THIS.
                 }
             } finally {
                 latch.countDown();
