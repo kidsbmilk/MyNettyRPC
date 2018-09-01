@@ -24,6 +24,8 @@
     <bean id="cacheService" class="my.netty.rpc.services.impl.CacheImpl"></bean>
     <bean id="storeService" class="my.netty.rpc.services.impl.StoreImpl"></bean>
 
+    <!--AccessAdaptiveProvider服务是在MessageRecvExecutor.register里注册的。-->
+
     <bean id="simpleFilter" class="my.netty.rpc.filter.support.SimpleFilter"></bean>
 
 </beans>

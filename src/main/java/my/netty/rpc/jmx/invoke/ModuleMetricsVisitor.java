@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 // 从这里的实现可以发现：ModuleMetricsVisitor是ModuleMetricsVisitorMXBean的存储数据的核心部分。
 public class ModuleMetricsVisitor {
 
-    private static final long DEFAULT_INVOKE_MIN_TIMESPAN = 3600 * 1000L;
+    public static final long DEFAULT_INVOKE_MIN_TIMESPAN = 3600 * 1000L;
     // 以下三个用于创建下面的javax.management.openmbean.CompositeType类变量。
     private static final String[] THROWABLE_ITEMNAMES = {"message", "class", "stackTrace"};
     private static final String[] THROWABLE_ITEMDESCRIPTIONS = {"message", "class", "stackTrace"};
@@ -101,7 +101,7 @@ public class ModuleMetricsVisitor {
         return lastErrorTime;
     }
 
-    public String getErrorLastTime() {
+    public String getLastErrorTime() {
         if(lastErrorTime <= 0) {
             return null;
         }
