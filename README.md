@@ -69,6 +69,25 @@ NettyRPC客户端支持重连功能：这点主要是针对RPC服务器宕机的
 * 在环境变量nettyrpc.jmx.invoke.metrics为1的前提下，在浏览器输入URL：http://ip地址:18886/NettyRPC.html/metrics。即可查看NettyRPC系统模块间的调用统计情况。
 * 可以按F5刷新统计界面，查看最新的统计指标。
 
+## NettyRPC 2.8
+**在NettyRPC 2.7的基础上，加入RPC请求过滤器链和监听器链功能**
+* 通过监听器链和过滤器链，可以对RPC客户端请求进行过滤和监听。具体调用流程图如下所示：  
+ |------------------------------------------------------------------------------------------------------|  
+ |                                       RPC客户端发起请求-->                                           |（NettyRPC客户端）  
+ |------------------------------------------------------------------------------------------------------|  
+                                                   |  
+                                                  \|/  
+ |------------------------------------------------------------------------------------------------------|  
+ | 链式过滤器1（ChainFilter）   -->链式过滤器2（ChainFilter）   ....-->链式过滤器N（ChainFilter）-->    |  
+ | 链式监听器1（ModuleListener）-->链式监听器2（ModuleListener）....-->链式监听器N（ModuleListener）--> |（NettyRPC服务端）  
+ | 过滤器（Filter）-->                                                                                  |  
+    
+| RPC服务器响应请求                                                                                    |  
+ |------------------------------------------------------------------------------------------------------|  
+* 过滤器链封装类（com.newlandframework.rpc.filter.ModuleFilterChainWrapper）、监听器链封装类（com.newlandframework.rpc.listener.ModuleListenerChainWrapper）通过spring依赖注入。
+* NettyRPC内置了一些链式过滤器：com.newlandframework.rpc.filter.support.ClassLoaderChainFilter、com.newlandframework.rpc.filter.support.EchoChainFilter，以及链式监听器：com.newlandframework.rpc.listener.support.ModuleListenerAdapter。具体可以根据需求进行扩展添加。
+
+
 
 **基于Netty打造RPC服务器设计经验谈**
 http://www.cnblogs.com/jietang/p/5983038.html
