@@ -9,7 +9,7 @@ public class ClassLoaderChainFilter implements ChainFilter {
     @Override
     public Object invoke(ModuleInvoker<?> invoker, MessageRequest request) throws Throwable {
         ClassLoader ocl = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(invoker.getInterface().getClassLoader());
+        Thread.currentThread().setContextClassLoader(invoker.getInterface().getClassLoader()); // 将当前线程上下文的加载器设置为加载invoker的加载器
 
         Object result = null;
         try {
@@ -19,7 +19,7 @@ public class ClassLoaderChainFilter implements ChainFilter {
             throwable.printStackTrace();
             throw throwable;
         } finally {
-            Thread.currentThread().setContextClassLoader(ocl);
+            Thread.currentThread().setContextClassLoader(ocl); // 还原当前线程上下文加载器
         }
     }
 }

@@ -229,7 +229,7 @@ public class ReflectionUtils {
 
     public void listMethod(Executable member, boolean html) {
         provider.append(html ? "<br>&nbsp&nbsp&nbsp&nbsp" : "\n    ")
-                .append(getModifiersString(member.getModifiers() & (~Modifier.FINAL)));
+                .append(getModifiersString(member.getModifiers() & (~Modifier.FINAL))); // 这个排除final标志，应该是修复了以前的一个bug，以前的代码没有考虑到这个，主要是因为：接口的实现类可以把接口中的方法实现为final的。
         if(member instanceof Method) {
             provider.append(getClassType(((Method) member).getReturnType()))
                     .append(" ");

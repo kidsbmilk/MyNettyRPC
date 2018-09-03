@@ -31,16 +31,6 @@
     <bean id="simpleFilter" class="my.netty.rpc.filter.support.SimpleFilter"></bean>
 
     <!-- MyNettyRPC Listeners and FilterChain Config -->
-    <bean id="listeners" class="my.netty.rpc.listener.ModuleListenerChainWrapper">
-        <constructor-arg name="modular">
-            <bean class="my.netty.rpc.core.DefaultModular"></bean>
-        </constructor-arg>
-        <property name="listeners">
-            <list>
-                <ref bean="listenerAdapter"/>
-            </list>
-        </property>
-    </bean>
     <bean id="modular" class="my.netty.rpc.filter.ModuleFilterChainWrapper">
         <constructor-arg name="modular" ref="listeners"/>
         <property name="filters">
@@ -51,6 +41,16 @@
         </property>
     </bean>
     <!-- Listeners -->
+    <bean id="listeners" class="my.netty.rpc.listener.ModuleListenerChainWrapper">
+        <constructor-arg name="modular">
+            <bean class="my.netty.rpc.core.DefaultModular"></bean>
+        </constructor-arg>
+        <property name="listeners">
+            <list>
+                <ref bean="listenerAdapter"/>
+            </list>
+        </property>
+    </bean>
     <bean id="listenerAdapter" class="my.netty.rpc.listener.support.ModuleListenerAdapter"/>
     <!-- FilterChain -->
     <bean id="classLoaderChainFilter" class="my.netty.rpc.filter.support.ClassLoaderChainFilter"/>

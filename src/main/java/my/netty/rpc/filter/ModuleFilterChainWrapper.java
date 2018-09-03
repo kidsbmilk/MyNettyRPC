@@ -25,13 +25,13 @@ public class ModuleFilterChainWrapper implements Modular {
     }
 
     private <T> ModuleInvoker<T> buildChain(ModuleInvoker<T> invoker) {
-        ModuleInvoker last = invoker;
+        ModuleInvoker now = invoker;
 
         if(filters.size() > 0) {
-            for(int i = filters.size() - 1; i >= 0; i --) {
+            for(int i = filters.size() - 1; i >= 0; i --) { // 注意这个顺序
                 ChainFilter filter = filters.get(i);
-                ModuleInvoker<T> next = last;
-                last = new ModuleInvoker<T>() {
+                ModuleInvoker<T> up = now;
+                now = new ModuleInvoker<T>() {
                     @Override
                     public Class<T> getInterface() {
                         return invoker.getInterface();
@@ -39,7 +39,7 @@ public class ModuleFilterChainWrapper implements Modular {
 
                     @Override
                     public Object invoke(MessageRequest request) throws Throwable {
-                        return filter.invoke(next, request);
+                        return filter.invoke(up, request); // 这里把整个调用链串起来
                     }
 
                     @Override
@@ -54,7 +54,7 @@ public class ModuleFilterChainWrapper implements Modular {
                 };
             }
         }
-        return last;
+        return now;
     }
 
     public List<ChainFilter> getFilters() {

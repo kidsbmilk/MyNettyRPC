@@ -14,7 +14,9 @@ import java.util.Map;
 import static org.springframework.beans.factory.BeanFactoryUtils.beanNamesForTypeIncludingAncestors;
 import static org.springframework.beans.factory.BeanFactoryUtils.beansOfTypeIncludingAncestors;
 
-public class BeanFactoryUtils implements BeanFactoryAware {
+public class BeanFactoryUtils implements BeanFactoryAware { // spring之BeanFactoryAware接口：https://blog.csdn.net/xyw591238/article/details/51995486
+    // Spring(三)Bean继续入门：https://www.cnblogs.com/liunanjava/p/4401089.html
+    // 【Spring4揭秘 BeanFactory】基本容器-BeanFactory：https://blog.csdn.net/u011179993/article/details/51636742
 
     private static BeanFactory beanFactory;
 
@@ -29,7 +31,7 @@ public class BeanFactoryUtils implements BeanFactoryAware {
         return false;
     }
 
-    public static <T> T getBean(String name) {
+    public static <T> T getBean(String name) { // 从BeanFactory里得到特定名称的bean，这个BeanFactory一般为XmlBeanFactory。
         if(beanFactory == null) {
             return null;
         }
@@ -40,7 +42,7 @@ public class BeanFactoryUtils implements BeanFactoryAware {
         }
     }
 
-    public static <T> T getOptionalBean(ListableBeanFactory beanFactory, String beanName, Class<T> beanType) {
+    public static <T> T getOptionalBean(ListableBeanFactory beanFactory, String beanName, Class<T> beanType) { // 从特定的ListableBeanFactory中获取已注册的特定类型和名称的bean
         String[] allBeanNames = beanNamesForTypeIncludingAncestors(beanFactory, beanType);
         if(!isContains(allBeanNames, beanName)) {
             return null;
@@ -49,7 +51,7 @@ public class BeanFactoryUtils implements BeanFactoryAware {
         return beansOfType.get(beanName);
     }
 
-    public static <T> List<T> getBeans(ListableBeanFactory beanFactory, String[] beanNames, Class<T> beanType) {
+    public static <T> List<T> getBeans(ListableBeanFactory beanFactory, String[] beanNames, Class<T> beanType) { // 从特定的ListableBeanFactory中获取已注册的某种类型的多个特定名称的bean
         String[] allBeanNames = beanNamesForTypeIncludingAncestors(beanFactory, beanType);
         List<T> beans = new ArrayList<>(beanNames.length);
         for(String beanName: beanNames) {
@@ -60,6 +62,10 @@ public class BeanFactoryUtils implements BeanFactoryAware {
         return Collections.unmodifiableList(beans);
     }
 
+    /**
+     * xml配置中的这行代码，会使springboot启动时调用setBeanFactory来注册beanFactory。
+     * <bean id="beanFactory" class="my.netty.rpc.spring.BeanFactoryUtils"/>
+     */
     @Override
     public void setBeanFactory(BeanFactory factory) throws BeansException {
         this.beanFactory = factory;
