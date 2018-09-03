@@ -8,6 +8,8 @@
 
     <context:property-placeholder location="classpath:rpc-server.properties"/>
 
+    <bean id="beanFactory" class="my.netty.rpc.spring.BeanFactoryUtils"/>
+
     <nettyrpc:service id="demoAddService" interfaceName="my.netty.rpc.services.AddCalculate" ref="calcAddService"></nettyrpc:service>
     <nettyrpc:service id="demoMultiService" interfaceName="my.netty.rpc.services.MultiCalculate" ref="calcMultiService"></nettyrpc:service>
     <nettyrpc:service id="demoPersonManage" interfaceName="my.netty.rpc.services.PersonManage" ref="personManageService"></nettyrpc:service>
@@ -27,5 +29,31 @@
     <!--AccessAdaptiveProvider服务是在MessageRecvExecutor.register里注册的。-->
 
     <bean id="simpleFilter" class="my.netty.rpc.filter.support.SimpleFilter"></bean>
+
+    <!-- MyNettyRPC Listeners and FilterChain Config -->
+    <bean id="listeners" class="my.netty.rpc.listener.ModuleListenerChainWrapper">
+        <constructor-arg name="modular">
+            <bean class="my.netty.rpc.core.DefaultModular"></bean>
+        </constructor-arg>
+        <property name="listeners">
+            <list>
+                <ref bean="listenerAdapter"/>
+            </list>
+        </property>
+    </bean>
+    <bean id="modular" class="my.netty.rpc.filter.ModuleFilterChainWrapper">
+        <constructor-arg name="modular" ref="listeners"/>
+        <property name="filters">
+            <list>
+                <ref bean="classLoaderChainFilter"/>
+                <ref bean="echoChainFilter"/>
+            </list>
+        </property>
+    </bean>
+    <!-- Listeners -->
+    <bean id="listenerAdapter" class="my.netty.rpc.listener.support.ModuleListenerAdapter"/>
+    <!-- FilterChain -->
+    <bean id="classLoaderChainFilter" class="my.netty.rpc.filter.support.ClassLoaderChainFilter"/>
+    <bean id="echoChainFilter" class="my.netty.rpc.filter.support.EchoChainFilter"/>
 
 </beans>

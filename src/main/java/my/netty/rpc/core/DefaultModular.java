@@ -2,7 +2,7 @@ package my.netty.rpc.core;
 
 import my.netty.rpc.model.MessageRequest;
 
-public class DefaltModular implements Modular {
+public class DefaultModular implements Modular {
 
     @Override
     public <T> ModuleProvider<T> invoke(ModuleInvoker<T> invoker, MessageRequest request) {

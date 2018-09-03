@@ -1,8 +1,12 @@
 package my.netty.rpc.netty;
 
+import my.netty.rpc.core.Modular;
+import my.netty.rpc.core.ModuleInvoker;
+import my.netty.rpc.core.ModuleProvider;
 import my.netty.rpc.core.RpcSystemConfig;
 import my.netty.rpc.model.MessageRequest;
 import my.netty.rpc.model.MessageResponse;
+import my.netty.rpc.spring.BeanFactoryUtils;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.NameMatchMethodPointcutAdvisor;
 
@@ -19,11 +23,35 @@ public abstract class AbstractMessageRecvInitializeTask implements Callable<Bool
     protected static final String METHOD_MAPPED_NAME = "invoke";
     protected boolean returnNotNull = true;
     protected long invokeTimespan;
+    protected Modular modular = BeanFactoryUtils.getBean("modular");
 
     public AbstractMessageRecvInitializeTask(MessageRequest request, MessageResponse response, Map<String, Object> handlerMap) {
         this.request = request;
         this.response = response;
         this.handlerMap = handlerMap;
+    }
+
+    private Object invoke(MethodInvoker mi, MessageRequest request) throws Throwable {
+        if(modular != null) {
+            ModuleProvider provider = modular.invoke(new ModuleInvoker() {
+                @Override
+                public Class getInterface() {
+                    return mi.getClass().getInterfaces()[0];
+                }
+
+                @Override
+                public Object invoke(MessageRequest request) throws Throwable {
+                    return mi.invoke(request);
+                }
+
+                @Override
+                public void destroy() {
+                }
+            }, request);
+            return provider.getInvoker().invoke(request);
+        } else {
+            return mi.invoke(request);
+        }
     }
 
     @Override
@@ -102,7 +130,8 @@ public abstract class AbstractMessageRecvInitializeTask implements Callable<Bool
         advisor.setAdvice(new MethodProxyAdvisor(handlerMap)); // 见MethodProxyAdvisor以及MethodInvoker里的注释。
         weaver.addAdvisor(advisor);
         MethodInvoker mi = (MethodInvoker) weaver.getProxy();
-        Object obj = mi.invoke(request); // AccessAdaptive服务是在MessageRecvExecutor.register手动注册的，这里将AccessAdaptiveProvider与原有框架结合起来，
+//        Object obj = mi.invoke(request); // AccessAdaptive服务是在MessageRecvExecutor.register手动注册的，这里将AccessAdaptiveProvider与原有框架结合起来，
+        Object obj = invoke(mi, request);
         invokeTimespan = mi.getInvokeTimespan();
         // 具体的MethodInvoker.serviceBean的设置是在MethodProxyAdvisor.invoke中设置的。
         setReturnNotNull(((MethodProxyAdvisor) advisor.getAdvice()).isReturnNotNull());
