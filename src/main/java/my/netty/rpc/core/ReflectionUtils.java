@@ -229,7 +229,7 @@ public class ReflectionUtils {
 
     public void listMethod(Executable member, boolean html) {
         provider.append(html ? "<br>&nbsp&nbsp&nbsp&nbsp" : "\n    ")
-                .append(getModifiersString(member.getModifiers()));
+                .append(getModifiersString(member.getModifiers() & (~Modifier.FINAL)));
         if(member instanceof Method) {
             provider.append(getClassType(((Method) member).getReturnType()))
                     .append(" ");
@@ -330,8 +330,14 @@ public class ReflectionUtils {
             StringBuilder signatureMethod = new StringBuilder();
             for(Method member : methods) {
                 int modifiers = member.getModifiers();
+                // Interface里的方法一般默认是抽象且公有的，不同的版本中，1.8会允许默认方法存在，但是不确定还是不是抽象的。
+                // https://zhidao.baidu.com/question/748488169527119572.html
+                // 在listMethod中去除final时，我感觉这里不需要处理final了。
+                // 应该是这样的：接口中的抽象方法，在具体实现类中重写时，可以添加上final标志，我实验了下是可以的，
+                // 所以listMethod中要去除可能存在的final，而这里是不用处理的。
                 if(Modifier.isAbstract(modifiers) && Modifier.isPublic(modifiers)) {
                     signatureMethod.append(getModifiersString(Modifier.PUBLIC));
+                    // 作者这里还判断了一下是否为final，其实是没有必要的，也是错误的，因为final不能与abstract一块使用，那样没有意义。
                 } else {
                     signatureMethod.append(getModifiersString(modifiers)); // 这里算是修复了作者写的一个bug。
                 }
