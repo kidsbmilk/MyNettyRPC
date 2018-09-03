@@ -335,6 +335,7 @@ public class ReflectionUtils {
                 // 在listMethod中去除final时，我感觉这里不需要处理final了。
                 // 应该是这样的：接口中的抽象方法，在具体实现类中重写时，可以添加上final标志，我实验了下是可以的，
                 // 所以listMethod中要去除可能存在的final，而这里是不用处理的。
+                // final类不能有子类，final方法可以被子类继承但不能被子类改写。
                 if(Modifier.isAbstract(modifiers) && Modifier.isPublic(modifiers)) {
                     signatureMethod.append(getModifiersString(Modifier.PUBLIC));
                     // 作者这里还判断了一下是否为final，其实是没有必要的，也是错误的，因为final不能与abstract一块使用，那样没有意义。
