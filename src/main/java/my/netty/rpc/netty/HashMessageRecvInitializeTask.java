@@ -45,13 +45,16 @@ public class HashMessageRecvInitializeTask extends AbstractMessageRecvInitialize
             Method method = ReflectionUtils.getDeclaredMethod(cls, request.getMethodName(), request.getTypeParameters());
             utils.listMethod(method, false);
             String signatureMethod = utils.getProvider().toString().trim(); // 注意这个trim()，以及其他说明见ReflectionUtils.getClassAllMethodSignature里的注释。
+            LOGGER.info("signatureMethod: {}", signatureMethod);
 
             int index = getHashVisitorListIndex(signatureMethod);
+            LOGGER.info("index: {}", index);
             List<ModuleMetricsVisitor> metricsVisitors = HashModuleMetricsVisitor.getInstance().getHashVisitorLists().get(index);
             /**
              * AbstractModuleMetricsHandler.getVisitor要通过并发手段来实现动态安全增加（见AbstractMessageRecvInitializeTask.call里的注释），
              * 而这里Hash版本通过事先创建所有visitor，之后只会涉及到多线程并发的读，消除了并发修改的问题。
              */
+            LOGGER.info("hashKey: {}", hashKey);
             visitor.set(metricsVisitors.get(hashKey));
             /**
              * 对于metricsVisitor，是同一个类同一种方法的RpcSystemConfig.SYSTEM_PROPERTY_JMX_METRICS_HASH_NUMS个visitor，
