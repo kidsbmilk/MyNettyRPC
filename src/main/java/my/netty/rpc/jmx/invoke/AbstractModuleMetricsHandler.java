@@ -25,6 +25,11 @@ import java.util.concurrent.locks.LockSupport;
 //从零开始玩转JMX(四)——Apache Commons Modeler & Dynamic MBean：https://blog.csdn.net/u013256816/article/details/52840067
 public abstract class AbstractModuleMetricsHandler extends NotificationBroadcasterSupport implements ModuleMetricsVisitorMXBean {
 
+    static {
+        // Reduce the risk of "lost unpark" due to classloading
+        Class<?> ensureLoaded = LockSupport.class;
+    }
+
     protected List<ModuleMetricsVisitor> visitorList = new CopyOnWriteArrayList<ModuleMetricsVisitor>();
     protected static String startTime;
     private final AtomicBoolean locked = new AtomicBoolean(false);
@@ -66,18 +71,34 @@ public abstract class AbstractModuleMetricsHandler extends NotificationBroadcast
     // first-in-first-out non-reentrant lock，这个的实现很有趣，可以实现一些有趣的效果：比如多个线程按序加锁等待并按加锁顺序或者逆加锁顺序依次唤醒每个线程继续执行。
     // 通过改变线程在队列中的顺序，可以实现某些线程等待其他的线程先唤醒后自己才唤醒。这样的缺点也非常明显，多个线程阻塞，会导致系统中有大量的线程，浪费资源。
     protected void enter() {
+        boolean wasInterrupted = false;
         Thread current = Thread.currentThread();
         waiters.add(current);
 
         while (waiters.peek() != current || !locked.compareAndSet(false, true)) {
+            // 如果waiters的peek()值不是当前线程或者locked当前值不是false（当前值不是false，说明有其他线程执行这里把它设置为true了），则当前线程等待。
+            // 反之，是当前线程且成功将locked设置为true了，则不执行下面的park。
+            // 注意是while。
             LockSupport.park(ModuleMetricsVisitor.class);
+            // ignore interrupts while waiting
+            if (Thread.interrupted()) { // 线程醒来后，检查一下自己是否被中断过，如果被中断过，在没有满足while时，还要继续park的。
+                // 注意：Thread.interrupted()与Thread.isInterrupted()方法的不同：thread.interrupted()会在检查状态后，将中断标志清空。
+                // Thread.currentThread.interrupt()：https://blog.csdn.net/albertfly/article/details/52768590
+                wasInterrupted = true;
+            }
         }
 
         waiters.remove();
+        // ensure correct interrupt status on return
+        if (wasInterrupted) {
+            Thread.currentThread().interrupt(); // 这个是重新设置线程的中断标志。
+        }
+        // 这个中断检查的作用是：比如有一个线程A并不知道另一个线程B的状态是什么，在A调用线程B的一个存在阻塞可能的操作后，想去中断B，
+        // 但是A并不知道B此时有可能阻塞在park上，如果线程B的park部分没有检查并重设中断标志，则会导致A的中断操作不起作用。也即是，B的park阻塞要对外透明。
     }
 
     protected void exit() {
-        locked.set(false);
+        locked.set(false); // 当前线程执行完退出时恢复locked为false。
         LockSupport.unpark(waiters.peek());
     }
 
