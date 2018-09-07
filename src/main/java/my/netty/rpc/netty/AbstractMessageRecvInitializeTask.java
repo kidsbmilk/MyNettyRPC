@@ -7,16 +7,21 @@ import my.netty.rpc.core.RpcSystemConfig;
 import my.netty.rpc.model.MessageRequest;
 import my.netty.rpc.model.MessageResponse;
 import my.netty.rpc.spring.BeanFactoryUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.NameMatchMethodPointcutAdvisor;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 public abstract class AbstractMessageRecvInitializeTask implements Callable<Boolean> {
 
+    protected final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     protected MessageRequest request = null;
     protected MessageResponse response = null;
     protected Map<String, Object> handlerMap = null;
@@ -24,6 +29,7 @@ public abstract class AbstractMessageRecvInitializeTask implements Callable<Bool
     protected boolean returnNotNull = true;
     protected long invokeTimespan;
     protected Modular modular = BeanFactoryUtils.getBean("modular");
+    private static final String UNIQUE_ID = "traceRootId";
 
     public AbstractMessageRecvInitializeTask(MessageRequest request, MessageResponse response, Map<String, Object> handlerMap) {
         this.request = request;
@@ -54,9 +60,19 @@ public abstract class AbstractMessageRecvInitializeTask implements Callable<Bool
         }
     }
 
+    private boolean insertMDC() {
+        UUID uuid = UUID.randomUUID(); // 把这里替换成twitter的snowflake算法就可以了。
+        // 详解Twitter开源分布式自增ID算法snowflake，附演算验证过程
+        // https://blog.csdn.net/li396864285/article/details/54668031
+        String uniqueId = UNIQUE_ID + "-" + uuid.toString().replace("-", "");
+        MDC.put(UNIQUE_ID, uniqueId);
+        return true;
+    }
+
     @Override
     public Boolean call() {
         try {
+            insertMDC();
             acquire();
             /**
              * ModuleMetricsVisitor是最终存统计数据的地方，见ModuleMetricsVisitor类注释，
@@ -80,6 +96,7 @@ public abstract class AbstractMessageRecvInitializeTask implements Callable<Bool
              * （真是道理都是相通的，要弄明白问题出在哪里，带着问题去学习，有问题才能知道自己究竟会不会、会什么。）
              */
             response.setMessageId(request.getMessageId());
+            LOGGER.info("message name: {}, message id : {}", request.getMethodName(), request.getMessageId());
             injectInvoke();
             Object result = reflect(request); // 在这里服务器端处理客户端发来的调用请求。
             if(!returnNotNull || result != null) {
@@ -102,6 +119,7 @@ public abstract class AbstractMessageRecvInitializeTask implements Callable<Bool
             return Boolean.FALSE;
         } finally {
             release();
+            MDC.remove(UNIQUE_ID);
         }
     }
 

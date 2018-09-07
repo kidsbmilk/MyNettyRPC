@@ -170,8 +170,11 @@ public class MessageRecvExecutor {
                 // 在这里，两个步骤都用了异步的写法，原因见NettyRpcJdbcServerTest里的说明。
 
 
-//                // 对于关闭监听连接（关闭服务器）的事件，法一：sync()后按顺序写代码，后面的代码是在主线程中执行的。
-//                future.channel().closeFuture().sync();
+//                // 法一：sync()后按顺序写代码，后面的代码是在主线程中执行的。
+//                future.channel().closeFuture().sync(); // 这个sync是在等待closeFuture的发生、完成，在等待期间主线程一直是wait状态，
+//                // 可以看看AbstractChannel.CloseFuture.setClosed会唤醒等待在关闭服务器事件上的主线程，所以服务器关闭后，主线程被唤醒而继续执行。
+//                // Netty的future.channel().closeFuture().sync();到底有什么用？：https://segmentfault.com/q/1010000009070241
+//                // Netty优雅退出机制和原理：http://www.infoq.com/cn/articles/netty-elegant-exit-mechanism-and-principles
 //                executor.shutdownNow();
 
 

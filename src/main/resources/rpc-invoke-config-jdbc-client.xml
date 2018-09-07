@@ -8,13 +8,13 @@
 
     <context:property-placeholder location="classpath:rpc-server.properties"/>
 
-    <nettyrpc:reference id="addCalc" interfaceName="my.netty.rpc.services.AddCalculate" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
-    <nettyrpc:reference id="multiCalc" interfaceName="my.netty.rpc.services.MultiCalculate" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
-    <nettyrpc:reference id="personManage" interfaceName="my.netty.rpc.services.PersonManage" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
-    <nettyrpc:reference id="personManageJdbc" interfaceName="my.netty.rpc.services.JdbcPersonManage" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
-    <nettyrpc:reference id="costTime" interfaceName="my.netty.rpc.services.CostTimeCalculate" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
-    <nettyrpc:reference id="access" interfaceName="my.netty.rpc.compiler.AccessAdaptive" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
-    <nettyrpc:reference id="ability" interfaceName="my.netty.rpc.core.AbilityDetail" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
-    <nettyrpc:reference id="cache" interfaceName="my.netty.rpc.services.Cache" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
-    <nettyrpc:reference id="store" interfaceName="my.netty.rpc.services.Store" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr}"/>
+    <nettyrpc:reference id="addCalc" interfaceName="my.netty.rpc.services.AddCalculate" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr.for.client}"/>
+    <nettyrpc:reference id="multiCalc" interfaceName="my.netty.rpc.services.MultiCalculate" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr.for.client}"/>
+    <nettyrpc:reference id="personManage" interfaceName="my.netty.rpc.services.PersonManage" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr.for.client}"/>
+    <nettyrpc:reference id="personManageJdbc" interfaceName="my.netty.rpc.services.JdbcPersonManage" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr.for.client}"/>
+    <nettyrpc:reference id="costTime" interfaceName="my.netty.rpc.services.CostTimeCalculate" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr.for.client}"/>
+    <nettyrpc:reference id="access" interfaceName="my.netty.rpc.compiler.AccessAdaptive" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr.for.client}"/>
+    <nettyrpc:reference id="ability" interfaceName="my.netty.rpc.core.AbilityDetail" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr.for.client}"/>
+    <nettyrpc:reference id="cache" interfaceName="my.netty.rpc.services.Cache" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr.for.client}"/>
+    <nettyrpc:reference id="store" interfaceName="my.netty.rpc.services.Store" protocol="PROTOSTUFFSERIALIZE" ipAddr="${rpc.server.addr.for.client}"/>
 </beans>
