@@ -32,9 +32,10 @@ public class RpcRecvSerializeFrame implements RpcSerializeFrame {
     public void select(RpcSerializeProtocol protocol, ChannelPipeline pipeline) {
         switch (protocol) {
             case JDKSERIALIZE: {
-                handler.getInstance(JdkNativeRecvHandler.class).handle(handlerMap, pipeline);
+                handler.getInstance(JdkNativeRecvHandler.class).handle(handlerMap, pipeline); // 这个是通过LengthFieldBasedFrameDecoder来解决粘包问题的。
                 break;
             }
+            // 下面几个使用第三方的序列化方式时，是通过在MessageDecoder中自己控制读取数据的长度来解决粘包问题的。
             case KRYOSERIALIZE: {
                 handler.getInstance(KryoRecvHandler.class).handle(handlerMap, pipeline);
                 break;
